@@ -1,0 +1,24 @@
+kb_version: "0.1.0-seed"
+domain: ai_ml_dl_paper_simplification
+audience: smart_non_technical_reader
+output_sections: [problem, solution, evidence, feasibility]
+supported_subfields: [nlp, cv, ml, rl, multimodal, general]
+retrieval:
+  default_top_k: 5
+  filters: [subfield, section]
+  prefer_same_subfield: true
+generation:
+  preserve_uncertainty: true
+  prohibit_unsupported_claims: true
+  define_hard_terms_on_first_use: true
+  distinguish_reported_results_from_interpretation: true
+validation:
+  require_source_url: true
+  require_faithfulness_notes: true
+  allowed_sections: [problem, solution, evidence, feasibility]
+seed_counts:
+  glossary_entries: 20
+  templates: 12
+  few_shot_examples: 10
+  test_papers: 30
+
