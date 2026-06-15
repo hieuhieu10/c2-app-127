@@ -1,0 +1,50 @@
+[
+  {
+    "id": "quiz",
+    "name": "Multiple-choice quiz",
+    "description": "Questions with one correct answer and misconception-targeting distractors. Best for checking factual recall and concept understanding.",
+    "content_type_fit": ["facts", "definitions", "concepts", "cause-effect"],
+    "grade_range": [6, 12],
+    "active": true
+  },
+  {
+    "id": "matching",
+    "name": "Matching / memory",
+    "description": "Match terms to definitions, events to dates, or causes to effects. Best for relating paired concepts.",
+    "content_type_fit": ["term-definition", "pairs", "classification", "vocabulary"],
+    "grade_range": [6, 12],
+    "active": true
+  },
+  {
+    "id": "fill_in_blank",
+    "name": "Fill in the blank",
+    "description": "Complete sentences by choosing the missing word(s). Best for key terminology in context.",
+    "content_type_fit": ["vocabulary", "key-terms", "definitions", "formulas"],
+    "grade_range": [6, 12],
+    "active": true
+  },
+  {
+    "id": "timeline_ordering",
+    "name": "Timeline ordering",
+    "description": "Arrange events or steps in the correct order. Best for chronology and processes.",
+    "content_type_fit": ["chronology", "sequence", "process-steps"],
+    "grade_range": [6, 12],
+    "active": false
+  },
+  {
+    "id": "crossword",
+    "name": "Crossword",
+    "description": "Clue-driven word grid. Best for vocabulary-rich topics.",
+    "content_type_fit": ["vocabulary", "definitions"],
+    "grade_range": [6, 12],
+    "active": false
+  },
+  {
+    "id": "character_guess",
+    "name": "Character guess",
+    "description": "Guess a person/figure from progressive clues. Best for historical or notable figures.",
+    "content_type_fit": ["figures", "biography", "attributes"],
+    "grade_range": [6, 12],
+    "active": false
+  }
+]

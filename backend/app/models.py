@@ -1,0 +1,43 @@
+"""Request/response models for the agent-workflow API."""
+
+from __future__ import annotations
+
+from typing import Any, Literal
+
+from pydantic import BaseModel, Field
+
+
+class LessonRequest(BaseModel):
+    subject: str = Field(..., description="Subject, e.g. 'Lịch sử'.")
+    grade: int = Field(..., ge=1, le=12, description="Grade level (1-12).")
+    difficulty: Literal["easy", "medium", "hard"] = "medium"
+    prompt: str = Field(..., min_length=1, description="Teacher's topic / learning-objective request.")
+    objective_id: str | None = Field(None, description="Linked GDPT 2018 objective id, if known.")
+    source_text: str | None = Field(None, description="Optional pasted source material.")
+    num_items: int = Field(5, ge=1, le=20, description="Desired number of items/pairs.")
+    override_template: str | None = Field(
+        None, description="Force a specific template id (FR-05); skips recommendation."
+    )
+
+
+class TemplateCandidate(BaseModel):
+    id: str
+    name: str
+    description: str
+
+
+class RecommendResponse(BaseModel):
+    template_id: str
+    rationale: str
+    candidates: list[TemplateCandidate]
+
+
+class GameResponse(BaseModel):
+    ok: bool
+    template_id: str | None = None
+    rationale: str | None = None
+    content: dict[str, Any] | None = None
+    objective_id: str | None = None
+    validation_errors: list[str] = []
+    repair_attempts: int = 0
+    error: str | None = None
