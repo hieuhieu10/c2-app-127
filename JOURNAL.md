@@ -33,3 +33,7 @@ Tuần này không code, tập trung định hình lại bài toán sau review c
 
 - Content tiếng Anh + paper tiếng Anh ⇒ **NLI trở thành monolingual (Anh–Anh)**, bỏ được rủi ro cross-lingual (mDeBERTa-XNLI / back-translation) đã lo trước đó → faithfulness chính xác hơn và bớt một lớp phức tạp.
 - Đổi lại: readability/comprehension test cần làm trên đối tượng đọc tiếng Anh; Flesch-Kincaid vẫn hợp.
+
+
+
+**Week 2**: Đổi đề tài -> game học đường
