@@ -1,0 +1,35 @@
+{
+  "subject": "Lịch sử",
+  "grade": 8,
+  "objectives": [
+    {
+      "id": "ls8-phongtrao-canvuong",
+      "topic": "Phong trào Cần Vương (1885-1896)",
+      "description": "Trình bày được nguyên nhân, diễn biến chính và ý nghĩa của phong trào Cần Vương chống thực dân Pháp cuối thế kỉ XIX.",
+      "curriculum_context": [
+        "Phong trào Cần Vương bùng nổ sau khi vua Hàm Nghi và Tôn Thất Thuyết phát động (1885) với chiếu Cần Vương kêu gọi nhân dân giúp vua cứu nước.",
+        "Phong trào chia làm hai giai đoạn: 1885-1888 đặt dưới sự lãnh đạo của triều đình kháng chiến (vua Hàm Nghi, Tôn Thất Thuyết); 1888-1896 tiếp tục dù vua Hàm Nghi bị bắt và đày sang Algérie.",
+        "Các cuộc khởi nghĩa tiêu biểu: khởi nghĩa Bãi Sậy (Nguyễn Thiện Thuật), khởi nghĩa Ba Đình (Phạm Bành, Đinh Công Tráng), khởi nghĩa Hương Khê (Phan Đình Phùng) — cuộc khởi nghĩa tiêu biểu và kéo dài nhất.",
+        "Phong trào Cần Vương mang tính chất yêu nước trên lập trường phong kiến, thất bại do thiếu đường lối và giai cấp lãnh đạo tiên tiến, nhưng thể hiện tinh thần yêu nước bất khuất của nhân dân.",
+        "Khởi nghĩa Hương Khê (1885-1896) do Phan Đình Phùng lãnh đạo, có Cao Thắng chế tạo súng, là đỉnh cao của phong trào Cần Vương."
+      ],
+      "misconceptions": [
+        {
+          "id": "mc-canvuong-tuban",
+          "misconception": "Phong trào Cần Vương đi theo khuynh hướng dân chủ tư sản.",
+          "correct_concept": "Phong trào Cần Vương mang tính chất yêu nước trên lập trường phong kiến, không phải khuynh hướng tư sản."
+        },
+        {
+          "id": "mc-canvuong-leader",
+          "misconception": "Phan Đình Phùng lãnh đạo khởi nghĩa Bãi Sậy.",
+          "correct_concept": "Nguyễn Thiện Thuật lãnh đạo khởi nghĩa Bãi Sậy; Phan Đình Phùng lãnh đạo khởi nghĩa Hương Khê."
+        },
+        {
+          "id": "mc-canvuong-success",
+          "misconception": "Phong trào Cần Vương giành được thắng lợi và đánh đuổi được thực dân Pháp.",
+          "correct_concept": "Phong trào Cần Vương cuối cùng thất bại do thiếu đường lối và giai cấp lãnh đạo tiên tiến."
+        }
+      ]
+    }
+  ]
+}
