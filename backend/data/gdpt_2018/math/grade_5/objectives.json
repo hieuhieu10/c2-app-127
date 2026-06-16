@@ -1,0 +1,635 @@
+[
+  {
+    "objective_id": "math_5_decimals_operations",
+    "subject": "Toán",
+    "subject_display": "Toán",
+    "grade": 5,
+    "topic": "Số thập phân",
+    "objective_text": "Đọc, viết, so sánh và thực hiện được các phép tính cơ bản với số thập phân; vận dụng trong tình huống thực tế phù hợp.",
+    "cognitive_level": "apply",
+    "difficulty_band": "medium",
+    "allowed_difficulty_range": [
+      "easy",
+      "medium",
+      "hard"
+    ],
+    "required_skills": [
+      "read_write_decimals",
+      "compare_decimals",
+      "add_subtract_decimals",
+      "multiply_divide_decimals",
+      "solve_word_problem"
+    ],
+    "prerequisites": [
+      "Hieu phan so thap phan",
+      "Gia tri hang",
+      "Bon phep tinh voi so tu nhien"
+    ],
+    "grade_scope": {
+      "min_grade": 5,
+      "target_grade": 5,
+      "max_grade": 5
+    },
+    "complexity_signals": {
+      "number_of_steps": 2,
+      "requires_place_value": true,
+      "abstractness": "medium"
+    },
+    "recommended_question_types": [
+      "fill_in_blank",
+      "multiple_choice",
+      "matching_operation_to_story"
+    ],
+    "misconceptions": [
+      {
+        "id": "mc-g5-decimal-length",
+        "misconception": "Hoc sinh nghi so thap phan co nhieu chu so hon sau dau phay thi lon hon.",
+        "correct_concept": "Can so sanh theo gia tri hang; 0,8 lon hon 0,75 du 0,75 co nhieu chu so hon."
+      }
+    ],
+    "scope_policy": {
+      "in_scope": [
+        "doc viet so thap phan",
+        "so sanh so thap phan",
+        "cong tru nhan chia so thap phan",
+        "bai toan thuc te mot den hai buoc"
+      ],
+      "below_grade": "simplify_and_generate",
+      "at_grade": "generate_normally",
+      "above_grade": "downgrade_or_warn",
+      "out_of_program": "flag_and_suggest_related_objective",
+      "not_allowed": [
+        "so am",
+        "phuong trinh dai so",
+        "ham so",
+        "can bac hai"
+      ]
+    },
+    "grounding_passages": [
+      "Lop 5 hoc so thap phan va cac phep tinh co ban, gan voi do dai, khoi luong, tien va do luong.",
+      "Can chu y gia tri hang khi so sanh va dat tinh voi so thap phan."
+    ],
+    "default_examples": [
+      {
+        "raw_text": "Mot day ruy bang dai 2,5 m, cat di 0,75 m",
+        "structured": {
+          "object": "day ruy bang",
+          "start": 2.5,
+          "change": 0.75,
+          "operation": "subtraction",
+          "expected_result": 1.75,
+          "unit": "m"
+        }
+      }
+    ],
+    "search_aliases": [
+      "so thap phan",
+      "số thập phân",
+      "dau phay",
+      "dấu phẩy",
+      "cong tru so thap phan",
+      "cộng trừ số thập phân"
+    ],
+    "language": "vi",
+    "source_ref": "GDPT_2018_math_primary_curated_v1"
+  },
+  {
+    "objective_id": "math_5_percent_ratio",
+    "subject": "Toán",
+    "subject_display": "Toán",
+    "grade": 5,
+    "topic": "Tỉ số và tỉ số phần trăm",
+    "objective_text": "Hiểu và vận dụng được tỉ số, tỉ số phần trăm trong các bài toán thực tế đơn giản.",
+    "cognitive_level": "apply",
+    "difficulty_band": "hard",
+    "allowed_difficulty_range": [
+      "easy",
+      "medium",
+      "hard"
+    ],
+    "required_skills": [
+      "understand_ratio",
+      "understand_percent",
+      "convert_percent_fraction_decimal",
+      "solve_percent_word_problem"
+    ],
+    "prerequisites": [
+      "Phan so",
+      "So thap phan",
+      "Phep nhan chia"
+    ],
+    "grade_scope": {
+      "min_grade": 5,
+      "target_grade": 5,
+      "max_grade": 5
+    },
+    "complexity_signals": {
+      "number_of_steps": 2,
+      "requires_proportional_reasoning": true,
+      "abstractness": "high"
+    },
+    "recommended_question_types": [
+      "multiple_choice",
+      "fill_in_blank",
+      "matching"
+    ],
+    "misconceptions": [
+      {
+        "id": "mc-g5-percent-base",
+        "misconception": "Hoc sinh tinh phan tram nhung khong xac dinh dung dai luong goc.",
+        "correct_concept": "Ti so phan tram luon so sanh mot dai luong voi dai luong goc duoc xem la 100%."
+      }
+    ],
+    "scope_policy": {
+      "in_scope": [
+        "ti so",
+        "ti so phan tram",
+        "tim phan tram cua mot so",
+        "bai toan thuc te don gian"
+      ],
+      "below_grade": "simplify_and_generate",
+      "at_grade": "generate_normally",
+      "above_grade": "downgrade_or_warn",
+      "out_of_program": "flag_and_suggest_related_objective",
+      "not_allowed": [
+        "lai kep",
+        "ham so ti le",
+        "phuong trinh ti le thuc",
+        "xac suat thong ke nang cao"
+      ]
+    },
+    "grounding_passages": [
+      "Ti so phan tram lop 5 nen gan voi cac tinh huong quen thuoc nhu giam gia, so hoc sinh, so san pham.",
+      "Can lam ro dai luong goc tuong ung voi 100%."
+    ],
+    "default_examples": [
+      {
+        "raw_text": "Lop co 40 hoc sinh, 50% la hoc sinh nu",
+        "structured": {
+          "total": 40,
+          "percent": 50,
+          "part": 20,
+          "item": "hoc sinh nu"
+        }
+      }
+    ],
+    "search_aliases": [
+      "ti so",
+      "tỉ số",
+      "ti so phan tram",
+      "tỉ số phần trăm",
+      "phan tram",
+      "phần trăm",
+      "giam gia",
+      "giảm giá"
+    ],
+    "language": "vi",
+    "source_ref": "GDPT_2018_math_primary_curated_v1"
+  },
+  {
+    "objective_id": "math_5_geometry_area_volume",
+    "subject": "Toán",
+    "subject_display": "Toán",
+    "grade": 5,
+    "topic": "Diện tích và thể tích",
+    "objective_text": "Tính được diện tích một số hình phẳng và thể tích hình hộp chữ nhật, hình lập phương trong các bài toán đơn giản.",
+    "cognitive_level": "apply",
+    "difficulty_band": "hard",
+    "allowed_difficulty_range": [
+      "easy",
+      "medium",
+      "hard"
+    ],
+    "required_skills": [
+      "calculate_area_triangle_trapezoid_circle_intro",
+      "calculate_volume_rectangular_prism",
+      "use_measurement_units",
+      "solve_geometry_word_problem"
+    ],
+    "prerequisites": [
+      "Chu vi dien tich hinh chu nhat hinh vuong",
+      "Phep nhan so thap phan",
+      "Don vi do dai dien tich"
+    ],
+    "grade_scope": {
+      "min_grade": 5,
+      "target_grade": 5,
+      "max_grade": 5
+    },
+    "complexity_signals": {
+      "requires_formula_use": true,
+      "requires_spatial_reasoning": true,
+      "number_of_steps": 2,
+      "abstractness": "medium"
+    },
+    "recommended_question_types": [
+      "matching_formula_to_shape",
+      "multiple_choice",
+      "fill_in_blank"
+    ],
+    "misconceptions": [
+      {
+        "id": "mc-g5-area-volume",
+        "misconception": "Hoc sinh nham don vi dien tich voi don vi the tich.",
+        "correct_concept": "Dien tich dung don vi vuong; the tich dung don vi khoi."
+      }
+    ],
+    "scope_policy": {
+      "in_scope": [
+        "dien tich tam giac",
+        "dien tich hinh thang",
+        "dien tich hinh tron muc co ban",
+        "the tich hinh hop chu nhat",
+        "the tich hinh lap phuong"
+      ],
+      "below_grade": "simplify_and_generate",
+      "at_grade": "generate_normally",
+      "above_grade": "downgrade_or_warn",
+      "out_of_program": "flag_and_suggest_related_objective",
+      "not_allowed": [
+        "hinh cau",
+        "hinh non",
+        "chung minh cong thuc",
+        "toa do khong gian"
+      ]
+    },
+    "grounding_passages": [
+      "Hinh hoc lop 5 co the dung cong thuc dien tich, the tich trong bai toan thuc te don gian.",
+      "Can chon dung cong thuc va don vi do."
+    ],
+    "default_examples": [
+      {
+        "raw_text": "Be ca hinh hop chu nhat dai 5 dm, rong 3 dm, cao 4 dm",
+        "structured": {
+          "shape": "hinh hop chu nhat",
+          "length": 5,
+          "width": 3,
+          "height": 4,
+          "volume": 60,
+          "unit": "dm3"
+        }
+      }
+    ],
+    "search_aliases": [
+      "dien tich",
+      "diện tích",
+      "the tich",
+      "thể tích",
+      "hinh hop chu nhat",
+      "hình hộp chữ nhật",
+      "hinh lap phuong",
+      "hình lập phương"
+    ],
+    "language": "vi",
+    "source_ref": "GDPT_2018_math_primary_curated_v1"
+  },
+  {
+    "objective_id": "math_5_measurement_speed_time",
+    "subject": "Toán",
+    "subject_display": "Toán",
+    "grade": 5,
+    "topic": "Đại lượng và vận tốc",
+    "objective_text": "Giải được một số bài toán thực tế về độ dài, khối lượng, thời gian, diện tích, thể tích và vận tốc ở mức đơn giản.",
+    "cognitive_level": "apply",
+    "difficulty_band": "hard",
+    "allowed_difficulty_range": [
+      "easy",
+      "medium",
+      "hard"
+    ],
+    "required_skills": [
+      "convert_units",
+      "calculate_speed_distance_time",
+      "solve_two_step_word_problem",
+      "choose_operation"
+    ],
+    "prerequisites": [
+      "Don vi do luong",
+      "So thap phan",
+      "Phep nhan chia",
+      "Bai toan co loi van"
+    ],
+    "grade_scope": {
+      "min_grade": 5,
+      "target_grade": 5,
+      "max_grade": 5
+    },
+    "complexity_signals": {
+      "number_of_steps": 2,
+      "requires_formula_use": true,
+      "abstractness": "medium"
+    },
+    "recommended_question_types": [
+      "multiple_choice",
+      "fill_in_blank",
+      "matching_operation_to_story"
+    ],
+    "misconceptions": [
+      {
+        "id": "mc-g5-speed-formula",
+        "misconception": "Hoc sinh nham cong thuc tinh van toc, quang duong va thoi gian.",
+        "correct_concept": "Van toc = quang duong / thoi gian; quang duong = van toc x thoi gian; thoi gian = quang duong / van toc."
+      }
+    ],
+    "scope_policy": {
+      "in_scope": [
+        "doi don vi quen thuoc",
+        "van toc quang duong thoi gian",
+        "bai toan mot den hai buoc"
+      ],
+      "below_grade": "simplify_and_generate",
+      "at_grade": "generate_normally",
+      "above_grade": "downgrade_or_warn",
+      "out_of_program": "flag_and_suggest_related_objective",
+      "not_allowed": [
+        "chuyen dong nguoc chieu phuc tap",
+        "do thi chuyen dong",
+        "vat ly nang cao"
+      ]
+    },
+    "grounding_passages": [
+      "Bai toan van toc lop 5 nen dung cong thuc co ban va tinh huong doi song don gian.",
+      "Can giu so buoc suy luan phu hop voi hoc sinh cuoi cap tieu hoc."
+    ],
+    "default_examples": [
+      {
+        "raw_text": "Mot xe dap di 24 km trong 2 gio",
+        "structured": {
+          "distance": 24,
+          "time": 2,
+          "speed": 12,
+          "unit": "km/h"
+        }
+      }
+    ],
+    "search_aliases": [
+      "van toc",
+      "vận tốc",
+      "quang duong",
+      "quãng đường",
+      "thoi gian",
+      "thời gian",
+      "dai luong",
+      "đại lượng"
+    ],
+    "language": "vi",
+    "source_ref": "GDPT_2018_math_primary_curated_v1"
+  },
+  {
+    "objective_id": "math_5_data_probability_intro",
+    "subject": "Toán",
+    "subject_display": "Toán",
+    "grade": 5,
+    "topic": "Thống kê và khả năng xảy ra",
+    "objective_text": "Đọc và diễn giải được số liệu trong bảng, biểu đồ; nhận biết khả năng xảy ra của một sự kiện ở mức trực quan.",
+    "cognitive_level": "understand",
+    "difficulty_band": "medium",
+    "allowed_difficulty_range": [
+      "easy",
+      "medium"
+    ],
+    "required_skills": [
+      "read_table",
+      "read_chart",
+      "compare_data",
+      "recognize_likelihood"
+    ],
+    "prerequisites": [
+      "Doc bieu do cot",
+      "So sanh so",
+      "Cong tru nhan chia co ban"
+    ],
+    "grade_scope": {
+      "min_grade": 5,
+      "target_grade": 5,
+      "max_grade": 5
+    },
+    "complexity_signals": {
+      "number_of_categories": 5,
+      "requires_probability_language": true,
+      "abstractness": "medium"
+    },
+    "recommended_question_types": [
+      "multiple_choice",
+      "matching",
+      "fill_in_blank"
+    ],
+    "misconceptions": [
+      {
+        "id": "mc-g5-likelihood-frequency",
+        "misconception": "Hoc sinh nghi su kien nao cung co kha nang xay ra ngang nhau.",
+        "correct_concept": "Kha nang xay ra phu thuoc vao so truong hop thuan loi va boi canh cua tinh huong."
+      }
+    ],
+    "scope_policy": {
+      "in_scope": [
+        "bang so lieu",
+        "bieu do",
+        "so sanh du lieu",
+        "chac chan co the khong the",
+        "kha nang xay ra truc quan"
+      ],
+      "below_grade": "simplify_and_generate",
+      "at_grade": "generate_normally",
+      "above_grade": "downgrade_or_warn",
+      "out_of_program": "flag_and_suggest_related_objective",
+      "not_allowed": [
+        "cong thuc xac suat phuc tap",
+        "phan phoi xac suat",
+        "thong ke suy luan"
+      ]
+    },
+    "grounding_passages": [
+      "Thong ke va kha nang xay ra o lop 5 nen o muc doc hieu du lieu va nhan xet truc quan.",
+      "Khong yeu cau cong thuc xac suat nang cao."
+    ],
+    "default_examples": [
+      {
+        "raw_text": "Trong hop co 3 bi do va 1 bi xanh",
+        "structured": {
+          "items": {
+            "bi do": 3,
+            "bi xanh": 1
+          },
+          "more_likely": "bi do"
+        }
+      }
+    ],
+    "search_aliases": [
+      "thong ke",
+      "thống kê",
+      "kha nang xay ra",
+      "khả năng xảy ra",
+      "bieu do",
+      "biểu đồ"
+    ],
+    "language": "vi",
+    "source_ref": "GDPT_2018_math_primary_curated_v1"
+  },
+  {
+    "objective_id": "math_5_natural_numbers_review_dependency",
+    "subject": "Toán",
+    "subject_display": "Toán",
+    "grade": 5,
+    "topic": "Ôn tập số tự nhiên và quan hệ phụ thuộc",
+    "objective_text": "Củng cố đọc, viết, so sánh số tự nhiên và giải các bài toán liên quan đến phép tính với số tự nhiên, quan hệ phụ thuộc trực tiếp và đơn giản.",
+    "language": "vi",
+    "source_ref": "source_documents/toan1-5.pdf; source_documents/GDPT_2018.md",
+    "search_aliases": [
+      "số tự nhiên lớp 5",
+      "so tu nhien lop 5",
+      "quan hệ phụ thuộc",
+      "quan he phu thuoc",
+      "bài toán số tự nhiên",
+      "bai toan so tu nhien"
+    ],
+    "cognitive_level": "apply",
+    "difficulty_band": "medium",
+    "allowed_difficulty_range": [
+      "easy",
+      "medium"
+    ],
+    "required_skills": [
+      "review_natural_numbers",
+      "choose_operation",
+      "solve_direct_dependency_problem"
+    ],
+    "prerequisites": [
+      "Bốn phép tính với số tự nhiên",
+      "Bài toán có lời văn lớp 4"
+    ],
+    "grade_scope": {
+      "min_grade": 5,
+      "target_grade": 5,
+      "max_grade": 5
+    },
+    "complexity_signals": {
+      "number_of_steps": 2,
+      "requires_relationship_reasoning": true,
+      "abstractness": "medium"
+    },
+    "recommended_question_types": [
+      "multiple_choice",
+      "fill_in_blank",
+      "matching_operation_to_story"
+    ],
+    "misconceptions": [
+      {
+        "misconception": "Học sinh nhầm lẫn khi vận dụng Ôn tập số tự nhiên và quan hệ phụ thuộc.",
+        "correct_concept": "Cần bám sát yêu cầu cần đạt và dùng ví dụ phù hợp lớp 5."
+      }
+    ],
+    "scope_policy": {
+      "in_scope": [
+        "Ôn tập số tự nhiên và quan hệ phụ thuộc",
+        "số tự nhiên lớp 5",
+        "so tu nhien lop 5",
+        "quan hệ phụ thuộc",
+        "quan he phu thuoc",
+        "bài toán số tự nhiên"
+      ],
+      "below_grade": "simplify_and_generate",
+      "at_grade": "generate_normally",
+      "above_grade": "downgrade_or_warn",
+      "out_of_program": "flag_and_suggest_related_objective",
+      "not_allowed": [
+        "nội dung vượt phạm vi lớp 5",
+        "kiến thức chưa có trong mục tiêu này"
+      ]
+    },
+    "grounding_passages": [
+      "Lớp 5 tiếp tục giải các bài toán liên quan đến phép tính về số tự nhiên và quan hệ phụ thuộc trực tiếp, đơn giản."
+    ],
+    "default_examples": [
+      {
+        "raw_text": "Ví dụ phù hợp với Ôn tập số tự nhiên và quan hệ phụ thuộc",
+        "structured": {
+          "topic": "Ôn tập số tự nhiên và quan hệ phụ thuộc"
+        }
+      }
+    ]
+  },
+  {
+    "objective_id": "math_5_fractions_review_operations",
+    "subject": "Toán",
+    "subject_display": "Toán",
+    "grade": 5,
+    "topic": "Ôn tập và vận dụng phân số",
+    "objective_text": "Củng cố, vận dụng phân số và các phép tính với phân số trong các tình huống phù hợp, làm nền tảng cho số thập phân và tỉ số phần trăm.",
+    "language": "vi",
+    "source_ref": "source_documents/toan1-5.pdf; source_documents/GDPT_2018.md",
+    "search_aliases": [
+      "phân số lớp 5",
+      "phan so lop 5",
+      "ôn tập phân số",
+      "on tap phan so",
+      "phép tính phân số",
+      "phep tinh phan so"
+    ],
+    "cognitive_level": "apply",
+    "difficulty_band": "medium",
+    "allowed_difficulty_range": [
+      "easy",
+      "medium"
+    ],
+    "required_skills": [
+      "review_fractions",
+      "calculate_with_fractions",
+      "connect_fraction_decimal_percent"
+    ],
+    "prerequisites": [
+      "Phân số lớp 4",
+      "Bốn phép tính với phân số đơn giản"
+    ],
+    "grade_scope": {
+      "min_grade": 5,
+      "target_grade": 5,
+      "max_grade": 5
+    },
+    "complexity_signals": {
+      "requires_part_whole_reasoning": true,
+      "number_of_steps": 2,
+      "abstractness": "medium"
+    },
+    "recommended_question_types": [
+      "multiple_choice",
+      "fill_in_blank",
+      "matching"
+    ],
+    "misconceptions": [
+      {
+        "misconception": "Học sinh nhầm lẫn khi vận dụng Ôn tập và vận dụng phân số.",
+        "correct_concept": "Cần bám sát yêu cầu cần đạt và dùng ví dụ phù hợp lớp 5."
+      }
+    ],
+    "scope_policy": {
+      "in_scope": [
+        "Ôn tập và vận dụng phân số",
+        "phân số lớp 5",
+        "phan so lop 5",
+        "ôn tập phân số",
+        "on tap phan so",
+        "phép tính phân số"
+      ],
+      "below_grade": "simplify_and_generate",
+      "at_grade": "generate_normally",
+      "above_grade": "downgrade_or_warn",
+      "out_of_program": "flag_and_suggest_related_objective",
+      "not_allowed": [
+        "nội dung vượt phạm vi lớp 5",
+        "kiến thức chưa có trong mục tiêu này"
+      ]
+    },
+    "grounding_passages": [
+      "Lớp 5 dùng kiến thức phân số làm nền cho số thập phân, tỉ số và tỉ số phần trăm."
+    ],
+    "default_examples": [
+      {
+        "raw_text": "Ví dụ phù hợp với Ôn tập và vận dụng phân số",
+        "structured": {
+          "topic": "Ôn tập và vận dụng phân số"
+        }
+      }
+    ]
+  }
+]

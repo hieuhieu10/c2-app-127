@@ -1,0 +1,353 @@
+[
+  {
+    "objective_id": "math_1_count_compare_numbers_100",
+    "subject": "Toán",
+    "subject_display": "Toán",
+    "grade": 1,
+    "topic": "Số đến 100",
+    "objective_text": "Đếm, đọc, viết và so sánh được các số trong phạm vi 100; nhận biết thứ tự và vị trí của số trong dãy số.",
+    "cognitive_level": "remember",
+    "difficulty_band": "easy",
+    "allowed_difficulty_range": [
+      "easy"
+    ],
+    "required_skills": [
+      "count_objects",
+      "read_write_numbers",
+      "compare_numbers",
+      "order_numbers"
+    ],
+    "prerequisites": [
+      "Dem duoc do vat roi rac",
+      "Nhan biet chu so co ban"
+    ],
+    "grade_scope": {
+      "min_grade": 1,
+      "target_grade": 1,
+      "max_grade": 1
+    },
+    "complexity_signals": {
+      "number_range_max": 100,
+      "number_of_steps": 1,
+      "abstractness": "low"
+    },
+    "recommended_question_types": [
+      "multiple_choice",
+      "fill_in_blank",
+      "matching_number_to_quantity"
+    ],
+    "misconceptions": [
+      {
+        "id": "mc-g1-count-skip",
+        "misconception": "Hoc sinh dem lap hoac bo sot do vat.",
+        "correct_concept": "Moi do vat chi duoc dem mot lan va so cuoi cung la tong so do vat."
+      }
+    ],
+    "scope_policy": {
+      "in_scope": [
+        "dem trong pham vi 100",
+        "doc viet so",
+        "so sanh so",
+        "sap xep so"
+      ],
+      "below_grade": "simplify_and_generate",
+      "at_grade": "generate_normally",
+      "above_grade": "downgrade_or_warn",
+      "out_of_program": "flag_and_suggest_related_objective",
+      "not_allowed": [
+        "so lon hon 100",
+        "phep tinh nhieu buoc",
+        "phan so",
+        "so thap phan"
+      ]
+    },
+    "grounding_passages": [
+      "Hoc sinh lop 1 lam quen voi cac so trong pham vi 100 thong qua dem, doc, viet, so sanh va sap xep.",
+      "Noi dung nen gan voi do vat quen thuoc va tranh yeu cau tinh toan nhieu buoc."
+    ],
+    "default_examples": [
+      {
+        "raw_text": "Co 8 bong hoa tren ban",
+        "structured": {
+          "item": "bong hoa",
+          "quantity": 8
+        }
+      }
+    ],
+    "search_aliases": [
+      "dem so",
+      "đếm số",
+      "so sanh so",
+      "so sánh số",
+      "so den 100",
+      "số đến 100"
+    ],
+    "language": "vi",
+    "source_ref": "GDPT_2018_math_primary_curated_v1"
+  },
+  {
+    "objective_id": "math_1_add_subtract_within_20",
+    "subject": "Toán",
+    "subject_display": "Toán",
+    "grade": 1,
+    "topic": "Cộng trừ trong phạm vi 20",
+    "objective_text": "Thực hiện được phép cộng, phép trừ trong phạm vi 20 và giải được bài toán một bước gắn với tình huống thực tế.",
+    "cognitive_level": "apply",
+    "difficulty_band": "easy",
+    "allowed_difficulty_range": [
+      "easy",
+      "medium"
+    ],
+    "required_skills": [
+      "add_within_20",
+      "subtract_within_20",
+      "interpret_simple_word_problem"
+    ],
+    "prerequisites": [
+      "Dem trong pham vi 20",
+      "Hieu them vao va bot di"
+    ],
+    "grade_scope": {
+      "min_grade": 1,
+      "target_grade": 1,
+      "max_grade": 1
+    },
+    "complexity_signals": {
+      "number_range_max": 20,
+      "number_of_steps": 1,
+      "abstractness": "low"
+    },
+    "recommended_question_types": [
+      "multiple_choice",
+      "fill_in_blank",
+      "visual_grouping"
+    ],
+    "misconceptions": [
+      {
+        "id": "mc-g1-add-sub-direction",
+        "misconception": "Hoc sinh nham tinh huong them vao voi bot di.",
+        "correct_concept": "Them vao dung phep cong; bot di hoac lay ra dung phep tru."
+      }
+    ],
+    "scope_policy": {
+      "in_scope": [
+        "cong trong pham vi 20",
+        "tru trong pham vi 20",
+        "bai toan mot buoc"
+      ],
+      "below_grade": "simplify_and_generate",
+      "at_grade": "generate_normally",
+      "above_grade": "downgrade_or_warn",
+      "out_of_program": "flag_and_suggest_related_objective",
+      "not_allowed": [
+        "cong tru co nho phuc tap",
+        "bai toan hai buoc",
+        "nhan chia"
+      ]
+    },
+    "grounding_passages": [
+      "Phep cong, phep tru lop 1 nen duoc dat trong tinh huong them vao, bot di, gop lai hoac con lai.",
+      "Bai toan nen co mot phep tinh va dung so nho trong pham vi 20."
+    ],
+    "default_examples": [
+      {
+        "raw_text": "Co 7 vien bi, them 3 vien bi",
+        "structured": {
+          "item": "vien bi",
+          "start": 7,
+          "change": 3,
+          "operation": "addition",
+          "expected_result": 10
+        }
+      }
+    ],
+    "search_aliases": [
+      "cong tru",
+      "cộng trừ",
+      "pham vi 20",
+      "phạm vi 20",
+      "them vao",
+      "thêm vào",
+      "bot di",
+      "bớt đi"
+    ],
+    "language": "vi",
+    "source_ref": "GDPT_2018_math_primary_curated_v1"
+  },
+  {
+    "objective_id": "math_1_shapes_positions",
+    "subject": "Toán",
+    "subject_display": "Toán",
+    "grade": 1,
+    "topic": "Hình học trực quan",
+    "objective_text": "Nhận biết được một số hình phẳng, hình khối đơn giản và sử dụng được các từ chỉ vị trí trong không gian.",
+    "cognitive_level": "remember",
+    "difficulty_band": "easy",
+    "allowed_difficulty_range": [
+      "easy"
+    ],
+    "required_skills": [
+      "recognize_shapes",
+      "classify_shapes",
+      "use_position_words"
+    ],
+    "prerequisites": [
+      "Quan sat do vat quen thuoc"
+    ],
+    "grade_scope": {
+      "min_grade": 1,
+      "target_grade": 1,
+      "max_grade": 1
+    },
+    "complexity_signals": {
+      "number_of_entities": 4,
+      "requires_spatial_reasoning": true,
+      "abstractness": "low"
+    },
+    "recommended_question_types": [
+      "matching",
+      "drag_drop_grouping",
+      "multiple_choice"
+    ],
+    "misconceptions": [
+      {
+        "id": "mc-g1-shape-orientation",
+        "misconception": "Hoc sinh nghi hinh doi huong thi thanh hinh khac.",
+        "correct_concept": "Mot hinh van la cung loai du no duoc xoay theo huong khac."
+      }
+    ],
+    "scope_policy": {
+      "in_scope": [
+        "hinh vuong",
+        "hinh tron",
+        "hinh tam giac",
+        "hinh chu nhat",
+        "tren duoi trai phai"
+      ],
+      "below_grade": "simplify_and_generate",
+      "at_grade": "generate_normally",
+      "above_grade": "downgrade_or_warn",
+      "out_of_program": "flag_and_suggest_related_objective",
+      "not_allowed": [
+        "tinh chu vi",
+        "tinh dien tich",
+        "goc",
+        "duong thang song song"
+      ]
+    },
+    "grounding_passages": [
+      "Hinh hoc lop 1 tap trung vao nhan biet truc quan cac hinh va vi tri trong khong gian.",
+      "Cau hoi nen dung vat that, tranh anh hoac mo ta don gian."
+    ],
+    "default_examples": [
+      {
+        "raw_text": "Chiec dong ho co mat hinh tron",
+        "structured": {
+          "object": "dong ho",
+          "shape": "hinh tron"
+        }
+      }
+    ],
+    "search_aliases": [
+      "hinh hoc",
+      "hình học",
+      "hinh vuong",
+      "hình vuông",
+      "hinh tron",
+      "hình tròn",
+      "vi tri",
+      "vị trí"
+    ],
+    "language": "vi",
+    "source_ref": "GDPT_2018_math_primary_curated_v1"
+  },
+  {
+    "objective_id": "math_1_measurement_time_cm",
+    "subject": "Toán",
+    "subject_display": "Toán",
+    "grade": 1,
+    "topic": "Đo độ dài, thời gian và lịch",
+    "objective_text": "Nhận biết được dài hơn, ngắn hơn; nhận biết đơn vị xăng-ti-mét, đọc giờ đúng trên đồng hồ, biết tuần lễ và thứ ngày trong tuần; giải quyết một số tình huống đơn giản về đo độ dài, giờ và lịch.",
+    "language": "vi",
+    "source_ref": "source_documents/toan1-5.pdf; source_documents/GDPT_2018.md",
+    "search_aliases": [
+      "đo độ dài",
+      "do do dai",
+      "xăng-ti-mét",
+      "xang ti met",
+      "cm",
+      "giờ đúng",
+      "gio dung",
+      "lịch",
+      "lich"
+    ],
+    "cognitive_level": "apply",
+    "difficulty_band": "easy",
+    "allowed_difficulty_range": [
+      "easy"
+    ],
+    "required_skills": [
+      "read_length_cm",
+      "compare_lengths",
+      "read_exact_hour",
+      "read_week_calendar",
+      "solve_simple_measurement_problem"
+    ],
+    "prerequisites": [
+      "Đếm và đọc số trong phạm vi 100",
+      "Nhận biết dài hơn và ngắn hơn qua vật thật"
+    ],
+    "grade_scope": {
+      "min_grade": 1,
+      "target_grade": 1,
+      "max_grade": 1
+    },
+    "complexity_signals": {
+      "number_of_steps": 1,
+      "number_range_max": 100,
+      "uses_real_objects": true,
+      "abstractness": "low"
+    },
+    "recommended_question_types": [
+      "multiple_choice",
+      "matching",
+      "fill_in_blank"
+    ],
+    "misconceptions": [
+      {
+        "misconception": "Học sinh nhầm lẫn khi vận dụng Đo độ dài, thời gian và lịch.",
+        "correct_concept": "Cần bám sát yêu cầu cần đạt và dùng ví dụ phù hợp lớp 1."
+      }
+    ],
+    "scope_policy": {
+      "in_scope": [
+        "Đo độ dài, thời gian và lịch",
+        "đo độ dài",
+        "do do dai",
+        "xăng-ti-mét",
+        "xang ti met",
+        "cm"
+      ],
+      "below_grade": "simplify_and_generate",
+      "at_grade": "generate_normally",
+      "above_grade": "downgrade_or_warn",
+      "out_of_program": "flag_and_suggest_related_objective",
+      "not_allowed": [
+        "nội dung vượt phạm vi lớp 1",
+        "kiến thức chưa có trong mục tiêu này"
+      ]
+    },
+    "grounding_passages": [
+      "Lớp 1 nhận biết đơn vị đo độ dài cm, đọc và viết số đo độ dài trong phạm vi 100 cm.",
+      "Học sinh lớp 1 đọc giờ đúng trên đồng hồ và xác định thứ, ngày trong tuần khi xem lịch."
+    ],
+    "default_examples": [
+      {
+        "raw_text": "Ví dụ phù hợp với Đo độ dài, thời gian và lịch",
+        "structured": {
+          "topic": "Đo độ dài, thời gian và lịch"
+        }
+      }
+    ]
+  }
+]

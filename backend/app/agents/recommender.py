@@ -48,6 +48,7 @@ async def recommend_node(state: GenerationState) -> GenerationState:
         difficulty=state["difficulty"],
         prompt=state["prompt"],
         candidates=candidates,
+        ctx=state.get("context"),
     )
 
     result = await call_tool(

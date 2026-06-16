@@ -1,0 +1,546 @@
+[
+  {
+    "objective_id": "math_2_numbers_1000_place_value",
+    "subject": "Toán",
+    "subject_display": "Toán",
+    "grade": 2,
+    "topic": "Số đến 1000",
+    "objective_text": "Đọc, viết, so sánh và phân tích được số có ba chữ số theo hàng trăm, hàng chục, hàng đơn vị trong phạm vi 1000.",
+    "cognitive_level": "understand",
+    "difficulty_band": "easy",
+    "allowed_difficulty_range": [
+      "easy",
+      "medium"
+    ],
+    "required_skills": [
+      "read_write_numbers",
+      "compare_numbers",
+      "understand_place_value",
+      "compose_decompose_numbers"
+    ],
+    "prerequisites": [
+      "Biet so den 100",
+      "Hieu chuc va don vi"
+    ],
+    "grade_scope": {
+      "min_grade": 2,
+      "target_grade": 2,
+      "max_grade": 2
+    },
+    "complexity_signals": {
+      "number_range_max": 1000,
+      "number_of_steps": 1,
+      "abstractness": "medium"
+    },
+    "recommended_question_types": [
+      "fill_in_blank",
+      "matching",
+      "multiple_choice"
+    ],
+    "misconceptions": [
+      {
+        "id": "mc-g2-place-zero",
+        "misconception": "Hoc sinh bo qua chu so 0 o hang chuc hoac hang don vi.",
+        "correct_concept": "Chu so 0 van giu vi tri hang va can duoc xet khi doc, viet, phan tich so."
+      }
+    ],
+    "scope_policy": {
+      "in_scope": [
+        "so co ba chu so",
+        "hang tram chuc don vi",
+        "so sanh so den 1000"
+      ],
+      "below_grade": "simplify_and_generate",
+      "at_grade": "generate_normally",
+      "above_grade": "downgrade_or_warn",
+      "out_of_program": "flag_and_suggest_related_objective",
+      "not_allowed": [
+        "so thap phan",
+        "phan so",
+        "so am",
+        "so lon hon 1000 neu la trong tam chinh"
+      ]
+    },
+    "grounding_passages": [
+      "Lop 2 mo rong pham vi so den 1000 va nhan manh cau tao tram, chuc, don vi.",
+      "Cau hoi nen kiem tra doc, viet, so sanh va phan tich so theo gia tri hang."
+    ],
+    "default_examples": [
+      {
+        "raw_text": "So 325 gom 3 tram, 2 chuc, 5 don vi",
+        "structured": {
+          "number": 325,
+          "hundreds": 3,
+          "tens": 2,
+          "ones": 5
+        }
+      }
+    ],
+    "search_aliases": [
+      "so den 1000",
+      "số đến 1000",
+      "tram chuc don vi",
+      "trăm chục đơn vị",
+      "gia tri hang",
+      "giá trị hàng"
+    ],
+    "language": "vi",
+    "source_ref": "GDPT_2018_math_primary_curated_v1"
+  },
+  {
+    "objective_id": "math_2_add_subtract_within_1000",
+    "subject": "Toán",
+    "subject_display": "Toán",
+    "grade": 2,
+    "topic": "Cộng trừ trong phạm vi 1000",
+    "objective_text": "Thực hiện được phép cộng, phép trừ trong phạm vi 1000 và giải được bài toán một bước liên quan.",
+    "cognitive_level": "apply",
+    "difficulty_band": "medium",
+    "allowed_difficulty_range": [
+      "easy",
+      "medium"
+    ],
+    "required_skills": [
+      "add_within_1000",
+      "subtract_within_1000",
+      "regroup_tens_hundreds",
+      "interpret_simple_word_problem"
+    ],
+    "prerequisites": [
+      "Cong tru trong pham vi 100",
+      "Hieu gia tri hang"
+    ],
+    "grade_scope": {
+      "min_grade": 2,
+      "target_grade": 2,
+      "max_grade": 2
+    },
+    "complexity_signals": {
+      "number_range_max": 1000,
+      "number_of_steps": 1,
+      "requires_regrouping": true,
+      "abstractness": "medium"
+    },
+    "recommended_question_types": [
+      "multiple_choice",
+      "fill_in_blank",
+      "matching_operation_to_story"
+    ],
+    "misconceptions": [
+      {
+        "id": "mc-g2-regroup",
+        "misconception": "Hoc sinh tru tung chu so ma khong muon/chuyen hang khi can.",
+        "correct_concept": "Khi hang don vi hoac hang chuc khong du de tru, can muon/chuyen tu hang cao hon."
+      }
+    ],
+    "scope_policy": {
+      "in_scope": [
+        "cong tru so co den ba chu so",
+        "bai toan mot buoc",
+        "co the co nho hoac muon don gian"
+      ],
+      "below_grade": "simplify_and_generate",
+      "at_grade": "generate_normally",
+      "above_grade": "downgrade_or_warn",
+      "out_of_program": "flag_and_suggest_related_objective",
+      "not_allowed": [
+        "bai toan nhieu buoc phuc tap",
+        "nhan chia nhieu chu so",
+        "so thap phan"
+      ]
+    },
+    "grounding_passages": [
+      "Phep cong, phep tru lop 2 nam trong pham vi 1000 va nen gan voi tinh huong thuc te mot buoc.",
+      "Noi dung co the luyen ky nang dat tinh va hieu y nghia them vao, bot di, hon kem."
+    ],
+    "default_examples": [
+      {
+        "raw_text": "Thu vien co 245 quyen sach, them 123 quyen",
+        "structured": {
+          "item": "quyen sach",
+          "start": 245,
+          "change": 123,
+          "operation": "addition",
+          "expected_result": 368
+        }
+      }
+    ],
+    "search_aliases": [
+      "cong tru 1000",
+      "cộng trừ 1000",
+      "dat tinh",
+      "đặt tính",
+      "co nho",
+      "có nhớ",
+      "co muon",
+      "có mượn"
+    ],
+    "language": "vi",
+    "source_ref": "GDPT_2018_math_primary_curated_v1"
+  },
+  {
+    "objective_id": "math_2_intro_multiplication_division",
+    "subject": "Toán",
+    "subject_display": "Toán",
+    "grade": 2,
+    "topic": "Làm quen phép nhân và phép chia",
+    "objective_text": "Nhận biết được phép nhân qua các nhóm bằng nhau và phép chia qua chia đều hoặc chia theo nhóm trong các tình huống đơn giản.",
+    "cognitive_level": "understand",
+    "difficulty_band": "medium",
+    "allowed_difficulty_range": [
+      "easy",
+      "medium"
+    ],
+    "required_skills": [
+      "recognize_equal_groups",
+      "connect_repeated_addition_to_multiplication",
+      "understand_equal_sharing",
+      "understand_grouping_division"
+    ],
+    "prerequisites": [
+      "Cong cac so bang nhau",
+      "Dem theo nhom"
+    ],
+    "grade_scope": {
+      "min_grade": 2,
+      "target_grade": 2,
+      "max_grade": 3
+    },
+    "complexity_signals": {
+      "number_of_steps": 1,
+      "uses_visual_grouping": true,
+      "abstractness": "low"
+    },
+    "recommended_question_types": [
+      "visual_grouping",
+      "matching",
+      "multiple_choice"
+    ],
+    "misconceptions": [
+      {
+        "id": "mc-g2-divide-share-group",
+        "misconception": "Hoc sinh khong phan biet chia deu cho moi ban va chia thanh cac nhom.",
+        "correct_concept": "Chia deu tim moi phan co bao nhieu; chia theo nhom tim co bao nhieu nhom."
+      }
+    ],
+    "scope_policy": {
+      "in_scope": [
+        "nhom bang nhau",
+        "cong lap",
+        "chia deu",
+        "chia theo nhom",
+        "bang nhan chia co ban"
+      ],
+      "below_grade": "simplify_and_generate",
+      "at_grade": "generate_normally",
+      "above_grade": "downgrade_or_warn",
+      "out_of_program": "flag_and_suggest_related_objective",
+      "not_allowed": [
+        "nhan chia so lon",
+        "bai toan hai buoc phuc tap",
+        "phan so"
+      ]
+    },
+    "grounding_passages": [
+      "Lop 2 lam quen phep nhan va phep chia qua mo hinh nhom bang nhau, chia deu va chia theo nhom.",
+      "Cau hoi nen dung tranh, do vat va so nho."
+    ],
+    "default_examples": [
+      {
+        "raw_text": "4 dia banh, moi dia 3 cai banh",
+        "structured": {
+          "item": "cai banh",
+          "group": "dia",
+          "num_groups": 4,
+          "items_per_group": 3,
+          "expected_result": 12
+        }
+      }
+    ],
+    "search_aliases": [
+      "phep nhan",
+      "phép nhân",
+      "phep chia",
+      "phép chia",
+      "nhom bang nhau",
+      "nhóm bằng nhau",
+      "chia deu",
+      "chia đều"
+    ],
+    "language": "vi",
+    "source_ref": "GDPT_2018_math_primary_curated_v1"
+  },
+  {
+    "objective_id": "math_2_measurement_time_money",
+    "subject": "Toán",
+    "subject_display": "Toán",
+    "grade": 2,
+    "topic": "Đo lường, thời gian và tiền Việt Nam",
+    "objective_text": "Nhận biết và sử dụng được một số đơn vị đo độ dài, khối lượng, dung tích, thời gian và tiền Việt Nam trong tình huống đơn giản.",
+    "cognitive_level": "apply",
+    "difficulty_band": "easy",
+    "allowed_difficulty_range": [
+      "easy",
+      "medium"
+    ],
+    "required_skills": [
+      "read_measurements",
+      "compare_measurements",
+      "read_clock",
+      "use_money_values"
+    ],
+    "prerequisites": [
+      "So sanh so",
+      "Dem va cong tru don gian"
+    ],
+    "grade_scope": {
+      "min_grade": 2,
+      "target_grade": 2,
+      "max_grade": 2
+    },
+    "complexity_signals": {
+      "number_of_units": 4,
+      "number_of_steps": 1,
+      "abstractness": "low"
+    },
+    "recommended_question_types": [
+      "matching",
+      "multiple_choice",
+      "fill_in_blank"
+    ],
+    "misconceptions": [
+      {
+        "id": "mc-g2-unit-mix",
+        "misconception": "Hoc sinh so sanh hai so do ma bo qua don vi.",
+        "correct_concept": "Khi so sanh so do, can xem don vi do va dai luong dang xet."
+      }
+    ],
+    "scope_policy": {
+      "in_scope": [
+        "cm",
+        "m",
+        "kg",
+        "l",
+        "gio",
+        "ngay",
+        "tien Viet Nam don gian"
+      ],
+      "below_grade": "simplify_and_generate",
+      "at_grade": "generate_normally",
+      "above_grade": "downgrade_or_warn",
+      "out_of_program": "flag_and_suggest_related_objective",
+      "not_allowed": [
+        "doi don vi phuc tap",
+        "van toc",
+        "dien tich the tich"
+      ]
+    },
+    "grounding_passages": [
+      "Do luong lop 2 gan voi dai luong quen thuoc nhu do dai, khoi luong, dung tich, thoi gian va tien.",
+      "Hoat dong nen yeu cau nhan biet, doc va so sanh don gian."
+    ],
+    "default_examples": [
+      {
+        "raw_text": "Mot chai nuoc co 1 lit",
+        "structured": {
+          "object": "chai nuoc",
+          "value": 1,
+          "unit": "lit"
+        }
+      }
+    ],
+    "search_aliases": [
+      "do luong",
+      "đo lường",
+      "thoi gian",
+      "thời gian",
+      "tien viet nam",
+      "tiền Việt Nam",
+      "don vi do",
+      "đơn vị đo"
+    ],
+    "language": "vi",
+    "source_ref": "GDPT_2018_math_primary_curated_v1"
+  },
+  {
+    "objective_id": "math_2_geometry_lines_shapes_solids",
+    "subject": "Toán",
+    "subject_display": "Toán",
+    "grade": 2,
+    "topic": "Hình phẳng, hình khối và đường",
+    "objective_text": "Nhận biết được điểm, đoạn thẳng, đường thẳng, đường cong, đường gấp khúc, ba điểm thẳng hàng; nhận dạng được hình tứ giác, khối trụ, khối cầu và giải quyết tình huống đơn giản liên quan đến hình đã học.",
+    "language": "vi",
+    "source_ref": "source_documents/toan1-5.pdf; source_documents/GDPT_2018.md",
+    "search_aliases": [
+      "điểm",
+      "diem",
+      "đoạn thẳng",
+      "doan thang",
+      "đường gấp khúc",
+      "duong gap khuc",
+      "hình tứ giác",
+      "hinh tu giac",
+      "khối trụ",
+      "khoi tru",
+      "khối cầu",
+      "khoi cau"
+    ],
+    "cognitive_level": "remember",
+    "difficulty_band": "easy",
+    "allowed_difficulty_range": [
+      "easy",
+      "medium"
+    ],
+    "required_skills": [
+      "recognize_lines",
+      "recognize_quadrilateral",
+      "recognize_cylinder_sphere",
+      "draw_segment_given_length"
+    ],
+    "prerequisites": [
+      "Nhận biết hình vuông, hình tròn, hình tam giác, hình chữ nhật",
+      "Biết đo độ dài bằng cm"
+    ],
+    "grade_scope": {
+      "min_grade": 2,
+      "target_grade": 2,
+      "max_grade": 2
+    },
+    "complexity_signals": {
+      "requires_spatial_reasoning": true,
+      "number_of_entities": 6,
+      "abstractness": "low"
+    },
+    "recommended_question_types": [
+      "matching",
+      "multiple_choice",
+      "fill_in_blank"
+    ],
+    "misconceptions": [
+      {
+        "misconception": "Học sinh nhầm lẫn khi vận dụng Hình phẳng, hình khối và đường.",
+        "correct_concept": "Cần bám sát yêu cầu cần đạt và dùng ví dụ phù hợp lớp 2."
+      }
+    ],
+    "scope_policy": {
+      "in_scope": [
+        "Hình phẳng, hình khối và đường",
+        "điểm",
+        "diem",
+        "đoạn thẳng",
+        "doan thang",
+        "đường gấp khúc"
+      ],
+      "below_grade": "simplify_and_generate",
+      "at_grade": "generate_normally",
+      "above_grade": "downgrade_or_warn",
+      "out_of_program": "flag_and_suggest_related_objective",
+      "not_allowed": [
+        "nội dung vượt phạm vi lớp 2",
+        "kiến thức chưa có trong mục tiêu này"
+      ]
+    },
+    "grounding_passages": [
+      "Lớp 2 nhận biết điểm, đoạn thẳng, đường cong, đường thẳng, đường gấp khúc và ba điểm thẳng hàng qua hình ảnh trực quan.",
+      "Lớp 2 nhận dạng hình tứ giác, khối trụ, khối cầu qua đồ dùng học tập hoặc vật thật."
+    ],
+    "default_examples": [
+      {
+        "raw_text": "Ví dụ phù hợp với Hình phẳng, hình khối và đường",
+        "structured": {
+          "topic": "Hình phẳng, hình khối và đường"
+        }
+      }
+    ]
+  },
+  {
+    "objective_id": "math_2_statistics_probability_picture_chart",
+    "subject": "Toán",
+    "subject_display": "Toán",
+    "grade": 2,
+    "topic": "Biểu đồ tranh và khả năng xảy ra",
+    "objective_text": "Làm quen với thu thập, phân loại, kiểm đếm số liệu; đọc và mô tả biểu đồ tranh; nêu nhận xét đơn giản từ biểu đồ tranh; mô tả các khả năng có thể, chắc chắn, không thể xảy ra.",
+    "language": "vi",
+    "source_ref": "source_documents/toan1-5.pdf; source_documents/GDPT_2018.md",
+    "search_aliases": [
+      "biểu đồ tranh",
+      "bieu do tranh",
+      "thống kê",
+      "thong ke",
+      "kiểm đếm",
+      "kiem dem",
+      "có thể",
+      "co the",
+      "chắc chắn",
+      "chac chan",
+      "không thể",
+      "khong the"
+    ],
+    "cognitive_level": "understand",
+    "difficulty_band": "easy",
+    "allowed_difficulty_range": [
+      "easy",
+      "medium"
+    ],
+    "required_skills": [
+      "collect_count_data",
+      "read_picture_chart",
+      "describe_likelihood_words"
+    ],
+    "prerequisites": [
+      "Đếm và so sánh số trong phạm vi 1000",
+      "Đọc thông tin từ tranh đơn giản"
+    ],
+    "grade_scope": {
+      "min_grade": 2,
+      "target_grade": 2,
+      "max_grade": 2
+    },
+    "complexity_signals": {
+      "number_of_categories": 4,
+      "requires_probability_language": true,
+      "abstractness": "low"
+    },
+    "recommended_question_types": [
+      "matching",
+      "multiple_choice",
+      "fill_in_blank"
+    ],
+    "misconceptions": [
+      {
+        "misconception": "Học sinh nhầm lẫn khi vận dụng Biểu đồ tranh và khả năng xảy ra.",
+        "correct_concept": "Cần bám sát yêu cầu cần đạt và dùng ví dụ phù hợp lớp 2."
+      }
+    ],
+    "scope_policy": {
+      "in_scope": [
+        "Biểu đồ tranh và khả năng xảy ra",
+        "biểu đồ tranh",
+        "bieu do tranh",
+        "thống kê",
+        "thong ke",
+        "kiểm đếm"
+      ],
+      "below_grade": "simplify_and_generate",
+      "at_grade": "generate_normally",
+      "above_grade": "downgrade_or_warn",
+      "out_of_program": "flag_and_suggest_related_objective",
+      "not_allowed": [
+        "nội dung vượt phạm vi lớp 2",
+        "kiến thức chưa có trong mục tiêu này"
+      ]
+    },
+    "grounding_passages": [
+      "Lớp 2 làm quen với thu thập, phân loại, kiểm đếm các đối tượng thống kê trong tình huống đơn giản.",
+      "Lớp 2 đọc biểu đồ tranh và làm quen với các thuật ngữ có thể, chắc chắn, không thể."
+    ],
+    "default_examples": [
+      {
+        "raw_text": "Ví dụ phù hợp với Biểu đồ tranh và khả năng xảy ra",
+        "structured": {
+          "topic": "Biểu đồ tranh và khả năng xảy ra"
+        }
+      }
+    ]
+  }
+]

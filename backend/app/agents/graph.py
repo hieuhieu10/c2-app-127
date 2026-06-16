@@ -76,6 +76,8 @@ async def run_workflow(
     prompt: str,
     objective_id: str | None = None,
     source_text: str | None = None,
+    uploaded_file_id: str | None = None,
+    upload_type: str = "none",
     num_items: int = 5,
     override_template: str | None = None,
 ) -> GenerationState:
@@ -88,6 +90,8 @@ async def run_workflow(
         "prompt": prompt,
         "objective_id": objective_id,
         "source_text": source_text,
+        "uploaded_file_id": uploaded_file_id,
+        "upload_type": upload_type,
         "num_items": num_items,
         "override_template": override_template,
     }
