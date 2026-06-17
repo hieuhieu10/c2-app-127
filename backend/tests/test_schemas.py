@@ -9,7 +9,7 @@ from app.templates.registry import content_model_for, list_templates
 from app.validation.validator import json_schema_for
 from tests.conftest import invalid_content, valid_content
 
-ACTIVE = ["quiz", "matching", "fill_in_blank"]
+ACTIVE = ["quiz", "matching", "fill_in_blank", "battleship"]
 
 
 @pytest.mark.parametrize("tid", ACTIVE)

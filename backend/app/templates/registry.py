@@ -13,6 +13,7 @@ from typing import Type
 
 from pydantic import BaseModel
 
+from .schemas.battleship import BattleshipContent
 from .schemas.fill_in_blank import FillBlankContent
 from .schemas.matching import MatchingContent
 from .schemas.quiz import QuizContent
@@ -24,6 +25,7 @@ _CONTENT_MODELS: dict[str, Type[BaseModel]] = {
     "quiz": QuizContent,
     "matching": MatchingContent,
     "fill_in_blank": FillBlankContent,
+    "battleship": BattleshipContent,
 }
 
 
