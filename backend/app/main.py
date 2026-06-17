@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 
 from app.api.routes_generate import router as generate_router
 
@@ -13,6 +16,9 @@ app = FastAPI(
 )
 
 app.include_router(generate_router)
+
+_STATIC = Path(__file__).parent.parent / "static"
+app.mount("/static", StaticFiles(directory=_STATIC), name="static")
 
 
 @app.get("/health")

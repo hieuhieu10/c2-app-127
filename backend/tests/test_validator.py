@@ -7,7 +7,7 @@ import pytest
 from app.validation.validator import validate
 from tests.conftest import invalid_content, valid_content
 
-ACTIVE = ["quiz", "matching", "fill_in_blank"]
+ACTIVE = ["quiz", "matching", "fill_in_blank", "battleship"]
 
 
 @pytest.mark.parametrize("tid", ACTIVE)

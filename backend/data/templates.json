@@ -24,6 +24,14 @@
     "active": true
   },
   {
+    "id": "battleship",
+    "name": "Trivia Battleship",
+    "description": "2-player hot-seat game: answer a trivia question correctly to earn the right to bomb the opponent's 6×6 grid. A hit rewards another turn. Best for competitive factual review.",
+    "content_type_fit": ["facts", "definitions", "concepts", "cause-effect", "vocabulary"],
+    "grade_range": [6, 12],
+    "active": true
+  },
+  {
     "id": "timeline_ordering",
     "name": "Timeline ordering",
     "description": "Arrange events or steps in the correct order. Best for chronology and processes.",

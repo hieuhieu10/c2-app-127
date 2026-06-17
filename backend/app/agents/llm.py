@@ -11,6 +11,8 @@ import json
 from functools import lru_cache
 from typing import Any
 
+from openai import AsyncOpenAI
+
 from app.config import settings
 
 
@@ -156,8 +158,16 @@ async def _call_openai_compatible_tool(
         return args
     try:
         return json.loads(args)
-    except json.JSONDecodeError as exc:
-        raise RuntimeError(f"Model returned invalid tool arguments for '{tool_name}'.") from exc
+    except json.JSONDecodeError:
+        # Some providers (e.g. DeepSeek) append trailing text after the JSON object.
+        # raw_decode stops at the end of the first valid object and ignores the rest.
+        try:
+            obj, _ = json.JSONDecoder().raw_decode(args.strip())
+            if isinstance(obj, dict):
+                return obj
+        except json.JSONDecodeError:
+            pass
+        raise RuntimeError(f"Model returned invalid tool arguments for '{tool_name}'.")
 
 
 async def call_tool(
