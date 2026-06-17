@@ -7,10 +7,22 @@ from app.db.models import Game, GameItem, GameReviewEvent, GameStatus, Lesson, R
 from app.schemas.ai import LessonRequest
 from app.schemas.games import GenerateGameRequest, GameResponse
 from app.services.ai_client import AIClient, AIClientError
-from app.services.game_mapper import GameMappingError, game_to_response, quiz_content_to_items
+from app.services.game_mapper import GameMappingError, battleship_content_to_items, game_to_response, quiz_content_to_items
 
-PRODUCT_TEMPLATE_TO_AI_TEMPLATE = {"treasure_hunt": "quiz"}
-DEFAULT_TREASURE_HUNT_SETTINGS = {"playerCount": 2, "mapTheme": "treasure-hunt"}
+PRODUCT_TEMPLATE_TO_AI_TEMPLATE = {
+    "treasure_hunt": "quiz",
+    "battleship": "battleship",
+}
+
+_CONTENT_MAPPERS = {
+    "quiz": quiz_content_to_items,
+    "battleship": battleship_content_to_items,
+}
+
+_DEFAULT_SETTINGS: dict[str, dict] = {
+    "treasure_hunt": {"playerCount": 2, "mapTheme": "treasure-hunt"},
+    "battleship": {},
+}
 
 
 async def generate_game(db: Session, request: GenerateGameRequest, ai_client: AIClient, current_user: User) -> GameResponse:
@@ -37,7 +49,7 @@ async def generate_game(db: Session, request: GenerateGameRequest, ai_client: AI
         product_template_id=request.product_template_id,
         ai_template_id=ai_template_id,
         status=GameStatus.draft,
-        settings_json={"numItems": request.num_items, **DEFAULT_TREASURE_HUNT_SETTINGS},
+        settings_json={"numItems": request.num_items, **_DEFAULT_SETTINGS.get(request.product_template_id, {})},
     )
     db.add(game)
     db.flush()
@@ -66,7 +78,8 @@ async def generate_game(db: Session, request: GenerateGameRequest, ai_client: AI
         if ai_response.template_id != ai_template_id:
             raise GameMappingError(f"BE_AI returned template '{ai_response.template_id}', expected '{ai_template_id}'")
 
-        for item_data in quiz_content_to_items(ai_response.content):
+        content_mapper = _CONTENT_MAPPERS[ai_template_id]
+        for item_data in content_mapper(ai_response.content):
             db.add(GameItem(game_id=game.id, **item_data))
         db.add(GameReviewEvent(game_id=game.id, event_type=ReviewEventType.generate, payload_json=game.ai_raw_response_json))
         db.commit()

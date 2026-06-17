@@ -1,11 +1,16 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException
+import json
+
+import httpx
+from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import HTMLResponse
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import selectinload
 
-from app.core.security import get_current_user
+from app.core.security import decode_access_token, get_current_user
+from app.core.settings import settings
 from app.db.models import Game, GameStatus, ReviewEventType, GameReviewEvent
 from app.db.session import get_db
 from app.db.models import User
@@ -91,6 +96,73 @@ def regenerate(
     db.add(GameReviewEvent(game_id=game_id, item_id=item_id, event_type=ReviewEventType.regenerate, payload_json={"status": "not_implemented"}))
     db.commit()
     raise HTTPException(501, "Single-item regeneration is not implemented until BE_AI exposes an endpoint")
+
+
+@router.get("/{game_id}/play", response_class=HTMLResponse)
+async def play_game(
+    game_id: int,
+    token: str | None = Query(default=None),
+    db: Session = Depends(get_db),
+) -> HTMLResponse:
+    """Serve the battleship game as a self-contained HTML page.
+
+    Accepts the JWT as a ?token= query param so it can be loaded in an <iframe>.
+    Reconstructs window.GAME_CONTENT from stored items and injects it into the
+    battleship HTML shell fetched from the AI backend.
+    """
+    if not token:
+        raise HTTPException(401, "Authentication required")
+
+    subject = decode_access_token(token)
+    try:
+        user_id = int(subject)
+    except ValueError as exc:
+        raise HTTPException(401, "Invalid token") from exc
+
+    current_user = db.get(User, user_id)
+    if not current_user:
+        raise HTTPException(401, "Authentication required")
+
+    game = get_game_or_404(db, game_id, current_user)
+
+    if game.product_template_id != "battleship":
+        raise HTTPException(400, f"Game {game_id} is not a battleship game")
+
+    game_content = {
+        "template_id": "battleship",
+        "title": game.lesson.title,
+        "objective_id": game.lesson.objective_id,
+        "questions": [
+            {
+                "question": item.question,
+                "correct_answer": item.correct_answer,
+                "distractors": item.options_json[1:] if item.options_json else [],
+                "hint": item.hint,
+                "explanation": item.explanation,
+                "objective_id": game.lesson.objective_id,
+            }
+            for item in game.items
+        ],
+    }
+
+    try:
+        async with httpx.AsyncClient(base_url=settings.be_ai_base_url, timeout=10.0) as client:
+            resp = await client.get("/static/battleship.html")
+            resp.raise_for_status()
+            html = resp.text
+    except httpx.HTTPError as exc:
+        raise HTTPException(502, f"Could not fetch battleship template: {exc}") from exc
+
+    # The battleship.html uses relative paths (e.g. battleship/constants.js).
+    # Rewrite them to absolute URLs pointing at the AI backend's static directory.
+    ai_static = f"{settings.be_ai_base_url.rstrip('/')}/static"
+    html = html.replace('href="battleship/', f'href="{ai_static}/battleship/')
+    html = html.replace('src="battleship/', f'src="{ai_static}/battleship/')
+
+    content_json = json.dumps(game_content, ensure_ascii=False)
+    html = html.replace("</head>", f"<script>window.GAME_CONTENT = {content_json};</script>\n</head>", 1)
+
+    return HTMLResponse(content=html)
 
 
 @router.post("/{game_id}/approve", response_model=StatusResponse)
