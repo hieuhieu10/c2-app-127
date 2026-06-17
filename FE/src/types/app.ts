@@ -52,6 +52,7 @@ export interface GameItem {
   correctAnswer: string
   options?: string[]
   explanation: string
+  hint?: string
   validationStatus: 'pending' | 'valid' | 'invalid'
   validationErrors?: string[]
   faithfulnessScore?: number
