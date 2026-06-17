@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from app.core.settings import settings
 from app.api.games import get_ai_client
 from app.main import app
 from app.schemas.ai import AIGameResponse
@@ -133,6 +134,61 @@ def test_change_password_replaces_old_password(client):
         json={"email": "teacher@example.com", "password": "newsecret123"},
     )
     assert new_signin.status_code == 200
+
+
+def test_avatar_upload_requires_authentication(client):
+    response = client.post(
+        "/api/auth/me/avatar",
+        files={"file": ("avatar.png", b"\x89PNG\r\n\x1a\navatar", "image/png")},
+    )
+
+    assert response.status_code == 401
+
+
+def test_avatar_upload_updates_user_and_serves_static_file(client):
+    headers = auth_headers(client)
+
+    response = client.post(
+        "/api/auth/me/avatar",
+        headers=headers,
+        files={"file": ("avatar.png", b"\x89PNG\r\n\x1a\navatar", "image/png")},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["avatarUrl"].startswith("/uploads/avatars/user-")
+    assert client.get("/api/auth/me", headers=headers).json()["avatarUrl"] == body["avatarUrl"]
+
+    uploaded = client.get(body["avatarUrl"])
+    assert uploaded.status_code == 200
+    assert uploaded.content == b"\x89PNG\r\n\x1a\navatar"
+
+
+def test_avatar_upload_rejects_large_files(client):
+    headers = auth_headers(client)
+    oversized = b"0" * (settings.max_avatar_size_bytes + 1)
+
+    response = client.post(
+        "/api/auth/me/avatar",
+        headers=headers,
+        files={"file": ("avatar.png", oversized, "image/png")},
+    )
+
+    assert response.status_code == 400
+    assert "2MB or smaller" in response.json()["detail"]
+
+
+def test_avatar_upload_rejects_non_image_files(client):
+    headers = auth_headers(client)
+
+    response = client.post(
+        "/api/auth/me/avatar",
+        headers=headers,
+        files={"file": ("avatar.txt", b"not-an-image", "text/plain")},
+    )
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Avatar must be a PNG, JPEG, or WebP image"
 
 
 def test_generate_game_requires_authentication(client):

@@ -65,6 +65,7 @@ export interface AuthUser {
   id: number
   email: string
   name: string | null
+  avatarUrl?: string | null
   createdAt: string
 }
 
@@ -84,11 +85,12 @@ export interface ChangePasswordInput {
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const token = getAccessToken()
+  const isFormData = typeof FormData !== 'undefined' && init?.body instanceof FormData
   const response = await fetch(`${BE_WEB_BASE_URL}${path}`, {
     ...init,
     headers: {
-      'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
       ...init?.headers,
     },
   })
@@ -137,6 +139,15 @@ export const beWebApi = {
     return request<{ success: boolean }>('/api/auth/change-password', {
       method: 'POST',
       body: JSON.stringify(input),
+    })
+  },
+
+  uploadAvatar(file: File) {
+    const formData = new FormData()
+    formData.append('file', file)
+    return request<AuthUser>('/api/auth/me/avatar', {
+      method: 'POST',
+      body: formData,
     })
   },
 
@@ -214,11 +225,18 @@ export function clearAccessToken(): void {
   window.localStorage.removeItem(ACCESS_TOKEN_KEY)
 }
 
-export function mapAuthUser(user: AuthUser): { id: string; email: string; name: string; createdAt: Date } {
+export function mapAuthUser(user: AuthUser): {
+  id: string
+  email: string
+  name: string
+  avatarUrl?: string | null
+  createdAt: Date
+} {
   return {
     id: String(user.id),
     email: user.email,
     name: user.name || user.email.split('@')[0],
+    avatarUrl: resolveBeWebAssetUrl(user.avatarUrl),
     createdAt: new Date(user.createdAt),
   }
 }
@@ -283,4 +301,12 @@ function numericGradeToLevel(grade: number): Lesson['gradeLevel'] {
   if (grade <= 8) return 'middle'
   if (grade <= 12) return 'high'
   return 'college'
+}
+
+function resolveBeWebAssetUrl(path?: string | null): string | null {
+  if (!path) return null
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return path
+  }
+  return `${BE_WEB_BASE_URL}${path}`
 }
