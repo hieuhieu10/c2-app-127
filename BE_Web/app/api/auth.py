@@ -1,10 +1,14 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from pathlib import Path
+from time import time
+
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.security import create_access_token, get_current_user, hash_password, verify_password
+from app.core.settings import settings
 from app.db.models import User
 from app.db.session import get_db
 from app.schemas.auth import (
@@ -18,6 +22,11 @@ from app.schemas.auth import (
 )
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
+ALLOWED_AVATAR_CONTENT_TYPES = {
+    "image/png": ".png",
+    "image/jpeg": ".jpg",
+    "image/webp": ".webp",
+}
 
 
 @router.post("/signup", response_model=AuthResponse)
@@ -79,6 +88,39 @@ def change_password(
     return SignOutResponse(success=True)
 
 
+@router.post("/me/avatar", response_model=UserResponse)
+async def upload_avatar(
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> UserResponse:
+    extension = ALLOWED_AVATAR_CONTENT_TYPES.get(file.content_type or "")
+    if not extension:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Avatar must be a PNG, JPEG, or WebP image",
+        )
+
+    content = await file.read()
+    if len(content) > settings.max_avatar_size_bytes:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Avatar must be {settings.max_avatar_size_bytes // (1024 * 1024)}MB or smaller",
+        )
+
+    avatar_dir = Path(settings.upload_dir) / "avatars"
+    avatar_dir.mkdir(parents=True, exist_ok=True)
+    filename = f"user-{current_user.id}-{int(time() * 1000)}{extension}"
+    filepath = avatar_dir / filename
+    filepath.write_bytes(content)
+
+    current_user.avatar_url = f"/uploads/avatars/{filename}"
+    db.add(current_user)
+    db.commit()
+    db.refresh(current_user)
+    return to_user_response(current_user)
+
+
 @router.post("/signout", response_model=SignOutResponse)
 def signout(current_user: User = Depends(get_current_user)) -> SignOutResponse:
     return SignOutResponse(success=True)
@@ -89,5 +131,6 @@ def to_user_response(user: User) -> UserResponse:
         id=user.id,
         email=user.email,
         name=user.name,
+        avatarUrl=user.avatar_url,
         createdAt=user.created_at,
     )

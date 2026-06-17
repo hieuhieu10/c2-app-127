@@ -9,11 +9,12 @@ import { BattleshipShell } from './battleship/BattleshipShell'
 interface GameShellProps {
   game: Game
   previewMode?: boolean
+  fullscreen?: boolean
 }
 
-export function GameShell({ game, previewMode = false }: GameShellProps) {
+export function GameShell({ game, previewMode = false, fullscreen = false }: GameShellProps) {
   if (game.templateType === 'press-the-button') {
-    return <TreasureHuntShell game={game} previewMode={previewMode} />
+    return <TreasureHuntShell game={game} previewMode={previewMode} fullscreen={fullscreen} />
   }
 
   if (game.templateType === 'battleship') {

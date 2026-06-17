@@ -18,6 +18,7 @@ interface AuthContextType {
   signOut: () => Promise<void>
   updateProfile: (name: string) => Promise<void>
   changePassword: (currentPassword: string, newPassword: string) => Promise<void>
+  uploadAvatar: (file: File) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -91,9 +92,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await beWebApi.changePassword({ currentPassword, newPassword })
   }
 
+  const uploadAvatar = async (file: File) => {
+    const updatedUser = await beWebApi.uploadAvatar(file)
+    setUser(mapAuthUser(updatedUser))
+  }
+
   return (
     <AuthContext.Provider
-      value={{ user, loading, signUp, signIn, signOut, updateProfile, changePassword }}
+      value={{ user, loading, signUp, signIn, signOut, updateProfile, changePassword, uploadAvatar }}
     >
       {children}
     </AuthContext.Provider>
