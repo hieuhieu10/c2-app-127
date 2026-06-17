@@ -8,12 +8,22 @@ from pydantic import BaseModel, Field
 
 
 class LessonRequest(BaseModel):
-    subject: str = Field(..., description="Subject, e.g. 'Lịch sử'.")
+    subject: str = Field(..., description="Subject, e.g. 'Toán'.")
     grade: int = Field(..., ge=1, le=12, description="Grade level (1-12).")
     difficulty: Literal["easy", "medium", "hard"] = "medium"
     prompt: str = Field(..., min_length=1, description="Teacher's topic / learning-objective request.")
     objective_id: str | None = Field(None, description="Linked GDPT 2018 objective id, if known.")
-    source_text: str | None = Field(None, description="Optional pasted source material.")
+    source_text: str | None = Field(
+        None,
+        description=(
+            "Optional pasted teacher material, lesson plan, slide text, or source material. "
+            "It personalizes generation but does not override GDPT 2018."
+        ),
+    )
+    uploaded_file_id: str | None = Field(None, description="Optional id of an uploaded lesson plan/slide.")
+    upload_type: Literal["lesson_plan", "slide", "none"] = Field(
+        "none", description="Type of optional teacher upload."
+    )
     num_items: int = Field(5, ge=1, le=20, description="Desired number of items/pairs.")
     override_template: str | None = Field(
         None, description="Force a specific template id (FR-05); skips recommendation."

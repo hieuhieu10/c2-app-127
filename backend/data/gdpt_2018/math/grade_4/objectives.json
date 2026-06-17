@@ -1,0 +1,628 @@
+[
+  {
+    "objective_id": "math_4_large_numbers_operations",
+    "subject": "Toán",
+    "subject_display": "Toán",
+    "grade": 4,
+    "topic": "Số tự nhiên và phép tính",
+    "objective_text": "Đọc, viết, so sánh các số tự nhiên lớn; thực hiện phép cộng, trừ, nhân, chia với số tự nhiên và vận dụng trong bài toán thực tế.",
+    "cognitive_level": "apply",
+    "difficulty_band": "medium",
+    "allowed_difficulty_range": [
+      "easy",
+      "medium",
+      "hard"
+    ],
+    "required_skills": [
+      "read_write_large_numbers",
+      "compare_large_numbers",
+      "multiply_multi_digit",
+      "divide_multi_digit",
+      "solve_word_problem"
+    ],
+    "prerequisites": [
+      "Gia tri hang",
+      "Bang nhan chia",
+      "Cong tru nhan chia co ban"
+    ],
+    "grade_scope": {
+      "min_grade": 4,
+      "target_grade": 4,
+      "max_grade": 4
+    },
+    "complexity_signals": {
+      "number_range_max": 1000000,
+      "number_of_steps": 2,
+      "requires_multi_step_reasoning": true,
+      "abstractness": "medium"
+    },
+    "recommended_question_types": [
+      "multiple_choice",
+      "fill_in_blank",
+      "matching_operation_to_story"
+    ],
+    "misconceptions": [
+      {
+        "id": "mc-g4-operation-choice",
+        "misconception": "Hoc sinh chon phep tinh theo tu khoa ma khong hieu quan he trong bai.",
+        "correct_concept": "Can doc tinh huong de xac dinh dai luong can tim va moi quan he giua cac so."
+      }
+    ],
+    "scope_policy": {
+      "in_scope": [
+        "so tu nhien lon",
+        "bon phep tinh",
+        "bai toan mot den hai buoc",
+        "uoc luong ket qua"
+      ],
+      "below_grade": "simplify_and_generate",
+      "at_grade": "generate_normally",
+      "above_grade": "downgrade_or_warn",
+      "out_of_program": "flag_and_suggest_related_objective",
+      "not_allowed": [
+        "so am",
+        "so thap phan nang cao",
+        "phuong trinh dai so",
+        "luy thua"
+      ]
+    },
+    "grounding_passages": [
+      "Lop 4 mo rong so tu nhien va bon phep tinh, co the co bai toan thuc te mot den hai buoc.",
+      "Do kho can kiem soat qua so chu so va so buoc suy luan."
+    ],
+    "default_examples": [
+      {
+        "raw_text": "Mot kho co 2350 quyen sach, chia deu vao 5 thung",
+        "structured": {
+          "item": "quyen sach",
+          "total": 2350,
+          "groups": 5,
+          "expected_each": 470
+        }
+      }
+    ],
+    "search_aliases": [
+      "so tu nhien",
+      "số tự nhiên",
+      "so lon",
+      "số lớn",
+      "bon phep tinh",
+      "bốn phép tính",
+      "nhan chia",
+      "nhân chia"
+    ],
+    "language": "vi",
+    "source_ref": "GDPT_2018_math_primary_curated_v1"
+  },
+  {
+    "objective_id": "math_4_fractions_intro",
+    "subject": "Toán",
+    "subject_display": "Toán",
+    "grade": 4,
+    "topic": "Phân số",
+    "objective_text": "Nhận biết, đọc, viết, so sánh và thực hiện một số phép tính đơn giản với phân số trong các tình huống phù hợp.",
+    "cognitive_level": "understand",
+    "difficulty_band": "medium",
+    "allowed_difficulty_range": [
+      "easy",
+      "medium",
+      "hard"
+    ],
+    "required_skills": [
+      "recognize_fraction_part_whole",
+      "read_write_fractions",
+      "compare_fractions",
+      "calculate_simple_fractions"
+    ],
+    "prerequisites": [
+      "Hieu chia deu",
+      "Biet phep chia",
+      "Biet so sanh so tu nhien"
+    ],
+    "grade_scope": {
+      "min_grade": 4,
+      "target_grade": 4,
+      "max_grade": 5
+    },
+    "complexity_signals": {
+      "requires_part_whole_reasoning": true,
+      "abstractness": "medium",
+      "number_of_steps": 1
+    },
+    "recommended_question_types": [
+      "visual_grouping",
+      "matching",
+      "multiple_choice",
+      "fill_in_blank"
+    ],
+    "misconceptions": [
+      {
+        "id": "mc-g4-fraction-bigger-denominator",
+        "misconception": "Hoc sinh nghi mau so lon hon thi phan so lon hon.",
+        "correct_concept": "Voi cung tu so, mau so lon hon thi moi phan nho hon nen phan so co the nho hon."
+      }
+    ],
+    "scope_policy": {
+      "in_scope": [
+        "phan so qua chia phan bang nhau",
+        "doc viet phan so",
+        "so sanh phan so don gian",
+        "phep tinh phan so co ban"
+      ],
+      "below_grade": "simplify_and_generate",
+      "at_grade": "generate_normally",
+      "above_grade": "downgrade_or_warn",
+      "out_of_program": "flag_and_suggest_related_objective",
+      "not_allowed": [
+        "phan so dai so",
+        "hon so phuc tap neu chua hoc",
+        "phuong trinh voi phan so"
+      ]
+    },
+    "grounding_passages": [
+      "Phan so lop 4 nen bat dau tu mo hinh phan bang nhau cua mot don vi hoac mot tap hop.",
+      "Cau hoi nen dung hinh anh banh, thanh socola, bang o vuong hoac do vat chia deu."
+    ],
+    "default_examples": [
+      {
+        "raw_text": "Chia mot cai banh thanh 4 phan bang nhau, lay 1 phan",
+        "structured": {
+          "whole": "cai banh",
+          "parts": 4,
+          "selected": 1,
+          "fraction": "1/4"
+        }
+      }
+    ],
+    "search_aliases": [
+      "phan so",
+      "phân số",
+      "tu so",
+      "tử số",
+      "mau so",
+      "mẫu số",
+      "so sanh phan so",
+      "so sánh phân số"
+    ],
+    "language": "vi",
+    "source_ref": "GDPT_2018_math_primary_curated_v1"
+  },
+  {
+    "objective_id": "math_4_geometry_angles_area",
+    "subject": "Toán",
+    "subject_display": "Toán",
+    "grade": 4,
+    "topic": "Góc, đường thẳng và diện tích",
+    "objective_text": "Nhận biết được góc, đường thẳng vuông góc, song song; tính được chu vi, diện tích một số hình phẳng quen thuộc trong tình huống đơn giản.",
+    "cognitive_level": "apply",
+    "difficulty_band": "medium",
+    "allowed_difficulty_range": [
+      "easy",
+      "medium"
+    ],
+    "required_skills": [
+      "recognize_angles",
+      "recognize_parallel_perpendicular",
+      "calculate_area_rectangle_square",
+      "solve_geometry_word_problem"
+    ],
+    "prerequisites": [
+      "Nhan biet hinh phang",
+      "Biet chu vi dien tich co ban"
+    ],
+    "grade_scope": {
+      "min_grade": 4,
+      "target_grade": 4,
+      "max_grade": 4
+    },
+    "complexity_signals": {
+      "requires_spatial_reasoning": true,
+      "requires_formula_use": true,
+      "number_of_steps": 1,
+      "abstractness": "medium"
+    },
+    "recommended_question_types": [
+      "matching",
+      "multiple_choice",
+      "fill_in_blank"
+    ],
+    "misconceptions": [
+      {
+        "id": "mc-g4-parallel-perpendicular",
+        "misconception": "Hoc sinh nham hai duong thang song song voi hai duong thang vuong goc.",
+        "correct_concept": "Song song la khong cat nhau; vuong goc la cat nhau tao goc vuong."
+      }
+    ],
+    "scope_policy": {
+      "in_scope": [
+        "goc vuong",
+        "duong thang song song",
+        "duong thang vuong goc",
+        "chu vi dien tich hinh chu nhat hinh vuong"
+      ],
+      "below_grade": "simplify_and_generate",
+      "at_grade": "generate_normally",
+      "above_grade": "downgrade_or_warn",
+      "out_of_program": "flag_and_suggest_related_objective",
+      "not_allowed": [
+        "hinh tron",
+        "the tich",
+        "chung minh hinh hoc",
+        "toa do phuc tap"
+      ]
+    },
+    "grounding_passages": [
+      "Hinh hoc lop 4 tang dan tu nhan biet truc quan sang su dung tinh chat co ban va cong thuc don gian.",
+      "Cau hoi nen tap trung vao nhan biet, phan loai va tinh toan mot buoc."
+    ],
+    "default_examples": [
+      {
+        "raw_text": "San truong hinh chu nhat dai 20 m, rong 10 m",
+        "structured": {
+          "shape": "hinh chu nhat",
+          "length": 20,
+          "width": 10,
+          "area": 200,
+          "perimeter": 60
+        }
+      }
+    ],
+    "search_aliases": [
+      "goc",
+      "góc",
+      "song song",
+      "vuong goc",
+      "vuông góc",
+      "dien tich",
+      "diện tích"
+    ],
+    "language": "vi",
+    "source_ref": "GDPT_2018_math_primary_curated_v1"
+  },
+  {
+    "objective_id": "math_4_data_charts",
+    "subject": "Toán",
+    "subject_display": "Toán",
+    "grade": 4,
+    "topic": "Thống kê đơn giản",
+    "objective_text": "Đọc, mô tả và rút ra thông tin đơn giản từ bảng số liệu, biểu đồ tranh, biểu đồ cột trong tình huống gần gũi.",
+    "cognitive_level": "understand",
+    "difficulty_band": "medium",
+    "allowed_difficulty_range": [
+      "easy",
+      "medium"
+    ],
+    "required_skills": [
+      "read_table",
+      "read_bar_chart",
+      "compare_data",
+      "answer_data_questions"
+    ],
+    "prerequisites": [
+      "Doc so tu nhien",
+      "So sanh so",
+      "Cong tru co ban"
+    ],
+    "grade_scope": {
+      "min_grade": 3,
+      "target_grade": 4,
+      "max_grade": 5
+    },
+    "complexity_signals": {
+      "number_of_categories": 4,
+      "number_of_steps": 1,
+      "abstractness": "medium"
+    },
+    "recommended_question_types": [
+      "multiple_choice",
+      "matching",
+      "fill_in_blank"
+    ],
+    "misconceptions": [
+      {
+        "id": "mc-g4-chart-scale",
+        "misconception": "Hoc sinh doc bieu do cot ma khong chu y don vi hoac khoang chia.",
+        "correct_concept": "Can xem nhan truc, don vi va moi khoang chia truoc khi tra loi."
+      }
+    ],
+    "scope_policy": {
+      "in_scope": [
+        "bang so lieu",
+        "bieu do tranh",
+        "bieu do cot",
+        "so sanh du lieu don gian"
+      ],
+      "below_grade": "simplify_and_generate",
+      "at_grade": "generate_normally",
+      "above_grade": "downgrade_or_warn",
+      "out_of_program": "flag_and_suggest_related_objective",
+      "not_allowed": [
+        "trung binh cong nang cao",
+        "xac suat phuc tap",
+        "bieu do ham so"
+      ]
+    },
+    "grounding_passages": [
+      "Thong ke lop 4 tap trung vao doc va dien giai bang, bieu do trong boi canh quen thuoc.",
+      "Game nen yeu cau tim lon hon, nho hon, tong don gian hoac noi thong tin voi cot/bang."
+    ],
+    "default_examples": [
+      {
+        "raw_text": "Lop 4A co 12 ban thich bong da, 8 ban thich boi loi",
+        "structured": {
+          "categories": {
+            "bong da": 12,
+            "boi loi": 8
+          }
+        }
+      }
+    ],
+    "search_aliases": [
+      "thong ke",
+      "thống kê",
+      "bang so lieu",
+      "bảng số liệu",
+      "bieu do cot",
+      "biểu đồ cột"
+    ],
+    "language": "vi",
+    "source_ref": "GDPT_2018_math_primary_curated_v1"
+  },
+  {
+    "objective_id": "math_4_rounding_natural_numbers_million",
+    "subject": "Toán",
+    "subject_display": "Toán",
+    "grade": 4,
+    "topic": "Số tự nhiên đến lớp triệu và làm tròn",
+    "objective_text": "Đọc, viết, so sánh, sắp xếp các số tự nhiên trong phạm vi lớp triệu; làm tròn số đến chục, trăm, nghìn, mười nghìn, trăm nghìn.",
+    "language": "vi",
+    "source_ref": "source_documents/toan1-5.pdf; source_documents/GDPT_2018.md",
+    "search_aliases": [
+      "lớp triệu",
+      "lop trieu",
+      "làm tròn số",
+      "lam tron so",
+      "số tự nhiên lớp 4",
+      "so tu nhien lop 4"
+    ],
+    "cognitive_level": "understand",
+    "difficulty_band": "medium",
+    "allowed_difficulty_range": [
+      "easy",
+      "medium"
+    ],
+    "required_skills": [
+      "read_write_numbers_million",
+      "compare_order_numbers",
+      "round_numbers_to_places"
+    ],
+    "prerequisites": [
+      "Biết số đến 100000",
+      "Hiểu cấu tạo thập phân"
+    ],
+    "grade_scope": {
+      "min_grade": 4,
+      "target_grade": 4,
+      "max_grade": 4
+    },
+    "complexity_signals": {
+      "number_range_max": 1000000,
+      "number_of_steps": 1,
+      "abstractness": "medium"
+    },
+    "recommended_question_types": [
+      "fill_in_blank",
+      "multiple_choice",
+      "matching"
+    ],
+    "misconceptions": [
+      {
+        "misconception": "Học sinh nhầm lẫn khi vận dụng Số tự nhiên đến lớp triệu và làm tròn.",
+        "correct_concept": "Cần bám sát yêu cầu cần đạt và dùng ví dụ phù hợp lớp 4."
+      }
+    ],
+    "scope_policy": {
+      "in_scope": [
+        "Số tự nhiên đến lớp triệu và làm tròn",
+        "lớp triệu",
+        "lop trieu",
+        "làm tròn số",
+        "lam tron so",
+        "số tự nhiên lớp 4"
+      ],
+      "below_grade": "simplify_and_generate",
+      "at_grade": "generate_normally",
+      "above_grade": "downgrade_or_warn",
+      "out_of_program": "flag_and_suggest_related_objective",
+      "not_allowed": [
+        "nội dung vượt phạm vi lớp 4",
+        "kiến thức chưa có trong mục tiêu này"
+      ]
+    },
+    "grounding_passages": [
+      "Lớp 4 học số tự nhiên trong phạm vi lớp triệu và làm tròn số đến các hàng đã học."
+    ],
+    "default_examples": [
+      {
+        "raw_text": "Ví dụ phù hợp với Số tự nhiên đến lớp triệu và làm tròn",
+        "structured": {
+          "topic": "Số tự nhiên đến lớp triệu và làm tròn"
+        }
+      }
+    ]
+  },
+  {
+    "objective_id": "math_4_fraction_operations_basic",
+    "subject": "Toán",
+    "subject_display": "Toán",
+    "grade": 4,
+    "topic": "Phân số và phép tính phân số cơ bản",
+    "objective_text": "Nhận biết, đọc, viết, so sánh phân số và thực hiện các phép tính phân số cơ bản trong những trường hợp đơn giản phù hợp với chương trình lớp 4.",
+    "language": "vi",
+    "source_ref": "source_documents/toan1-5.pdf; source_documents/GDPT_2018.md",
+    "search_aliases": [
+      "phân số lớp 4",
+      "phan so lop 4",
+      "cộng phân số",
+      "cong phan so",
+      "trừ phân số",
+      "tru phan so",
+      "so sánh phân số",
+      "so sanh phan so"
+    ],
+    "cognitive_level": "apply",
+    "difficulty_band": "medium",
+    "allowed_difficulty_range": [
+      "easy",
+      "medium",
+      "hard"
+    ],
+    "required_skills": [
+      "read_write_fractions",
+      "compare_fractions",
+      "add_subtract_simple_fractions",
+      "use_fraction_visual_models"
+    ],
+    "prerequisites": [
+      "Làm quen phân số lớp 3",
+      "Biết chia phần bằng nhau"
+    ],
+    "grade_scope": {
+      "min_grade": 4,
+      "target_grade": 4,
+      "max_grade": 4
+    },
+    "complexity_signals": {
+      "requires_part_whole_reasoning": true,
+      "number_of_steps": 1,
+      "abstractness": "medium"
+    },
+    "recommended_question_types": [
+      "visual_grouping",
+      "matching",
+      "multiple_choice",
+      "fill_in_blank"
+    ],
+    "misconceptions": [
+      {
+        "misconception": "Học sinh nhầm lẫn khi vận dụng Phân số và phép tính phân số cơ bản.",
+        "correct_concept": "Cần bám sát yêu cầu cần đạt và dùng ví dụ phù hợp lớp 4."
+      }
+    ],
+    "scope_policy": {
+      "in_scope": [
+        "Phân số và phép tính phân số cơ bản",
+        "phân số lớp 4",
+        "phan so lop 4",
+        "cộng phân số",
+        "cong phan so",
+        "trừ phân số"
+      ],
+      "below_grade": "simplify_and_generate",
+      "at_grade": "generate_normally",
+      "above_grade": "downgrade_or_warn",
+      "out_of_program": "flag_and_suggest_related_objective",
+      "not_allowed": [
+        "nội dung vượt phạm vi lớp 4",
+        "kiến thức chưa có trong mục tiêu này"
+      ]
+    },
+    "grounding_passages": [
+      "Lớp 4 học phân số và một số phép tính với phân số trong trường hợp đơn giản."
+    ],
+    "default_examples": [
+      {
+        "raw_text": "Ví dụ phù hợp với Phân số và phép tính phân số cơ bản",
+        "structured": {
+          "topic": "Phân số và phép tính phân số cơ bản"
+        }
+      }
+    ]
+  },
+  {
+    "objective_id": "math_4_measurement_units_area_mass",
+    "subject": "Toán",
+    "subject_display": "Toán",
+    "grade": 4,
+    "topic": "Đơn vị đo đại lượng lớp 4",
+    "objective_text": "Nhận biết và sử dụng các đơn vị đo khối lượng, diện tích và các đại lượng đã học; chuyển đổi, tính toán, ước lượng với số đo đại lượng trong tình huống đơn giản.",
+    "language": "vi",
+    "source_ref": "source_documents/toan1-5.pdf; source_documents/GDPT_2018.md",
+    "search_aliases": [
+      "đơn vị đo lớp 4",
+      "don vi do lop 4",
+      "yến tạ tấn",
+      "yen ta tan",
+      "dm2",
+      "m2",
+      "diện tích",
+      "dien tich"
+    ],
+    "cognitive_level": "apply",
+    "difficulty_band": "medium",
+    "allowed_difficulty_range": [
+      "easy",
+      "medium"
+    ],
+    "required_skills": [
+      "read_measurement_units",
+      "convert_simple_units",
+      "estimate_measurements",
+      "solve_measurement_problem"
+    ],
+    "prerequisites": [
+      "Biết đơn vị đo độ dài, khối lượng, dung tích lớp 3",
+      "Biết nhân chia cơ bản"
+    ],
+    "grade_scope": {
+      "min_grade": 4,
+      "target_grade": 4,
+      "max_grade": 4
+    },
+    "complexity_signals": {
+      "number_of_units": 5,
+      "number_of_steps": 1,
+      "abstractness": "medium"
+    },
+    "recommended_question_types": [
+      "matching",
+      "multiple_choice",
+      "fill_in_blank"
+    ],
+    "misconceptions": [
+      {
+        "misconception": "Học sinh nhầm lẫn khi vận dụng Đơn vị đo đại lượng lớp 4.",
+        "correct_concept": "Cần bám sát yêu cầu cần đạt và dùng ví dụ phù hợp lớp 4."
+      }
+    ],
+    "scope_policy": {
+      "in_scope": [
+        "Đơn vị đo đại lượng lớp 4",
+        "đơn vị đo lớp 4",
+        "don vi do lop 4",
+        "yến tạ tấn",
+        "yen ta tan",
+        "dm2"
+      ],
+      "below_grade": "simplify_and_generate",
+      "at_grade": "generate_normally",
+      "above_grade": "downgrade_or_warn",
+      "out_of_program": "flag_and_suggest_related_objective",
+      "not_allowed": [
+        "nội dung vượt phạm vi lớp 4",
+        "kiến thức chưa có trong mục tiêu này"
+      ]
+    },
+    "grounding_passages": [
+      "Lớp 4 nhận biết thêm các đơn vị đo khối lượng và diện tích, thực hiện chuyển đổi và tính toán với các số đo đại lượng đã học."
+    ],
+    "default_examples": [
+      {
+        "raw_text": "Ví dụ phù hợp với Đơn vị đo đại lượng lớp 4",
+        "structured": {
+          "topic": "Đơn vị đo đại lượng lớp 4"
+        }
+      }
+    ]
+  }
+]

@@ -1,9 +1,4 @@
-"""Application settings, loaded from environment / .env.
-
-The repo's root .env already carries ANTHROPIC_API_KEY and DEFAULT_MODEL. We read
-those, but default the model to a *current* id rather than the outdated value pinned
-in .env, so generation works even if .env is stale.
-"""
+"""Application settings, loaded from environment / .env."""
 
 from __future__ import annotations
 
@@ -22,17 +17,44 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
+    # Supported values: auto, anthropic, openai, deepseek.
+    llm_provider: str = "auto"
+
     anthropic_api_key: str = ""
-    # Current Claude model id; .env may pin an older one — env still overrides if set.
-    default_model: str = "claude-sonnet-4-6"
+    openai_api_key: str = ""
+    deepseek_api_key: str = ""
+    deepseek_base_url: str = "https://api.deepseek.com"
+
+    # If unset, app.agents.llm resolves a provider-specific default.
+    default_model: str = ""
+
     # Max worker re-generation attempts when content fails schema validation.
     max_repairs: int = 2
     # Tokens budget for a single generation call.
     max_tokens: int = 4096
 
     @property
+    def provider(self) -> str:
+        configured = self.llm_provider.strip().lower()
+        if configured != "auto":
+            return configured
+        if self.openai_api_key:
+            return "openai"
+        if self.deepseek_api_key:
+            return "deepseek"
+        if self.anthropic_api_key:
+            return "anthropic"
+        return "anthropic"
+
+    @property
     def has_api_key(self) -> bool:
-        return bool(self.anthropic_api_key and self.anthropic_api_key.startswith("sk-"))
+        if self.provider == "anthropic":
+            return bool(self.anthropic_api_key)
+        if self.provider == "openai":
+            return bool(self.openai_api_key)
+        if self.provider == "deepseek":
+            return bool(self.deepseek_api_key)
+        return False
 
 
 settings = Settings()

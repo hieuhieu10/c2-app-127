@@ -81,6 +81,8 @@ async def generate_full(req: LessonRequest) -> GameResponse:
         prompt=req.prompt,
         objective_id=req.objective_id,
         source_text=req.source_text,
+        uploaded_file_id=req.uploaded_file_id,
+        upload_type=req.upload_type,
         num_items=req.num_items,
         override_template=req.override_template,
     )

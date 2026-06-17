@@ -4,7 +4,7 @@
     "name": "Multiple-choice quiz",
     "description": "Questions with one correct answer and misconception-targeting distractors. Best for checking factual recall and concept understanding.",
     "content_type_fit": ["facts", "definitions", "concepts", "cause-effect"],
-    "grade_range": [6, 12],
+    "grade_range": [1, 12],
     "active": true
   },
   {
@@ -12,7 +12,7 @@
     "name": "Matching / memory",
     "description": "Match terms to definitions, events to dates, or causes to effects. Best for relating paired concepts.",
     "content_type_fit": ["term-definition", "pairs", "classification", "vocabulary"],
-    "grade_range": [6, 12],
+    "grade_range": [1, 12],
     "active": true
   },
   {
@@ -20,7 +20,7 @@
     "name": "Fill in the blank",
     "description": "Complete sentences by choosing the missing word(s). Best for key terminology in context.",
     "content_type_fit": ["vocabulary", "key-terms", "definitions", "formulas"],
-    "grade_range": [6, 12],
+    "grade_range": [1, 12],
     "active": true
   },
   {

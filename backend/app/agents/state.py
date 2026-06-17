@@ -15,6 +15,8 @@ class GenerationState(TypedDict, total=False):
     prompt: str
     objective_id: str | None
     source_text: str | None
+    uploaded_file_id: str | None
+    upload_type: str
     num_items: int
     override_template: str | None  # FR-05: teacher picks template explicitly
 
