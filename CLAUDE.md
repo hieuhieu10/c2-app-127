@@ -68,14 +68,14 @@ backend/
       llm.py                 # Claude API wrapper (call_tool helper)
       prompts.py             # System prompts + user-message builders
     templates/
-      registry.py            # Template metadata from data/templates.json + Pydantic model lookup
-      schemas/               # Per-template Pydantic content models (quiz, matching, fill_in_blank)
+      spec.py                # GameSpec dataclass — one game's full description (metadata + content model + knobs)
+      registry.py            # Auto-discovers every schemas/*.SPEC; metadata + content-model lookups
+      schemas/               # One module per game = content model + module-level SPEC (quiz, matching, fill_in_blank, treasure_hunt, battleship)
     retrieval/
       context.py             # RetrievalProvider Protocol + StubRetrievalProvider (real RAG is a teammate's seam)
     validation/
       validator.py           # Schema validation gate; validate() + json_schema_for()
   data/
-    templates.json           # Template metadata (id, grade_range, active flag, etc.)
     fixtures/                # sample_subject.json with objectives + misconceptions for the stub retriever
   tests/
     conftest.py              # valid_content()/invalid_content() helpers + lesson_payload fixture
@@ -89,23 +89,31 @@ backend/
 ### LangGraph pipeline
 
 ```
-retrieve -> recommend -> generate -> validate --done--> END
-                                        ^   |
-                                        |   +--repair--> repair --> validate
-                                        +--give_up--> finalize_failure -> END
+guardrail --ok--> retrieve -> recommend -> generate -> validate --done--> END
+    |                                          ^   |
+    +--blocked--> END                          |   +--repair--> repair --> validate
+                                               +--give_up--> finalize_failure -> END
 ```
 
+- **guardrail** (`guardrail.py:guardrail_node`) — input screening before any work. Rejects requests that are out of KB scope (subject/grade), off-topic for the chosen subject, above the chosen grade, or not child-friendly, with a teacher-facing explanation + re-prompt suggestion. Layered: deterministic scope check + explicit-term screen (free, always run) then a nuanced LLM relevance/safety screen (only when an API key is set; fails open on error). HTTP endpoints return **422** with a `GuardrailReport` (`code`, `message`, `suggestion`) detail; the SSE stream emits a `blocked` event.
 - **retrieve** (`generator.py:retrieve_node`) — calls `default_provider.retrieve()` to get grounding context (curriculum passages, misconceptions). Real RAG injected via `default_provider`.
 - **recommend** (`recommender.py:recommend_node`) — supervisor LLM call; honours `override_template` to skip. Falls back gracefully if grade has no templates.
 - **generate / repair** (`generator.py`) — worker LLM call using Claude tool_use with the template's JSON Schema as `input_schema`. Repair passes prior validation errors back in the prompt.
 - **validate** — hard gate via Pydantic; non-conforming content never leaves the pipeline. Up to `MAX_REPAIRS` repair iterations.
 
-### Adding a new game template
+### Adding a new game
 
-1. Add a Pydantic content model in `backend/app/templates/schemas/`.
-2. Register it in `_CONTENT_MODELS` in `backend/app/templates/registry.py`.
-3. Add metadata (including `grade_range` and `active: true`) to `backend/data/templates.json`.
-4. No pipeline changes needed.
+Backend — one file, auto-discovered (no registry/JSON edits):
+
+1. Create `backend/app/templates/schemas/<game>.py` with a Pydantic content model **and** a module-level `SPEC = GameSpec(...)` (id, name, description, `content_type_fit`, `grade_range`, `content_model`, plus optional `active`/`playable`/`min_items`/`sort_order`).
+2. That's it — `registry.py` discovers the `SPEC` automatically. No pipeline changes.
+
+Frontend — one manifest entry (only needed for `playable` games that teachers can pick/play):
+
+3. Write the game's React shell under `FE/src/features/game-shells/<game>/`.
+4. Add one entry to `GAMES` in `FE/src/features/game-shells/registry.tsx` (ties `backendId` ↔ `type` ↔ metadata ↔ `Shell`). `GameShell` and the chat game-picker both read from this list.
+
+A game is offered in the chat picker only when its backend `SPEC.playable` is true **and** it has a frontend manifest entry.
 
 ### Retrieval seam
 

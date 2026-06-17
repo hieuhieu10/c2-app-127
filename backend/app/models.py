@@ -42,6 +42,29 @@ class RecommendResponse(BaseModel):
     candidates: list[TemplateCandidate]
 
 
+class GameRecommendation(BaseModel):
+    """A single playable game offered to the teacher, with an AI-written intro."""
+
+    template_id: str = Field(..., description="Backend template id, e.g. 'treasure_hunt'.")
+    name: str = Field(..., description="Teacher-facing game name, e.g. 'Treasure Hunt'.")
+    intro: str = Field(..., description="One or two sentences (Vietnamese) on why this game fits the lesson.")
+    recommended: bool = Field(False, description="True for the single best-fit game (the top pick).")
+
+
+class RecommendGamesResponse(BaseModel):
+    """Ranked list of playable games for the teacher to choose from (best-first).
+
+    When the request is blocked by the guardrail, ``blocked`` is True,
+    ``recommendations`` is empty, and ``message`` / ``suggestion`` carry the
+    teacher-facing explanation so the frontend can display them without crashing.
+    """
+
+    recommendations: list[GameRecommendation] = []
+    blocked: bool = False
+    message: str = ""
+    suggestion: str = ""
+
+
 class GameResponse(BaseModel):
     ok: bool
     template_id: str | None = None

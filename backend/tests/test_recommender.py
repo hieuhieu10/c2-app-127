@@ -5,7 +5,7 @@ from __future__ import annotations
 import pytest
 
 import app.agents.recommender as rec
-from app.agents.recommender import recommend_node
+from app.agents.recommender import recommend_games, recommend_node
 
 
 async def test_override_skips_llm(monkeypatch):
@@ -38,9 +38,65 @@ async def test_llm_invalid_choice_falls_back(monkeypatch):
         {"subject": "Lịch sử", "grade": 8, "difficulty": "medium", "prompt": "p"}
     )
     # Falls back to a real candidate rather than propagating a bad id.
-    assert out["template_id"] in {"quiz", "matching", "fill_in_blank"}
+    valid = {c.id for c in rec.candidates_for(8)}
+    assert out["template_id"] in valid
 
 
 async def test_no_templates_for_grade(monkeypatch):
     out = await recommend_node({"grade": 99})
     assert "error" in out
+
+
+async def test_recommend_games_single_skips_llm(monkeypatch):
+    async def boom(*a, **k):  # only one playable game → no LLM call needed
+        raise AssertionError("LLM must not be called for a single game")
+
+    only = next(g for g in rec.playable_games() if g.id == "treasure_hunt")
+    monkeypatch.setattr(rec, "playable_games", lambda: [only])
+    monkeypatch.setattr(rec, "call_tool", boom)
+    out = await recommend_games(subject="Toán", grade=4, difficulty="easy", prompt="Bảng cửu chương")
+    assert [g["template_id"] for g in out] == ["treasure_hunt"]
+    assert out[0]["recommended"] is True
+    assert out[0]["intro"]
+
+
+async def test_recommend_games_offers_all_regardless_of_grade(monkeypatch):
+    # A low grade still gets Battleship offered (ranked by the model), not filtered out.
+    async def fake(*a, **k):
+        return {
+            "recommendations": [
+                {"template_id": "treasure_hunt", "intro": "Phù hợp tiểu học."},
+                {"template_id": "battleship", "intro": "Khó hơn nhưng vẫn dùng được."},
+            ]
+        }
+
+    monkeypatch.setattr(rec, "call_tool", fake)
+    out = await recommend_games(subject="Toán", grade=3, difficulty="easy", prompt="cộng trừ")
+    assert {g["template_id"] for g in out} == {"treasure_hunt", "battleship"}
+
+
+async def test_recommend_games_ranks_and_introduces(monkeypatch):
+    async def fake(*a, **k):
+        return {
+            "recommendations": [
+                {"template_id": "battleship", "intro": "Trò chơi đối kháng phù hợp ôn tập."},
+                {"template_id": "treasure_hunt", "intro": "Đua bản đồ vui nhộn."},
+            ]
+        }
+
+    monkeypatch.setattr(rec, "call_tool", fake)
+    out = await recommend_games(subject="Lịch sử", grade=8, difficulty="medium", prompt="Cần Vương")
+    assert [g["template_id"] for g in out] == ["battleship", "treasure_hunt"]
+    assert out[0]["recommended"] is True          # top pick flagged
+    assert all(not g["recommended"] for g in out[1:])
+    assert all(g["intro"] and g["name"] for g in out)
+
+
+async def test_recommend_games_appends_omitted(monkeypatch):
+    async def fake(*a, **k):  # model only ranked one of the two grade-8 games
+        return {"recommendations": [{"template_id": "treasure_hunt", "intro": "Đua bản đồ."}]}
+
+    monkeypatch.setattr(rec, "call_tool", fake)
+    out = await recommend_games(subject="Lịch sử", grade=8, difficulty="medium", prompt="p")
+    ids = [g["template_id"] for g in out]
+    assert set(ids) == {"treasure_hunt", "battleship"}   # omitted game still offered

@@ -7,6 +7,7 @@ OpenAI and DeepSeek use the OpenAI-compatible Chat Completions tool-calling API.
 
 from __future__ import annotations
 
+import asyncio
 import json
 from functools import lru_cache
 from typing import Any
@@ -180,32 +181,41 @@ async def call_tool(
     model: str | None = None,
     max_tokens: int | None = None,
     client: Any | None = None,
+    timeout: float = 30.0,
 ) -> dict[str, Any]:
-    """Call the configured provider forcing a single tool and return its input dict."""
+    """Call the configured provider forcing a single tool and return its input dict.
+
+    Raises ``asyncio.TimeoutError`` if the provider does not respond within
+    ``timeout`` seconds (default 30 s), so callers are never left hanging.
+    """
     provider = settings.provider
-    if provider == "anthropic":
-        return await _call_anthropic_tool(
-            system=system,
-            user=user,
-            tool_name=tool_name,
-            tool_description=tool_description,
-            input_schema=input_schema,
-            model=model,
-            max_tokens=max_tokens,
-            client=client,
+
+    async def _call() -> dict[str, Any]:
+        if provider == "anthropic":
+            return await _call_anthropic_tool(
+                system=system,
+                user=user,
+                tool_name=tool_name,
+                tool_description=tool_description,
+                input_schema=input_schema,
+                model=model,
+                max_tokens=max_tokens,
+                client=client,
+            )
+        if provider in {"openai", "deepseek"}:
+            return await _call_openai_compatible_tool(
+                provider=provider,
+                system=system,
+                user=user,
+                tool_name=tool_name,
+                tool_description=tool_description,
+                input_schema=input_schema,
+                model=model,
+                max_tokens=max_tokens,
+                client=client,
+            )
+        raise RuntimeError(
+            f"Unsupported LLM_PROVIDER '{settings.llm_provider}'. Use anthropic, openai, or deepseek."
         )
-    if provider in {"openai", "deepseek"}:
-        return await _call_openai_compatible_tool(
-            provider=provider,
-            system=system,
-            user=user,
-            tool_name=tool_name,
-            tool_description=tool_description,
-            input_schema=input_schema,
-            model=model,
-            max_tokens=max_tokens,
-            client=client,
-        )
-    raise RuntimeError(
-        f"Unsupported LLM_PROVIDER '{settings.llm_provider}'. Use anthropic, openai, or deepseek."
-    )
+
+    return await asyncio.wait_for(_call(), timeout=timeout)

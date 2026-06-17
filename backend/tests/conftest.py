@@ -7,6 +7,21 @@ import pytest
 OBJ = "ls8-phongtrao-canvuong"
 
 
+@pytest.fixture(autouse=True)
+def _allow_guardrail_llm(monkeypatch):
+    """Default the guardrail's LLM screen to "allow" so tests never hit the network.
+
+    The deterministic scope/keyword layers still run. Guardrail-specific tests override
+    this by patching ``app.agents.guardrail.call_tool`` with their own verdict.
+    """
+    import app.agents.guardrail as guardrail
+
+    async def _allow(*a, **k):
+        return {"verdict": "ok", "reason": "", "suggestion": ""}
+
+    monkeypatch.setattr(guardrail, "call_tool", _allow)
+
+
 def valid_content(template_id: str) -> dict:
     """A schema-valid content dict for each active template."""
     if template_id == "quiz":
@@ -66,6 +81,20 @@ def valid_content(template_id: str) -> dict:
             "objective_id": OBJ,
             "questions": [q] * 9,
         }
+    if template_id == "treasure_hunt":
+        q = {
+            "question": "Ai lãnh đạo khởi nghĩa Hương Khê?",
+            "correct_answer": "Phan Đình Phùng",
+            "distractors": ["Nguyễn Thiện Thuật", "Đinh Công Tráng", "Hoàng Hoa Thám"],
+            "hint": "Cuộc khởi nghĩa tiêu biểu nhất của phong trào Cần Vương.",
+            "explanation": "Phan Đình Phùng lãnh đạo khởi nghĩa Hương Khê (1885–1896).",
+            "objective_id": OBJ,
+        }
+        return {
+            "title": "Cần Vương Treasure Hunt",
+            "objective_id": OBJ,
+            "questions": [q] * 4,
+        }
     raise ValueError(template_id)
 
 
@@ -78,6 +107,10 @@ def invalid_content(template_id: str) -> dict:
         c["pairs"] = c["pairs"][:1]  # below min_length=3
     elif template_id == "battleship":
         c["questions"] = c["questions"][:3]          # below min_length=9
+        for q in c["questions"]:
+            q["distractors"] = q["distractors"][:2]  # below min_length=3
+    elif template_id == "treasure_hunt":
+        c["questions"] = c["questions"][:1]          # below min_length=4
         for q in c["questions"]:
             q["distractors"] = q["distractors"][:2]  # below min_length=3
     return c

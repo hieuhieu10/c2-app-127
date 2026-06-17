@@ -164,6 +164,22 @@ class GDPT2018RetrievalProvider:
         self._kb_root = kb_root
         self._objectives = self._load_objectives()
 
+    def coverage(self) -> dict[str, set[int]]:
+        """Subjects the KB grounds, mapped to the grades available for each.
+
+        Guardrails use this to reject out-of-scope (subject, grade) requests before
+        any LLM call. Derived from the loaded objectives, so it always reflects the
+        real KB (currently Toán grades 1-5 plus a legacy Lịch sử grade-8 objective).
+        """
+        cov: dict[str, set[int]] = {}
+        for obj in self._objectives:
+            subject = obj.get("subject_display") or obj.get("subject") or ""
+            grade = obj.get("grade")
+            if not subject or grade is None:
+                continue
+            cov.setdefault(subject, set()).add(int(grade))
+        return cov
+
     def _load_objectives(self) -> list[dict[str, Any]]:
         by_id: dict[str, dict[str, Any]] = {}
         for path in self._kb_root.glob("*/*/objectives.json"):
