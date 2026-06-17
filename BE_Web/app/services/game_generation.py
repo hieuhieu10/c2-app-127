@@ -60,7 +60,7 @@ async def generate_game(db: Session, request: GenerateGameRequest, ai_client: AI
         subject=lesson.subject,
         grade=ai_grade,
         difficulty=lesson.difficulty,  # type: ignore[arg-type]
-        prompt=lesson.title,
+        prompt=lesson.input_text,
         objective_id=lesson.objective_id,
         source_text=lesson.input_text,
         num_items=request.num_items,
