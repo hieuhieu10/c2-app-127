@@ -1,0 +1,1693 @@
+
+
+===== PAGE 1 =====
+BỘ GIÁO DỤC VÀ ĐÀO TẠO 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+CHƯƠNG TRÌNH GIÁO DỤC PHỔ THÔNG 
+MÔN TOÁN 
+(Ban hành kèm theo Thông tư số 32/2018/TT-BGDĐT 
+ ngày 26 tháng 12 năm 2018 của Bộ trưởng Bộ Giáo dục và Đào tạo) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Hà Nội, 2018 
+
+
+
+===== PAGE 2 =====
+2 
+ 
+MỤC LỤC  
+Trang 
+I. ĐẶC ĐIỂM MÔN HỌC ..................................................................................................................................................... 3 
+II. QUAN ĐIỂM XÂY DỰNG CHƯƠNG TRÌNH .............................................................................................................. 4 
+III. MỤC TIÊU CHƯƠNG TRÌNH ....................................................................................................................................... 6 
+IV. YÊU CẦU CẦN ĐẠT ..................................................................................................................................................... 9 
+V. NỘI DUNG GIÁO DỤC ................................................................................................................................................. 16 
+LỚP 1 ........................................................................................................................................................................... 21 
+LỚP 2 ........................................................................................................................................................................... 24 
+LỚP 3 ........................................................................................................................................................................... 29 
+LỚP 4 ........................................................................................................................................................................... 34 
+LỚP 5 ........................................................................................................................................................................... 40 
+LỚP 6 ........................................................................................................................................................................... 46 
+LỚP 7 ........................................................................................................................................................................... 55 
+LỚP 8 ........................................................................................................................................................................... 63 
+LỚP 9 ........................................................................................................................................................................... 71 
+LỚP 10 ......................................................................................................................................................................... 79 
+LỚP 11 ......................................................................................................................................................................... 89 
+LỚP 12 ....................................................................................................................................................................... 105 
+VI. PHƯƠNG PHÁP GIÁO DỤC ..................................................................................................................................... 114 
+VII. ĐÁNH GIÁ KẾT QUẢ GIÁO DỤC ......................................................................................................................... 116 
+VIII. GIẢI THÍCH VÀ HƯỚNG DẪN THỰC HIỆN CHƯƠNG TRÌNH ...................................................................... 118 
+
+
+
+===== PAGE 3 =====
+3 
+ 
+I. ĐẶC ĐIỂM MÔN HỌC  
+Toán học ngày càng có nhiều ứng dụng trong cuộc sống, những kiến thức và kĩ năng toán học cơ bản đã giúp con người 
+giải quyết các vấn đề trong thực tế cuộc sống một cách có hệ thống và chính xác, góp phần thúc đẩy xã hội phát triển. 
+Môn Toán ở trường phổ thông góp phần hình thành và phát tri ển các phẩm chất chủ yếu, năng lực chung và năng l ực 
+toán học cho học sinh; phát triển kiến thức, kĩ năng then chốt và tạo cơ hội để học sinh được trải nghiệm, vận dụng toán học 
+vào thực tiễn; tạo lập sự kết nối giữa các ý tưởng toán học, giữa Toán học với thực tiễn, giữa Toán học với các môn học và 
+hoạt động giáo dục khác, đặc biệt với các môn Khoa học, Khoa học tự nhiên, Vật lí, Hoá học, Sinh học, Công nghệ, Tin học 
+để thực hiện giáo dục STEM.  
+Nội dung môn Toán thư ờng mang tính logic, trừu tượng, khái quát. Do đó, đ ể hiểu và h ọc được Toán, chương tr ình 
+Toán ở trường phổ thông cần bảo đảm sự cân đối giữa “học” kiến thức và “vận dụng” kiến thức vào giải quyết vấn đề cụ thể.  
+Trong quá trình học và áp dụng toán học, học sinh luôn có cơ hội sử dụng các phương tiện công nghệ, thiết bị dạy học 
+hiện đại, đặc biệt là máy tính điện tử và máy tính cầm tay hỗ trợ quá trình biểu diễn, tìm tòi, khám phá kiến thức, giải quyết 
+vấn đề toán học. 
+Trong chương tr ình giáo d ục phổ thông, Toán là môn h ọc bắt buộc từ lớp 1 đ ến lớp 12. N ội dung giáo d ục toán học 
+được phân chia theo hai giai đoạn: 
+- Giai đoạn giáo dục cơ bản: Môn Toán giúp học sinh hiểu được một cách có hệ thống những khái niệm, nguyên lí, quy 
+tắc toán học cần thiết nhất cho tất cả mọi người, làm nền tảng cho việc học tập ở các trình độ học tập tiếp theo hoặc có thể sử 
+dụng trong cuộc sống hằng ngày. 
+- Giai đoạn giáo dục định hướng nghề nghiệp: Môn Toán giúp học sinh có cái nhìn tương đối tổng quát về toán học, hiểu 
+được vai trò và những ứng dụng của toán học trong thực tiễn, những ngành nghề có liên quan đến toán học để học sinh có cơ 
+sở định hướng nghề nghiệp, cũng như có khả năng tự mình tìm hiểu những vấn đề có liên quan đến toán học trong suốt cuộc 
+đời. Bên cạnh nội dung giáo dục cốt lõi, trong mỗi năm học, học sinh (đặc biệt là những học sinh có định hướng khoa học tự 
+nhiên và công nghệ) được chọn học một số chuyên đề học tập. Các chuyên đề này nhằm tăng cường kiến thức về toán học, kĩ 
+
+
+
+===== PAGE 4 =====
+4 
+năng vận dụng kiến thức toán vào thực tiễn, đáp ứng sở thích, nhu cầu và định hướng nghề nghiệp của học sinh. 
+Chương trình môn Toán trong c ả hai giai đoạn giáo dục có cấu trúc tuyến tính kết hợp với “đồng tâm xoáy ốc” (đồng 
+tâm, mở rộng và nâng cao dần), xoay quanh và tích hợp ba mạch kiến thức: Số, Đại số và Một số yếu tố giải tích; Hình học 
+và Đo lường; Thống kê và Xác suất. 
+II. QUAN ĐIỂM XÂY DỰNG CHƯƠNG TRÌNH 
+Chương trình môn Toán quán triệt các quy định cơ bản được nêu trong Chương trình tổng thể; kế thừa và phát huy ưu 
+điểm của chương tr ình hiện hành và các chương tr ình trước đó, tiếp thu có chọn lọc kinh nghiệm xây d ựng chương tr ình 
+môn học của các nước tiên tiến trên thế giới, tiếp cận những thành tựu của khoa học giáo dục, có tính đến điều kiện kinh tế 
+và xã hội Việt Nam. Đồng thời, chương trình môn Toán nhấn mạnh một số quan điểm sau:   
+1. Bảo đảm tính tinh giản, thiết thực, hiện đại 
+Chương trình môn Toán bảo đảm tính tinh giản, thiết thực, hiện đại thể hiện ở việc phản ánh những nội dung nhất thiết 
+phải được đề cập trong nhà trường phổ thông, đáp ứng nhu cầu hiểu biết thế giới cũng như hứng thú, sở thích của người học, 
+phù hợp với cách tiếp cận của thế giới ngày nay. Chương tr ình quán triệt tinh thần “toán học cho mọi người”, ai cũng học 
+được Toán nhưng mỗi người có thể học Toán theo cách phù hợp với sở thích và năng lực cá nhân. 
+Chương trình môn Toán chú trọng tính ứng dụng, gắn kết với thực tiễn hay các môn học, hoạt động giáo dục khác, đặc 
+biệt với các môn học nhằm thực hiện giáo dục STEM, gắn với xu hướng phát triển hiện đại của kinh tế, khoa học, đời sống 
+xã hội và những vấn đề cấp thiết có tính toàn cầu (như biến đổi khí hậu, phát triển bền vững, giáo dục tài chính,...). Điều này 
+còn được thể hiện qua các ho ạt động thực hành và tr ải nghiệm trong giáo d ục toán học với nhiều hình thức như: thực hiện 
+những đề tài, dự án học tập về Toán, đặc biệt là những đề tài và dự án về ứng dụng toán học trong thực tiễn; tổ chức trò chơi 
+học toán, câu lạc bộ toán học, diễn đàn, hội thảo, cuộc thi về Toán,... tạo cơ hội giúp học sinh vận dụng kiến thức, kĩ năng và 
+kinh nghiệm của bản thân vào thực tiễn một cách sáng tạo.  
+2. Bảo đảm tính thống nhất, sự nhất quán và phát triển liên tục 
+Chương trình môn Toán b ảo đảm tính thống nhất, sự phát triển liên tục (từ lớp 1 đến lớp 12), bao gồm hai nhánh liên 
+
+
+
+===== PAGE 5 =====
+5 
+kết chặt chẽ với nhau, một nhánh mô t ả sự phát triển của các mạch nội dung kiến thức cốt lõi và m ột nhánh mô t ả sự phát 
+triển của năng l ực, phẩm chất của học sinh. Đồng thời, chương tr ình môn Toán chú ý ti ếp nối với chương tr ình giáo d ục 
+mầm non và tạo nền tảng cho giáo dục nghề nghiệp và giáo dục đại học. 
+3. Bảo đảm tính tích hợp và phân hoá 
+Chương trình môn Toán th ực hiện tích hợp nội môn xoay quanh ba m ạch kiến thức: Số, Đại số và Một số yếu tố giải 
+tích; Hình học và Đo lư ờng; Thống kê và Xác su ất; thực hiện tích hợp liên môn thông qua các n ội dung, chủ đề liên quan 
+hoặc các kiến thức toán học được khai thác, sử dụng trong các môn học khác như Vật lí, Hoá học, Sinh học, Địa lí, Tin học, 
+Công nghệ, Lịch s ử, Nghệ thuật,...; thực hiện tích h ợp n ội môn và liên m ôn thông qua các ho ạt động thực hành và tr ải 
+nghiệm trong giáo dục toán học.  
+Đồng thời, chương trình môn Toán bảo đảm yêu cầu phân hoá. Đối với tất cả các cấp học, môn Toán quán triệt tinh thần 
+dạy học theo hướng cá thể hoá người học trên cơ sở bảo đảm đa số học sinh (trên tất cả các vùng miền của cả nước) đáp ứng 
+được yêu cầu cần đạt của chương trình; đồng thời chú ý tới các đối tượng chuyên biệt (học sinh giỏi, học sinh khuyết tật, học 
+sinh có hoàn cảnh khó khăn,…). Đối với cấp trung học phổ thông, môn Toán có hệ thống chuyên đề học tập chuyên sâu và các 
+nội dung học tập giúp học sinh nâng cao kiến thức, kĩ năng thực hành, vận dụng giải quyết các vấn đề gắn với thực tiễn.  
+4. Bảo đảm tính mở 
+Chương trình môn Toán bảo đảm định hướng thống nhất và những nội dung giáo dục toán học cốt lõi, bắt buộc đối với 
+học sinh toàn qu ốc, đồng thời trao quy ền chủ động và trách nhi ệm cho đ ịa phương và nhà trư ờng trong vi ệc lựa chọn, bổ 
+sung một số nội dung giáo dục toán học và triển khai kế hoạch giáo dục phù hợp với đối tượng và điều kiện của địa phương, 
+của cơ sở giáo dục. 
+Chương trình môn Toán chỉ quy định những nguyên tắc, định hướng chung về yêu cầu cần đạt về phẩm chất và năng 
+lực của học sinh, nội dung giáo dục, phương pháp giáo d ục và việc đánh giá kết quả giáo dục, không quy định quá chi tiết, 
+để tạo điều kiện cho tác giả sách giáo khoa và giáo viên phát huy tính chủ động, sáng tạo trong thực hiện chương trình.  
+Chương trình bảo đảm tính ổn định và khả năng phát triển trong quá trình thực hiện cho phù hợp với tiến bộ khoa học – 
+công nghệ và yêu cầu của thực tế. 
+
+
+
+===== PAGE 6 =====
+6 
+ 
+III. MỤC TIÊU CHƯƠNG TRÌNH 
+1. Mục tiêu chung  
+Chương trình môn Toán giúp học sinh đạt các mục tiêu chủ yếu sau: 
+a) Hình thành và phát tri ển năng lực toán học bao gồm các thành t ố cốt lõi sau: n ăng lực tư duy và lập luận toán học; 
+năng lực mô hình hoá toán học; năng lực giải quyết vấn đề toán học; năng lực giao tiếp toán học; năng lực sử dụng công cụ, 
+phương tiện học toán.  
+b) Góp phần hình thành và phát triển ở học sinh các phẩm chất chủ yếu và năng lực chung theo các mức độ phù hợp với 
+môn học, cấp học được quy định tại Chương trình tổng thể. 
+c) Có kiến thức, kĩ năng toán h ọc phổ thông, cơ bản, thiết yếu; phát triển khả năng giải quyết vấn đề có tính tích h ợp 
+liên môn gi ữa môn Toán và các môn h ọc khác như V ật lí, Hoá h ọc, Sinh h ọc, Địa lí, Tin h ọc, Công ngh ệ, Lịch sử, Nghệ 
+thuật,...; tạo cơ hội để học sinh được trải nghiệm, áp dụng toán học vào thực tiễn.  
+d) Có hiểu biết tương đối tổng quát về sự hữu ích của toán học đối với từng ngành nghề liên quan để làm cơ sở định hướng 
+nghề nghiệp, cũng như có đủ năng lực tối thiểu để tự tìm hiểu những vấn đề liên quan đến toán học trong suốt cuộc đời. 
+2. Mục tiêu cấp tiểu học 
+Môn Toán cấp tiểu học nhằm giúp học sinh đạt các mục tiêu chủ yếu sau: 
+a) Góp phần hình thành và phát triển năng lực toán học với yêu cầu cần đạt: thực hiện được các thao tác tư duy ở mức 
+độ đơn giản; nêu và trả lời được câu hỏi khi lập luận, giải quyết vấn đề đơn giản; lựa chọn được các phép toán và công thức 
+số học để trình bày, di ễn đạt (nói ho ặc viết) được các n ội dung, ý t ưởng, cách thức giải quyết vấn đề; sử dụng được ngôn 
+ngữ toán học kết hợp với ngôn ngữ thông thường, động tác hình thể để biểu đạt các nội dung toán học ở những tình huống 
+đơn giản; sử dụng được các công cụ, phương tiện học toán đơn giản để thực hiện các nhiệm vụ học tập toán đơn giản.  
+b) Có những kiến thức và kĩ năng toán học cơ bản ban đầu, thiết yếu về:   
+
+
+
+===== PAGE 7 =====
+7 
+– Số và phép tính: Số tự nhiên, phân số, số thập phân và các phép tính trên những tập hợp số đó. 
+– Hình học và Đo lư ờng: Quan sát, nhận biết, mô tả hình dạng và đ ặc điểm (ở mức độ trực quan) c ủa một số hình 
+phẳng và hình kh ối trong th ực tiễn; tạo lập một số mô hình hình h ọc đơn gi ản; tính toán một số đại lượng hình h ọc; phát 
+triển trí tư ởng tượng không gian; gi ải quyết một số vấn đề thực tiễn đơn giản gắn với Hình h ọc và Đo lư ờng (với các đ ại 
+lượng đo thông dụng). 
+– Thống kê và Xác suất: Một số yếu tố thống kê và xác suất đơn giản; giải quyết một số vấn đề thực tiễn đơn giản gắn 
+với một số yếu tố thống kê và xác suất. 
+c) Cùng với các môn học và hoạt động giáo dục khác như: Đạo đức, Tự nhiên và xã hội, Hoạt động trải nghiệm,… góp 
+phần giúp học sinh có những hiểu biết ban đầu về một số nghề nghiệp trong xã hội. 
+3. Mục tiêu cấp trung học cơ sở 
+Môn Toán cấp trung học cơ sở nhằm giúp học sinh đạt các mục tiêu chủ yếu sau: 
+a) Góp phần hình thành và phát tri ển năng lực toán học với yêu cầu cần đạt: nêu và trả lời được câu hỏi khi lập luận, 
+giải quyết vấn đề, thực hiện được việc lập luận hợp lí khi giải quyết vấn đề, chứng minh được mệnh đề toán học không quá 
+phức tạp; sử dụng được các mô hình toán h ọc (công th ức toán h ọc, phương tr ình đại số, hình bi ểu diễn,...) để mô tả tình 
+huống xuất hiện trong một số bài toán thực tiễn không quá phức tạp; sử dụng được ngôn ngữ toán học kết hợp với ngôn ngữ 
+thông thường để biểu đạt các nội dung toán học cũng như thể hiện chứng cứ, cách thức và kết quả lập luận; trình bày được ý 
+tưởng và cách s ử dụng công c ụ, phương tiện học toán đ ể thực hiện một nhiệm vụ học tập hoặc để diễn tả những lập luận, 
+chứng minh toán học. 
+b) Có những kiến thức và kĩ năng toán học cơ bản về: 
+– Số và Đại số: Hệ thống số (từ số tự nhiên đến số thực); tính toán và s ử dụng công cụ tính toán; ngôn ngữ và kí hiệu 
+đại số; biến đổi biểu thức đại số, phương trình, hệ phương trình, bất phương trình; sử dụng ngôn ngữ hàm số để mô tả (mô 
+hình hoá) một số quá trình và hiện tượng trong thực tiễn. 
+– Hình học và Đo lư ờng: Nội dung Hình học và Đo lư ờng ở cấp học này bao gồm Hình h ọc trực quan và Hình h ọc 
+
+
+
+===== PAGE 8 =====
+8 
+phẳng. Hình học trực quan tiếp tục cung cấp ngôn ngữ, kí hiệu, mô tả (ở mức độ trực quan) những đối tượng của thực tiễn 
+(hình phẳng, hình khối); tạo lập một số mô hình hình học thông dụng; tính toán một số yếu tố hình học; phát triển trí tưởng 
+tượng không gian; gi ải quyết một số vấn đề thực tiễn đơn giản gắn với Hình h ọc và Đo lư ờng. Hình học phẳng cung c ấp 
+những kiến thức và k ĩ năng (ở mức độ suy luận logic) về các quan h ệ hình học và m ột số hình phẳng thông d ụng (điểm, 
+đường thẳng, tia, đoạn thẳng, góc, hai đường thẳng song song, tam giác, tứ giác, đường tròn).  
+– Thống kê và Xác suất: Thu thập, phân loại, biểu diễn, phân tích và xử lí dữ liệu thống kê; phân tích dữ liệu thống kê 
+thông qua tần số, tần số tương đối; nhận biết một số quy luật thống kê đơn giản trong thực tiễn; sử dụng thống kê để hiểu các 
+khái niệm cơ bản về xác suất thực nghiệm của một biến cố và xác suất của một biến cố; nhận biết ý nghĩa của xác suất trong 
+thực tiễn. 
+c) Góp phần giúp học sinh có những hiểu biết ban đầu về các ngành nghề gắn với môn Toán; có ý th ức hướng nghiệp 
+dựa trên năng lực và sở thích, điều kiện và hoàn cảnh của bản thân; định hướng phân luồng sau trung học cơ sở (tiếp tục học 
+lên, học nghề hoặc tham gia vào cuộc sống lao động). 
+4. Mục tiêu cấp trung học phổ thông 
+Môn Toán cấp trung học phổ thông nhằm giúp học sinh đạt các mục tiêu chủ yếu sau: 
+a) Góp phần hình thành và phát tri ển năng lực toán học với yêu cầu cần đạt: nêu và trả lời được câu hỏi khi lập luận, 
+giải quyết vấn đề; sử dụng được các phương pháp l ập luận, quy nạp và suy di ễn để hiểu được những cách thức khác nhau 
+trong việc giải quyết vấn đề; thiết lập được mô hình toán học để mô tả tình huống, từ đó đưa ra cách giải quyết vấn đề toán 
+học đặt ra trong mô hình được thiết lập; thực hiện và trình bày được giải pháp giải quyết vấn đề và đánh giá được giải pháp 
+đã thực hiện, phản ánh được giá trị của giải pháp, khái quát hoá được cho vấn đề tương tự; sử dụng được công cụ, phương 
+tiện học toán trong học tập, khám phá và giải quyết vấn đề toán học. 
+b) Có những kiến thức và kĩ năng toán học cơ bản, thiết yếu về:  
+– Đại số và Một số yếu tố giải tích: Tính toán và sử dụng công cụ tính toán; sử dụng ngôn ngữ và kí hiệu đại số; biến 
+đổi biểu thức đại số và siêu vi ệt (lượng giác, mũ, lôgarit), ph ương trình, hệ phương trình, bất phương tr ình; nhận biết các 
+
+
+
+===== PAGE 9 =====
+9 
+hàm số sơ cấp cơ b ản (luỹ thừa, lượng giác, mũ, lôgarit); khảo sát hàm s ố và vẽ đồ thị hàm số bằng công cụ đạo hàm; sử 
+dụng ngôn ngữ hàm số, đồ thị hàm số để mô tả và phân tích một số quá trình và hiện tượng trong thế giới thực; sử dụng tích 
+phân để tính toán diện tích hình phẳng và thể tích vật thể trong không gian. 
+– Hình học và Đo lường: Cung cấp những kiến thức và kĩ năng (ở mức độ suy luận logic) về các quan hệ hình học và 
+một số hình phẳng, hình kh ối quen thuộc; phương pháp đ ại số (vectơ, toạ độ) trong hình h ọc; phát tri ển trí tư ởng tượng 
+không gian; giải quyết một số vấn đề thực tiễn đơn giản gắn với Hình học và Đo lường. 
+– Thống kê và Xác su ất: Hoàn thiện khả năng thu th ập, phân loại, biểu diễn, phân tích  và xử lí dữ liệu thống kê; sử 
+dụng các công cụ phân tích dữ liệu thống kê thông qua các số đặc trưng đo xu thế trung tâm và đo mức độ phân tán cho mẫu 
+số liệu không ghép nhóm và ghép nhóm ; sử dụng các quy luật thống kê trong thực tiễn; nhận biết các mô hình ngẫu nhiên, 
+các khái niệm cơ bản của xác suất và ý nghĩa của xác suất trong thực tiễn.  
+c) Góp phần giúp học sinh có những hiểu biết tương đối tổng quát về các ngành nghề gắn với môn Toán và giá trị của 
+nó; làm cơ sở cho định hướng nghề nghiệp sau trung học phổ thông; có đủ năng lực tối thiểu để tự tìm hiểu những vấn đề 
+liên quan đến toán học trong suốt cuộc đời.  
+IV. YÊU CẦU CẦN ĐẠT 
+1. Yêu cầu cần đạt về phẩm chất chủ yếu và năng lực chung  
+Môn Toán góp phần hình thành và phát triển ở học sinh các phẩm chất chủ yếu và năng lực chung theo các mức độ phù 
+hợp với môn học, cấp học đã được quy định tại Chương trình tổng thể.  
+2. Yêu cầu cần đạt về năng lực đặc thù 
+Môn Toán góp phần hình thành và phát triển cho học sinh năng lực toán học (biểu hiện tập trung nhất của năng lực tính 
+toán) bao gồm các thành ph ần cốt lõi sau: năng lực tư duy và l ập luận toán học; năng lực mô hình hoá toán h ọc; năng lực 
+giải quyết vấn đề toán học; năng lực giao tiếp toán học; năng lực sử dụng công cụ, phương tiện học toán. 
+Biểu hiện cụ thể của năng lực toán học và yêu cầu cần đạt cho từng cấp học được thể hiện trong bảng sau: 
+
+
+
+===== PAGE 10 =====
+10 
+Thành phần năng lực Cấp tiểu học Cấp trung học cơ sở Cấp trung học phổ thông 
+Năng lực tư duy và l ập luận 
+toán học thể hiện qua việc: 
+   
+– Thực hiện được các thao tác 
+tư duy như: so sánh, phân tích, 
+tổng h ợp, đ ặc b iệt hoá, khái 
+quát hoá, tương t ự; quy n ạp, 
+diễn dịch. 
+ 
+– Thực hiện được các thao tác 
+tư duy ( ở mức độ đơn giản), 
+đặc bi ệt bi ết quan sát, tìm 
+kiếm sự tương đồng và khác 
+biệt trong nh ững tình hu ống 
+quen thuộc và mô tả được kết 
+quả của việc quan sát. 
+– Thực h iện đư ợc các thao 
+tác tư duy, đặc biệt biết quan 
+sát, giải thích đư ợc sự tương 
+đồng và khác biệt trong nhiều 
+tình huống và th ể hiện được 
+kết quả của việc quan sát. 
+– Thực hi ện được tương đ ối 
+thành th ạo các thao tác tư 
+duy, đặc biệt phát hi ện được 
+sự tương đồng và khác bi ệt 
+trong những tình huống tương 
+đối ph ức t ạp và lí gi ải đư ợc 
+kết quả của việc quan sát. 
+– Chỉ ra đư ợc ch ứng cứ, lí l ẽ 
+và bi ết l ập lu ận h ợp lí trư ớc 
+khi kết luận. 
+ 
+– Nêu đư ợc ch ứng c ứ, lí l ẽ 
+và biết lập luận hợp lí trư ớc 
+khi kết luận. 
+ 
+– Thực hi ện đư ợc vi ệc l ập 
+luận hợp lí khi giải quyết vấn 
+đề. 
+ 
+– Sử dụng được các phương 
+pháp l ập lu ận, quy n ạp và 
+suy di ễn đ ể nhìn ra nh ững 
+cách th ức khác nhau trong 
+việc giải quyết vấn đề. 
+– Giải thích ho ặc đi ều ch ỉnh 
+được cách th ức giải quyết vấn 
+đề về phương diện toán học. 
+– Nêu và trả lời được câu hỏi 
+khi l ập lu ận, gi ải quy ết v ấn 
+đề. Bư ớc đ ầu ch ỉ ra đư ợc 
+chứng c ứ và l ập lu ận có cơ  
+sở, có lí lẽ trước khi kết luận. 
+– Nêu và trả lời được câu hỏi 
+khi l ập lu ận, gi ải quy ết v ấn 
+đề. Ch ứng minh đư ợc m ệnh 
+đề toán học không quá ph ức 
+tạp. 
+– Nêu và trả lời được câu hỏi 
+khi l ập lu ận, gi ải quy ết v ấn 
+đề. Gi ải thích, ch ứng minh, 
+điều ch ỉnh đư ợc gi ải pháp  
+thực hi ện v ề phương di ện 
+toán học. 
+ 
+
+
+
+===== PAGE 11 =====
+11 
+Thành phần năng lực Cấp tiểu học Cấp trung học cơ sở Cấp trung học phổ thông 
+Năng l ực mô hình hoá toán 
+học thể hiện qua việc: 
+   
+– Xác định được mô hình toán 
+học (gồm công th ức, phương 
+trình, bảng biểu, đồ thị,...) cho 
+tình huống xuất hiện trong bài 
+toán thực tiễn.  
+– Lựa ch ọn đư ợc các phép 
+toán, công th ức s ố học, sơ 
+đồ, b ảng bi ểu, hình v ẽ để 
+trình bày, di ễn đạt (nói ho ặc 
+viết) đư ợc các n ội dung, ý 
+tưởng c ủa tình huống xu ất 
+hiện trong bài toán th ực tiễn 
+đơn giản.  
+– Sử dụng được các mô hình 
+toán h ọc (g ồm công th ức 
+toán h ọc, sơ đ ồ, b ảng bi ểu, 
+hình v ẽ, phương tr ình, hình 
+biểu di ễn,...) đ ể mô t ả tình 
+huống xuất hiện trong một số 
+bài toán th ực tiễn không quá 
+phức tạp. 
+– Thiết l ập đư ợc mô hình 
+toán h ọc (g ồm công th ức, 
+phương trình, sơ đồ, hình vẽ, 
+bảng biểu, đồ thị,...) để mô tả 
+tình hu ống đ ặt ra trong m ột 
+số bài toán thực tiễn. 
+– Giải quy ết đư ợc nh ững v ấn 
+đề toán h ọc trong mô hình 
+được thiết lập. 
+– Giải quyết được những bài 
+toán xuất hiện từ sự lựa chọn 
+trên. 
+– Giải quyết được những vấn 
+đề toán h ọc trong mô hình 
+được thiết lập. 
+– Giải quyết được những vấn 
+đề toán h ọc trong mô hình 
+được thiết lập. 
+– Thể hiện và đánh giá đư ợc 
+lời giải trong ngữ cảnh thực tế 
+và c ải ti ến đ ược mô hình n ếu 
+cách gi ải quy ết không phù 
+hợp. 
+ 
+– Nêu đư ợc câu tr ả lời cho 
+tình hu ống xu ất hi ện trong 
+bài toán thực tiễn. 
+– Thể hiện được lời giải toán 
+học vào ng ữ cảnh th ực ti ễn 
+và làm quen v ới vi ệc ki ểm 
+chứng tính đúng đ ắn của lời 
+giải. 
+– Lí giải được tính đúng đắn 
+của l ời gi ải (nh ững k ết lu ận 
+thu đư ợc t ừ các tính toán là 
+có ý nghĩa, phù hợp với thực 
+tiễn hay không). Đ ặc bi ệt, 
+nhận bi ết đư ợc cách đơn 
+giản hoá, cách đi ều ch ỉnh 
+những yêu cầu thực tiễn (xấp 
+xỉ, b ổ sung thêm gi ả thiết, 
+
+
+
+===== PAGE 12 =====
+12 
+Thành phần năng lực Cấp tiểu học Cấp trung học cơ sở Cấp trung học phổ thông 
+tổng quát hoá,...) đ ể đưa đến 
+những bài toán giải được. 
+Năng l ực gi ải quy ết v ấn đ ề 
+toán học thể hiện qua việc: 
+   
+– Nhận bi ết, phát hi ện được 
+vấn đ ề cần gi ải quy ết b ằng 
+toán học. 
+– Nhận biết được vấn đề cần 
+giải quyết và nêu được thành 
+câu hỏi. 
+– Phát hiện được vấn đề cần 
+giải quyết. 
+– Xác định được tình hu ống 
+có vấn đề; thu thập, sắp xếp, 
+giải thích và đánh giá đư ợc 
+độ tin cậy của thông tin; chia 
+sẻ sự am hi ểu v ấn đ ề với 
+người khác. 
+– Lựa chọn, đề xuất được cách 
+thức, gi ải pháp gi ải quy ết  
+vấn đề. 
+– Nêu đư ợc cách th ức gi ải 
+quyết vấn đề. 
+– Xác đ ịnh đư ợc cách th ức, 
+giải pháp giải quyết vấn đề. 
+– Lựa chọn và thiết lập được 
+cách th ức, quy trình gi ải 
+quyết vấn đề. 
+– Sử dụng được các kiến thức, 
+kĩ năng toán h ọc tương thích 
+(bao g ồm các công c ụ và  
+thuật toán) đ ể giải quy ết v ấn 
+đề đặt ra. 
+– Thực hi ện và trình bày 
+được cách th ức gi ải quy ết 
+vấn đề ở mức độ đơn giản. 
+– Sử dụng đư ợc các ki ến 
+thức, kĩ năng toán học tương 
+thích để giải quyết vấn đề. 
+– Thực hi ện và trình bày 
+được gi ải pháp gi ải quy ết 
+vấn đề. 
+
+
+
+===== PAGE 13 =====
+13 
+Thành phần năng lực Cấp tiểu học Cấp trung học cơ sở Cấp trung học phổ thông 
+– Đánh giá đư ợc giải pháp đề 
+ra và khái quát hoá đư ợc cho 
+vấn đề tương tự. 
+– Kiểm tra được giải pháp đã 
+thực hiện. 
+– Giải thích đư ợc gi ải pháp 
+đã thực hiện. 
+– Đánh giá đư ợc gi ải pháp 
+đã thực hiện; phản ánh đư ợc 
+giá tr ị của gi ải pháp; khái 
+quát hoá đư ợc cho v ấn đ ề 
+tương tự. 
+Năng l ực gia o ti ếp toán h ọc 
+thể hiện qua việc: 
+   
+– Nghe hi ểu, đ ọc hi ểu và ghi 
+chép đư ợc các thông tin toán 
+học c ần thi ết đư ợc trình bày 
+dưới d ạng văn b ản toán h ọc 
+hay do ngư ời khác nói ho ặc 
+viết ra. 
+ 
+– Nghe hiểu, đọc hiểu và ghi 
+chép ( tóm t ắt) được các 
+thông tin toá n học trọng tâm 
+trong n ội dung văn b ản hay 
+do ngư ời khác thông báo ( ở 
+mức đ ộ đơn gi ản), t ừ đó 
+nhận bi ết đư ợc v ấn đ ề cần 
+giải quyết. 
+ 
+– Nghe hiểu, đọc hiểu và ghi 
+chép (tóm tắt) được các thông 
+tin toán học cơ bản, trọng tâm 
+trong văn b ản ( ở dạng văn 
+bản nói  hoặc vi ết). T ừ đó 
+phân tích, lựa chọn, trích xuất 
+được các thông tin toán h ọc 
+cần thiết từ văn bản ( ở dạng 
+văn bản nói hoặc viết). 
+– Nghe hiểu, đọc hiểu và ghi 
+chép (tóm t ắt) đư ợc tương 
+đối thành th ạo các thông tin 
+toán h ọc cơ b ản, tr ọng tâm 
+trong văn b ản nói hoặc viết. 
+Từ đó phân tích, l ựa ch ọn, 
+trích xuất được các thông tin 
+toán học cần thiết từ văn bản 
+nói hoặc viết. 
+– Trình bày, diễn đạt (nói hoặc 
+viết) đư ợc các n ội dung, ý 
+tưởng, gi ải pháp toán h ọc 
+trong s ự tương tác v ới ngư ời 
+khác (với yêu cầu thích hợp về 
+sự đầy đủ, chính xác). 
+– Trình bày, di ễn đ ạt (nói 
+hoặc viết) được các nội dung, 
+ý t ưởng, gi ải pháp toán h ọc 
+trong sự tương tác với người 
+khác (chưa yêu cầu phải diễn 
+đạt đ ầy đ ủ, chính xác). Nêu 
+– Thực hiện đư ợc việc trình 
+bày, di ễn đ ạt, nêu câu h ỏi, 
+thảo luận, tranh lu ận các nội 
+dung, ý tưởng, giải pháp toán 
+học trong s ự tương tác v ới 
+người khác (ở mức tương đối 
+– Lí giải được (một cách hợp 
+lí) vi ệc trình bày, di ễn đ ạt, 
+thảo luận, tranh lu ận các nội 
+dung, ý tưởng, giải pháp toán 
+học trong s ự tương tác v ới 
+người khác. 
+
+
+
+===== PAGE 14 =====
+14 
+Thành phần năng lực Cấp tiểu học Cấp trung học cơ sở Cấp trung học phổ thông 
+ và trả lời được câu hỏi khi lập 
+luận, giải quyết vấn đề. 
+đầy đủ, chính xác). 
+ 
+ 
+– Sử dụng được hiệu quả ngôn 
+ngữ toán học (chữ số, chữ cái,  
+kí hi ệu, bi ểu đ ồ, đ ồ thị, các 
+liên k ết logic,...) k ết h ợp v ới 
+ngôn ng ữ thông thư ờng ho ặc 
+động t ác hình th ể khi trình 
+bày, giải thích và đánh giá các 
+ý t ưởng toán h ọc trong s ự 
+tương tác ( thảo lu ận, tranh 
+luận) với người khác. 
+– Sử dụng đư ợc ngôn ng ữ 
+toán h ọc k ết h ợp v ới ngôn 
+ngữ thông thư ờng, đ ộng tác 
+hình thể để biểu đ ạt các n ội 
+dung toán h ọc ở những tình 
+huống đơn giản. 
+ 
+– Sử dụng đư ợc ngôn ng ữ 
+toán h ọc k ết h ợp v ới ngôn 
+ngữ thông thư ờng đ ể biểu 
+đạt các n ội dung toán h ọc 
+cũng như thể hiện chứng cứ, 
+cách th ức và k ết qu ả lập 
+luận. 
+ 
+– Sử dụng đư ợc m ột cách 
+hợp lí ngôn ngữ toán học kết 
+hợp v ới ngôn ng ữ thông 
+thường để biểu đạt cách suy 
+nghĩ, l ập lu ận, ch ứng minh 
+các khẳng định toán học. 
+ 
+– Thể hiện được sự tự tin khi 
+trình bày, di ễn đ ạt, nêu câu 
+hỏi, thảo lu ận, tranh lu ận các 
+nội dung, ý t ưởng liên quan 
+đến toán học. 
+– Thể hiện được sự tự tin khi 
+trả lời câu hỏi, khi trình bày, 
+thảo luận các nội dung toán học 
+ở những tình huống đơn giản. 
+– Thể hiện được sự tự tin khi 
+trình bày, diễn đ ạt, thảo luận, 
+tranh luận, giải thích các n ội 
+dung toán học trong một số tình 
+huống không quá phức tạp. 
+– Thể hiện được sự tự tin khi 
+trình bày, diễn đạt, thảo luận, 
+tranh luận, giải thích các n ội 
+dung toán học trong nhiều tình 
+huống không quá phức tạp. 
+Năng l ực sử dụng công c ụ, 
+phương tiện học toán thể hiện 
+qua việc: 
+   
+– Nhận bi ết đư ợc tên g ọi, tác 
+dụng, quy cách s ử dụng, cách 
+– Nhận biết được tên gọi, tác 
+dụng, quy cách s ử dụng, 
+– Nhận biết được tên gọi, tác 
+dụng, quy cách s ử dụng, 
+– Nhận bi ết đư ợc tác d ụng, 
+quy cách s ử dụng, cách th ức 
+
+
+
+===== PAGE 15 =====
+15 
+Thành phần năng lực Cấp tiểu học Cấp trung học cơ sở Cấp trung học phổ thông 
+thức b ảo qu ản các đ ồ dùng, 
+phương ti ện tr ực quan thông 
+thường, phương ti ện khoa h ọc 
+công nghệ (đặc biệt là phương 
+tiện s ử dụng công ngh ệ thông 
+tin), phục vụ cho việc học Toán. 
+cách thức bảo quản các công 
+cụ, phương tiện học toán đơn 
+giản (que tính, thẻ số, thước, 
+compa, êke, các mô hình 
+hình ph ẳng và hình kh ối 
+quen thuộc,...) 
+cách thức bảo quản các công 
+cụ, phương ti ện h ọc toán 
+(mô hình hình h ọc phẳng và 
+không gian, thư ớc đo góc, 
+thước cu ộn, tranh ảnh, bi ểu 
+đồ,...). 
+bảo quản các công cụ, phương 
+tiện học toán (bảng tổng kết về 
+các dạng hàm số, mô hình góc 
+và cung lượng giác, mô hình 
+các hình khối, bộ dụng cụ tạo 
+mặt tròn xoay,...). 
+– Sử dụng đư ợc các công c ụ, 
+phương tiện học toán, đặc biệt 
+là phương ti ện khoa h ọc công 
+nghệ để tìm tòi, khám phá và 
+giải quy ết v ấn đ ề toán h ọc 
+(phù h ợp v ới đ ặc đi ểm nh ận 
+thức lứa tuổi). 
+– Sử dụng được các công cụ, 
+phương tiện học toán để thực 
+hiện những nhiệm vụ học tập 
+toán đơn giản. 
+– Làm quen v ới máy tính 
+cầm tay, phương ti ện công 
+nghệ thông tin h ỗ trợ học 
+tập. 
+– Trình bày được cách s ử 
+dụng công c ụ, phương ti ện 
+học toán đ ể thực hiện nhiệm 
+vụ học t ập ho ặc đ ể diễn t ả 
+những lập luận, chứng minh 
+toán học. 
+– Sử dụng đư ợc máy tính 
+cầm tay, m ột s ố phần m ềm 
+tin học và phương ti ện công 
+nghệ hỗ trợ học tập. 
+– Sử dụng đư ợc máy tính 
+cầm tay, ph ần mềm, phương 
+tiện công ngh ệ, ngu ồn tài 
+nguyên trên m ạng Internet 
+để giải quyết một số vấn đề 
+toán học. 
+– Nhận biết được các ưu điểm, 
+hạn ch ế của nh ững công c ụ, 
+phương tiện hỗ trợ để có cách 
+sử dụng hợp lí. 
+– Nhận biết được (bước đầu) 
+một số ưu điểm, hạn chế của 
+những công c ụ, phương ti ện 
+hỗ trợ để có cách s ử dụng 
+hợp lí. 
+– Chỉ ra đư ợc các ưu đi ểm, 
+hạn ch ế của nh ững công c ụ, 
+phương ti ện h ỗ trợ để có 
+cách sử dụng hợp lí. 
+– Đánh giá đư ợc cách th ức 
+sử dụng các công cụ, phương 
+tiện h ọc toán trong tìm tòi, 
+khám phá và gi ải quyết v ấn 
+đề toán học. 
+ 
+
+
+
+===== PAGE 16 =====
+16 
+V. NỘI DUNG GIÁO DỤC 
+1. Nội dung khái quát 
+a) Nội dung cốt lõi 
+Nội dung môn Toán được tích hợp xoay quanh ba m ạch kiến thức: Số, Đại số và Một số yếu tố giải tích; Hình học và 
+Đo lường; Thống kê và Xác suất. 
+Số, Đại số và Một số yếu tố giải tích là cơ sở cho tất cả các nghiên cứu sâu hơn v ề toán học, nhằm hình thành nh ững 
+công cụ toán học để giải quyết các vấn đề của toán học và các lĩnh vực khoa học khác có liên quan ; tạo cho học sinh khả 
+năng suy luận suy diễn, góp phần phát triển tư duy logic, kh ả năng sáng tạo toán học và hình thành kh ả năng sử dụng các 
+thuật toán. Hàm số cũng là công c ụ quan trọng cho vi ệc xây d ựng các mô hình toán h ọc của các quá trình và hi ện tượng 
+trong thế giới thực.  
+Hình học và Đo lường là một trong những thành phần quan trọng của giáo dục toán học, rất cần thiết cho học sinh trong 
+việc tiếp thu các kiến thức về không gian và phát triển các kĩ năng thực tế thiết yếu. Hình học và Đo lường hình thành những 
+công cụ nhằm mô tả các đối tượng, thực thể của thế giới xung quanh; cung cấp cho học sinh kiến thức, kĩ năng toán học cơ 
+bản về Hình học, Đo lường (với các đại lượng đo thông dụng) và tạo cho học sinh khả năng suy luận, kĩ năng thực hiện các 
+chứng minh toán học, góp phần vào phát triển tư duy logic, kh ả năng sáng tạo toán học, trí tưởng tượng không gian và tính 
+trực giác. Đồng thời, Hình học còn góp phần giáo dục thẩm mĩ và nâng cao văn hoá toán học cho học sinh. Việc gắn kết Đo 
+lường và Hình học sẽ tăng cường tính trực quan, thực tiễn của việc dạy học môn Toán.  
+Thống kê và Xác su ất là một thành phần bắt buộc của giáo dục toán học trong nhà trư ờng, góp phần tăng cường tính 
+ứng dụng và giá trị thiết thực của giáo dục toán học. Thống kê và Xác suất tạo cho học sinh khả năng nhận thức và phân tích 
+các thông tin đư ợc thể hiện dưới nhiều hình th ức khác nhau, hi ểu bản chất xác su ất của nhiều sự phụ thuộc trong th ực tế, 
+hình thành s ự hiểu biết về vai trò của thống kê như là m ột nguồn thông tin quan tr ọng về mặt xã h ội, biết áp d ụng tư duy 
+thống kê để phân tích dữ liệu. Từ đó, nâng cao sự hiểu biết và phương pháp nghiên cứu thế giới hiện đại cho học sinh. 
+Ngoài ra, chương trình môn Toán ở từng cấp cũng dành thời lượng thích đáng để tiến hành các hoạt động thực hành và 
+trải nghiệm cho học sinh chẳng hạn như: Tiến hành các đề tài, dự án học tập về Toán, đặc biệt là các đề tài và các dự án về 
+
+
+
+===== PAGE 17 =====
+17 
+ứng dụng toán học trong thực tiễn; tổ chức các trò chơi học toán, câu lạc bộ toán học, diễn đàn, hội thảo, cuộc thi về Toán; 
+ra báo tường (hoặc nội san) về Toán; tham quan các cơ sở đào tạo và nghiên cứu toán học, giao lưu với học sinh có khả năng 
+và yêu thích môn Toán,... Những hoạt động đó sẽ giúp học sinh vận dụng những tri thức, kiến thức, kĩ năng, thái độ đã được 
+tích luỹ từ giáo dục toán học và những kinh nghiệm của bản thân vào thực tiễn cuộc sống m ột cách sáng tạo; phát triển cho 
+học sinh năng lực tổ chức và quản lí hoạt động, năng lực tự nhận thức và tích cực hoá bản thân; giúp học sinh bước đầu xác 
+định được năng lực, sở trường của bản thân nhằm định hướng và lựa chọn nghề nghiệp ; tạo lập một số năng lực cơ bản cho 
+người lao động tương lai và người công dân có trách nhiệm.  
+b) Chuyên đề học tập 
+Trong mỗi lớp ở giai đoạn giáo dục định hướng nghề nghiệp, học sinh (đặc biệt là những học sinh có định hướng khoa 
+học tự nhiên và công nghệ) được chọn học một số chuyên đề học tập. Các chuyên đề này nhằm:  
+– Cung cấp thêm một số kiến thức và kĩ năng toán học đáp ứng yêu cầu phân hoá sâu (ví dụ: phương pháp quy nạp toán 
+học; hệ phương trình bậc nhất ba ẩn; biến ngẫu nhiên rời rạc và các số đặc trưng của biến ngẫu nhiên rời rạc; phép biến hình 
+phẳng; vẽ kĩ thuật; một số yếu tố của lí thuyết đồ thị); tạo cơ hội cho học sinh vận dụng toán học giải quyết các vấn đề liên 
+môn và thực tiễn, góp phần hình thành cơ sở khoa học cho giáo dục STEM (ví dụ: các kiến thức về hệ phương trình bậc nhất 
+cho phép giải quyết một số bài toán vật lí về tính toán điện trở, tính cường độ dòng điện trong dòng điện không đổi,...; cân 
+bằng phản ứng trong một số bài toán hoá h ọc,...; một số bài toán sinh h ọc về nguyên phân, giảm phân,...; kiến thức về đạo 
+hàm để giải quyết một số bài toán tối ưu về khoảng cách, thời gian, kinh tế;...). 
+– Giúp học sinh hiểu sâu thêm vai trò và nh ững ứng dụng của Toán học trong thực tiễn; có những hiểu biết về các 
+ngành nghề gắn với môn Toán và giá trị của nó làm cơ sở cho định hướng nghề nghiệp sau trung học phổ thông.  
+– Tạo cơ h ội cho học sinh nh ận biết năng khiếu, sở thích, phát tri ển hứng thú và ni ềm tin trong h ọc Toán; phát tri ển 
+năng lực toán học và năng lực tìm hiểu những vấn đề có liên quan đến Toán học trong suốt cuộc đời. 
+2. Phân bố các mạch nội dung ở các lớp 
+Nội dung trình bày tường minh, kí hiệu bằng dấu “x”. 
+
+
+
+===== PAGE 18 =====
+18 
+Mạch Chủ đề 
+Lớp 
+1 2 3 4 5 6 7 8 9 10 11 12 
+SỐ, ĐẠI SỐ VÀ MỘT SỐ YẾU TỐ GIẢI TÍCH 
+Số học 
+Số tự nhiên x x x x x x       
+Số nguyên      x       
+Số hữu tỉ 
+Phân số    x x x       
+Số thập phân     x x       
+Số hữu tỉ       x      
+Số thực       x x x    
+Ước lượng và làm tròn số  x x x x x x   x    
+Tỉ số. Tỉ số phần trăm. Tỉ lệ thức và dãy tỉ số bằng nhau     x x x      
+Đại số 
+Mệnh đề          x   
+Tập hợp          x   
+Biểu thức đại số   x x   x x     
+Hàm số và đồ thị        x x x x x 
+Phương trình, hệ phương trình        x x x x  
+Bất phương trình, hệ bất phương trình         x x x  
+
+
+
+===== PAGE 19 =====
+19 
+Mạch Chủ đề 
+Lớp 
+1 2 3 4 5 6 7 8 9 10 11 12 
+Lượng giác         x x x  
+Luỹ thừa, mũ và lôgarit      x x    x  
+Dãy số, cấp số cộng, cấp số nhân     x      x  
+Đại số tổ hợp          x   
+Một số yếu tố giải tích 
+Giới hạn. Hàm số 
+liên tục 
+Giới hạn của dãy số            x  
+Giới hạn của hàm số            x  
+Hàm số liên tục            x  
+Đạo hàm           x x 
+Nguyên hàm, tích phân            x 
+HÌNH HỌC VÀ ĐO LƯỜNG 
+Hình học trực quan 
+Hình phẳng và hình khối trong thực tiễn x x x x x x x x x    
+Hình học phẳng 
+Các hình hình học cơ bản (điểm, đường thẳng, đoạn thẳng)      x       
+Góc      x  x      
+Tam giác      x x x x    
+
+
+
+===== PAGE 20 =====
+20 
+Mạch Chủ đề 
+Lớp 
+1 2 3 4 5 6 7 8 9 10 11 12 
+Tứ giác       x x x    
+Đa giác đều         x    
+Hình tròn. Đường tròn         x x   
+Ba đường conic          x   
+Hệ thức lượng trong tam giác         x x   
+Vectơ trong mặt phẳng          x   
+Phương pháp toạ độ trong mặt phẳng          x   
+Hình học không gian 
+Đường thẳng và mặt phẳng trong không gian           x  
+Quan hệ song song trong không gian. Phép chiếu song song           x  
+Quan hệ vuông góc trong không gian. Phép chiếu vuông góc           x  
+Vectơ trong không gian            x 
+Phương pháp toạ độ trong không gian            x 
+Đo lường  
+Độ dài x x x x x x  x x x x  
+Số đo góc    x  x    x  x  
+Diện tích   x x x x x x x x x x 
+
+
+
+===== PAGE 21 =====
+21 
+Mạch Chủ đề 
+Lớp 
+1 2 3 4 5 6 7 8 9 10 11 12 
+Dung tích. Thể tích  x x  x  x x x  x x 
+Khối lượng  x x x         
+Nhiệt độ   x          
+Thời gian x x x x x        
+Vận tốc     x      x  
+Tiền tệ  x x x         
+THỐNG KÊ VÀ XÁC SUẤT  
+Một số yếu tố thống kê  x x x x x x x x x x x 
+Một số yếu tố xác suất  x x x x x x x x x x x 
+HOẠT ĐỘNG THỰC HÀNH VÀ TRẢI NGHIỆM x x x x x x x x x x x x 
+3. Nội dung cụ thể và yêu cầu cần đạt ở các lớp 
+LỚP 1 
+Nội dung Yêu cầu cần đạt 
+SỐ VÀ PHÉP TÍNH 
+Số tự nhiên 
+Số tự nhiên Đếm, đ ọc, vi ết các s ố 
+trong phạm vi 100 
+– Đếm, đọc, viết được các s ố trong phạm vi 10; trong ph ạm vi 20; trong 
+phạm vi 100.  
+
+
+
+===== PAGE 22 =====
+22 
+Nội dung Yêu cầu cần đạt 
+– Nhận biết được chục và đơn vị, số tròn chục. 
+So sánh các số trong phạm 
+vi 100 
+Nhận biết được cách so sánh, x ếp thứ tự các số trong phạm vi 100 ( ở các 
+nhóm có không quá 4 số).  
+Các phép tính v ới 
+số tự nhiên 
+Phép cộng, phép trừ 
+ 
+– Nhận biết được ý nghĩa của phép cộng, phép trừ. 
+– Thực hiện được phép cộng, phép trừ (không nhớ) các số trong phạm vi 100. 
+– Làm quen với việc thực hiện tính toán trong trường hợp có hai dấu phép 
+tính cộng, trừ (theo thứ tự từ trái sang phải). 
+Tính nhẩm – Thực hiện được việc cộng, trừ nhẩm trong phạm vi 10. 
+– Thực hiện được việc cộng, trừ nhẩm các số tròn chục. 
+Thực hành gi ải quy ết v ấn 
+đề liên quan đ ến các phép 
+tính cộng, trừ 
+– Nhận biết được ý ngh ĩa thực tiễn của phép tính (cộng, trừ) thông qua 
+tranh ảnh, hình vẽ hoặc tình huống thực tiễn. 
+– Nhận biết và viết được phép tính (cộng, trừ) phù hợp với câu trả lời của 
+bài toán có lời văn và tính được kết quả đúng. 
+HÌNH HỌC VÀ ĐO LƯỜNG 
+Hình học trực quan 
+Hình phẳng  
+và hình khối 
+Quan sát, nh ận bi ết hình 
+dạng c ủa m ột s ố hình 
+phẳng và hìn h kh ối đơn 
+giản 
+– Nhận biết được vị trí, định hướng trong không gian: trên  – dưới, phải – 
+trái, trước – sau, ở giữa. 
+– Nhận d ạng được hình vuông, hình tròn, hình tam giác , hình chữ nhật 
+thông qua việc sử dụng bộ đồ dùng học tập cá nhân hoặc vật thật. 
+– Nhận dạng được khối lập phương, khối hộp chữ nhật thông qua việc sử 
+
+
+
+===== PAGE 23 =====
+23 
+Nội dung Yêu cầu cần đạt 
+dụng bộ đồ dùng học tập cá nhân hoặc vật thật. 
+Thực hành l ắp ghép, x ếp 
+hình g ắn v ới m ột s ố hình 
+phẳng và hình kh ối đơn 
+giản 
+Nhận biết và t hực hiện được việc lắp ghép, xếp hình g ắn với sử dụng bộ 
+đồ dùng học tập cá nhân hoặc vật thật. 
+ 
+Đo lường 
+Đo lường Biểu tư ợng v ề đại lư ợng 
+và đơn vị đo đại lượng 
+– Nhận biết được về “dài hơn”, “ngắn hơn”. 
+– Nhận biết được đơn vị đo độ dài: cm (xăng-ti-mét); đọc và viết được số 
+đo độ dài trong phạm vi 100cm.   
+– Nhận biết được mỗi tuần lễ có 7 ngày và tên gọi, thứ tự các ngày trong 
+tuần lễ. 
+– Nhận biết được giờ đúng trên đồng hồ.  
+Thực hành đo đại lượng – Thực hiện được việc đo và ước lượng độ dài theo đơn vị đo tự quy ước 
+(gang tay, bước chân,...). 
+– Thực hiện được việc đo độ dài bằng thước thẳng với đơn vị đo là cm. 
+– Thực hiện được việc đọc giờ đúng trên đồng hồ. 
+– Xác đ ịnh được thứ, ngày trong tu ần khi xem l ịch (lo ại l ịch t ờ hàng 
+ngày). 
+– Giải quyết được một số vấn đề thực tiễn đơn giản liên quan đ ến đo độ 
+dài, đọc giờ đúng và xem lịch (loại lịch tờ hằng ngày). 
+ 
+
+
+
+===== PAGE 24 =====
+24 
+Nội dung Yêu cầu cần đạt 
+HOẠT ĐỘNG THỰC HÀNH VÀ TRẢI NGHIỆM 
+Nhà trường tổ chức cho học sinh một số hoạt động sau và có thể bổ sung các hoạt động khác tuỳ vào điều kiện cụ thể. 
+Hoạt động 1: Thực hành ứng dụng các kiến thức toán học vào thực tiễn, chẳng hạn: 
+– Thực hành đếm, nhận biết số, thực hiện phép tính trong một số tình huống thực tiễn hằng ngày (ví dụ: đếm số bàn học và 
+số cửa sổ trong lớp học,...). 
+– Thực hành các hoạt động liên quan đến vị trí, định hướng không gian (ví dụ: xác định được một vật ở trên hoặc dưới mặt 
+bàn, một vật cao hơn hoặc thấp hơn vật khác,...). 
+– Thực hành đo và ước lượng độ dài một số đồ vật trong thực tế gắn với đơn vị đo cm; thực hành đọc giờ đúng trên đồng hồ, 
+xem lịch loại lịch tờ hằng ngày. 
+Hoạt động 2: Tổ chức các hoạt động ngoài giờ chính khoá (ví dụ: các trò chơi học toán,...) liên quan đến ôn tập, củng cố các 
+kiến thức cơ bản. 
+ 
+LỚP 2 
+Nội dung Yêu cầu cần đạt 
+SỐ VÀ PHÉP TÍNH 
+Số tự nhiên 
+Số tự nhiên Số và c ấu t ạo th ập phân 
+của một số 
+– Đếm, đọc, viết được các số trong phạm vi 1000. 
+– Nhận biết được số tròn trăm. 
+– Nhận biết được số liền trước, số liền sau của một số. 
+– Thực hiện được việc viết số thành tổng của trăm, chục, đơn vị. 
+
+
+
+===== PAGE 25 =====
+25 
+Nội dung Yêu cầu cần đạt 
+– Nhận biết được tia số và viết được số thích hợp trên tia số. 
+So sánh các số  – Nhận biết được cách so sánh hai số trong phạm vi 1000.  
+– Xác định được số lớn nhất hoặc số bé nhất trong m ột nhóm có không 
+quá 4 số (trong phạm vi 1000). 
+– Thực hi ện đư ợc vi ệc s ắp x ếp các s ố theo th ứ tự (từ bé đ ến l ớn ho ặc 
+ngược lại) trong một nhóm có không quá 4 số (trong phạm vi 1000). 
+Ước lượng số đồ vật Làm quen với việc ước lượng số đồ vật theo các nhóm 1 chục. 
+Các phép tính v ới 
+số tự nhiên 
+Phép cộng, phép trừ – Nhận biết được các thành phần của phép cộng, phép trừ. 
+– Thực hiện được phép cộng, phép trừ (không nhớ, có nhớ không quá một 
+lượt) các số trong phạm vi 1000. 
+– Thực hiện được việc tính toán trong trư ờng hợp có hai d ấu phép tính 
+cộng, trừ (theo thứ tự từ trái sang phải). 
+Phép nhân, phép chia – Nhận biết được ý nghĩa của phép nhân, phép chia. 
+– Nhận biết được các thành phần của phép nhân, phép chia. 
+– Vận dụng được bảng nhân 2 và bảng nhân 5 trong thực hành tính. 
+– Vận dụng được bảng chia 2 và bảng chia 5 trong thực hành tính. 
+Tính nhẩm  – Thực hiện được việc cộng, trừ nhẩm trong phạm vi 20.  
+– Thực hiện được việc cộng, trừ nhẩm các s ố tròn chục, tròn tr ăm trong 
+phạm vi 1000. 
+ Thực hành gi ải quy ết v ấn 
+đề liên quan đ ến các phép 
+– Nhận biết ý nghĩa thực tiễn của phép tính (cộng, trừ, nhân, chia) thông 
+qua tranh ảnh, hình vẽ hoặc tình huống thực tiễn. 
+
+
+
+===== PAGE 26 =====
+26 
+Nội dung Yêu cầu cần đạt 
+tính đã học – Giải quyết được một số vấn đề gắn với việc giải các bài toán có m ột 
+bước tính (trong ph ạm vi các s ố và phép tính đ ã h ọc) liên quan đ ến ý 
+nghĩa thực tế của phép tính (ví d ụ: bài toán v ề thêm, bớt một số đơn vị; 
+bài toán về nhiều hơn, ít hơn một số đơn vị). 
+HÌNH HỌC VÀ ĐO LƯỜNG 
+Hình học trực quan 
+Hình phẳng  
+và hình khối 
+Quan sát, nh ận biết, mô t ả 
+hình dạng của một số hình 
+phẳng và hình kh ối đơn 
+giản 
+– Nhận biết được điểm, đoạn thẳng, đường cong, đường thẳng, đường gấp 
+khúc, ba điểm thẳng hàng thông qua hình ảnh trực quan.  
+– Nhận dạng được hình tứ giác thông qua vi ệc sử dụng bộ đồ dùng học 
+tập cá nhân hoặc vật thật.  
+– Nhận dạng được khối trụ, khối cầu thông qua vi ệc sử dụng bộ đồ dùng 
+học tập cá nhân hoặc vật thật. 
+Thực hành đo, v ẽ, l ắp 
+ghép, tạo hình gắn với một 
+số hình phẳng và hình khối 
+đã học  
+– Thực hiện được việc vẽ đoạn thẳng có độ dài cho trước. 
+– Nhận biết và thực hiện được việc gấp, cắt, ghép, xếp và tạo hình gắn với 
+việc sử dụng bộ đồ dùng học tập cá nhân hoặc vật thật. 
+– Giải quyết được một số vấn đề thực tiễn đơn gi ản liên quan đ ến hình 
+phẳng và hình khối đã học. 
+Đo lường 
+Đo lường Biểu tượng về đại lượng và 
+đơn vị đo đại lượng 
+– Nhận biết được về “nặng hơn”, “nhẹ hơn”. 
+– Nhận biết được đơn vị đo khối lượng: kg (ki-lô-gam); đọc và viết được 
+số đo khối lượng trong phạm vi 1000kg. 
+– Nhận biết được đơn vị đo dung tích: l (lít); đọc và viết được số đo dung 
+
+
+
+===== PAGE 27 =====
+27 
+Nội dung Yêu cầu cần đạt 
+tích trong phạm vi 1000 lít. 
+– Nhận bi ết được các đơn v ị đo đ ộ dài dm (đề-xi-mét), m  (mét), km  
+(ki-lô-mét) và quan hệ giữa các đơn vị đo độ dài đã học.  
+– Nhận biết được một ngày có 24 giờ; một giờ có 60 phút.  
+– Nhận biết được số ngày trong tháng, ngày trong tháng (ví d ụ: tháng Ba 
+có 31 ngày; sinh nhật Bác Hồ là ngày 19 tháng 5). 
+– Nhận biết được tiền Việt Nam thông qua hình ảnh một số tờ tiền. 
+Thực hành đo đại lượng – Sử dụng được một số dụng cụ thông dụng (một số loại cân thông dụng, 
+thước thẳng có chia v ạch đến xăng-ti-mét,...) để thực hành cân, đo, đong, 
+đếm. 
+– Đọc được giờ trên đồng hồ khi kim phút chỉ số 3, số 6. 
+Tính toán và ước lượng với 
+các số đo đại lượng 
+ 
+– Thực hiện được việc chuyển đổi và tính toán v ới các số đo độ dài, khối 
+lượng, dung tích đã học.  
+– Thực hiện được việc ước lượng các số đo trong một số trường hợp đơn 
+giản (ví dụ: cột cờ trường em cao khoảng 6m, cửa ra vào của lớp học cao 
+khoảng 2m,...). 
+– Tính được độ dài đường gấp khúc khi biết độ dài các cạnh. 
+– Giải quyết được một số vấn đề thực tiễn liên quan đến đo lường các đại 
+lượng đã học. 
+MỘT SỐ YẾU TỐ THỐNG KÊ VÀ XÁC SUẤT 
+Một số yếu tố thống kê 
+
+
+
+===== PAGE 28 =====
+28 
+Nội dung Yêu cầu cần đạt 
+Một số yếu tố  
+thống kê 
+Thu th ập, phân lo ại, s ắp 
+xếp các số liệu  
+Làm quen với việc thu thập, phân loại, kiểm đếm các đối t ượng thống kê 
+(trong một số tình huống đơn giản). 
+Đọc biểu đồ tranh Đọc và mô tả được các số liệu ở dạng biểu đồ tranh. 
+Nhận xét v ề các s ố liệu 
+trên biểu đồ tranh 
+Nêu được một số nhận xét đơn giản từ biểu đồ tranh. 
+Một số yếu tố xác suất 
+Một s ố yếu t ố xác 
+suất 
+Làm quen v ới các kh ả 
+năng xảy ra (có tính ng ẫu 
+nhiên) của một sự kiện 
+Làm quen với việc mô tả những hiện tượng liên quan tới các thuật ngữ: có 
+thể, chắc chắn, không thể , thông qua m ột vài thí nghi ệm, trò chơi, hoặc 
+xuất phát từ thực tiễn.  
+HOẠT ĐỘNG THỰC HÀNH VÀ TRẢI NGHIỆM 
+Nhà trường tổ chức cho học sinh một số hoạt động sau và có thể bổ sung các hoạt động khác tuỳ vào điều kiện cụ thể. 
+Hoạt động 1: Thực hành ứng dụng các kiến thức toán học vào thực tiễn, chẳng hạn: 
+– Thực hành tính toán, đo lường và ước lượng độ dài, khối lượng, dung tích một số đồ vật trong thực tiễn; thực hành đọc giờ 
+trên đồng hồ, xem lịch; thực hành sắp xếp thời gian biểu học tập và sinh hoạt của cá nhân hằng ngày, trong tuần,... 
+– Thực hành thu thập, phân loại, ghi chép, kiểm đếm một số đối tượng thống kê trong trường, lớp. 
+Hoạt động 2: Tổ chức các ho ạt động ngoài gi ờ chính khoá (ví d ụ: trò ch ơi học toán ho ặc các ho ạt động “Học vui – Vui 
+học”,...) liên quan đến ôn tập, củng cố các kiến thức cơ bản. 
+ 
+ 
+ 
+
+
+
+===== PAGE 29 =====
+29 
+LỚP 3 
+Nội dung Yêu cầu cần đạt 
+SỐ VÀ PHÉP TÍNH 
+Số tự nhiên 
+Số tự nhiên Số và cấu tạo thập phân 
+của một số 
+– Đọc, viết được các số trong phạm vi 10 000; trong phạm vi 100 000. 
+– Nhận biết được số tròn nghìn, tròn mười nghìn. 
+– Nhận biết được cấu tạo thập phân của một số. 
+– Nhận biết được chữ số La Mã và vi ết được các số tự nhiên trong phạm 
+vi 20 bằng cách sử dụng chữ số La Mã. 
+So sánh các số  – Nhận biết được cách so sánh hai số trong phạm vi 100 000.  
+– Xác định được số lớn nhất hoặc số bé nhất trong m ột nhóm có không 
+quá 4 số (trong phạm vi 100 000). 
+– Thực hi ện đư ợc vi ệc s ắp x ếp các s ố theo th ứ tự (từ bé đ ến l ớn ho ặc 
+ngược lại) trong một nhóm có không quá 4 số (trong phạm vi 100 000). 
+Làm tròn số Làm quen v ới việc làm tròn s ố đến tròn ch ục, tròn tr ăm, tròn nghìn, tròn 
+mười nghìn (ví dụ: làm tròn số 1234 đến hàng chục thì được số 1230). 
+Các phép tính v ới 
+số tự nhiên 
+Phép cộng, phép trừ – Thực hi ện được phép c ộng, phép trừ các số có đến 5 ch ữ số (có nhớ 
+không quá hai lượt và không liên tiếp).  
+– Nhận biết được tính chất giao hoán, tính ch ất kết hợp của phép cộng và 
+mối quan hệ giữa phép cộng với phép trừ trong thực hành tính. 
+Phép nhân, phép chia – Vận dụng được các bảng nhân, bảng chia 2, 3,..., 9 trong thực hành tính. 
+
+
+
+===== PAGE 30 =====
+30 
+Nội dung Yêu cầu cần đạt 
+– Thực hiện được phép nhân với số có một chữ số (có nhớ không quá hai 
+lượt và không liên tiếp). 
+– Thực hiện được phép chia cho số có một chữ số. 
+– Nhận biết và thực hiện được phép chia hết và phép chia có dư. 
+– Nhận biết được tính chất giao hoán, tính ch ất kết hợp của phép nhân và 
+mối quan hệ giữa phép nhân với phép chia trong thực hành tính. 
+Tính nhẩm  Thực hi ện đư ợc c ộng, tr ừ, nhân, chia nh ẩm tron g nh ững trư ờng h ợp  
+đơn giản. 
+Biểu thức số  – Làm quen với biểu thức số. 
+– Tính được giá trị của biểu thức số có đến hai dấu phép tính và không có 
+dấu ngoặc. 
+– Tính được giá tr ị của biểu thức số có đến hai d ấu phép tính và có d ấu 
+ngoặc theo nguyên tắc thực hiện trong dấu ngoặc trước. 
+– Xác định được thành phần chưa biết của phép tính thông qua các giá tr ị 
+đã biết. 
+ Thực hành gi ải quy ết v ấn 
+đề liên quan đ ến các phép 
+tính đã học 
+Giải quyết được một số vấn đề gắn với việc giải các bài toán có đ ến hai 
+bước t ính (trong ph ạm vi các s ố và phép tính đ ã h ọc) liên quan đ ến ý 
+nghĩa thực tế của phép tính; liên quan đến thành phần và kết quả của phép 
+tính; liên quan đ ến các mối quan hệ so sánh trực tiếp và đơn gi ản (chẳng 
+hạn: gấp một số lên một số lần, giảm một số đi một số lần, so sánh số lớn 
+gấp mấy lần số bé).  
+
+
+
+===== PAGE 31 =====
+31 
+Nội dung Yêu cầu cần đạt 
+Phân số 
+Phân số Làm quen với phân số – Nhận biết được về 1 1 1; ;...;2 3 9  
+thông qua các hình ảnh trực quan. 
+– Xác đ ịnh đư ợc 1 1 1; ;...;2 3 9  
+của m ột nhóm đ ồ vật (đ ối tư ợng) b ằng vi ệc 
+chia thành các phần đều nhau. 
+HÌNH HỌC VÀ ĐO LƯỜNG 
+Hình học trực quan 
+Hình ph ẳng và 
+hình khối 
+Quan sát, nh ận biết, mô t ả 
+hình dạng và đặc điểm của 
+một số hình phẳng và hình 
+khối  
+đơn giản 
+– Nhận biết được điểm ở giữa, trung điểm của đoạn thẳng. 
+– Nhận biết được góc, góc vuông, góc không vuông.  
+– Nhận biết được tam giác, tứ giác. 
+– Nhận biết được một số yếu tố cơ bản như đỉnh, cạnh, góc của hình chữ 
+nhật, hình vuông; tâm, bán kính, đường kính của hình tròn.  
+– Nhận biết được một số yếu tố cơ bản như đỉnh, cạnh, mặt của khối lập 
+phương, khối hộp chữ nhật. 
+Thực hành đo, v ẽ, l ắp 
+ghép, tạo hình gắn với một 
+số hình phẳng và hình khối 
+đã học  
+–  Thực hiện được việc vẽ góc vuông, đường tròn, vẽ trang trí. 
+– Sử dụng được êke để kiểm tra góc vuông, sử dụng được compa để vẽ 
+đường tròn. 
+–  Thực hiện được việc vẽ hình vuông, hình chữ nhật bằng lưới ô vuông.  
+– Giải quyết được một số vấn đề liên quan đến gấp, cắt, ghép, xếp, vẽ và 
+tạo hình trang trí. 
+
+
+
+===== PAGE 32 =====
+32 
+Nội dung Yêu cầu cần đạt 
+Đo lường 
+Đo lường Biểu tượng về đại lượng và 
+đơn vị đo đại lượng 
+– Nhận biết được “diện tích” thông qua một số biểu tượng cụ thể. 
+– Nhận biết được đơn vị đo diện tích: cm2 (xăng-ti-mét vuông).  
+– Nhận biết được đơn vị đo độ dài: mm (mi-li-mét); quan hệ giữa các đơn 
+vị m, dm, cm và mm.  
+– Nhận biết được đơn vị đo khối lượng: g (gam); quan hệ giữa g và kg. 
+– Nhận biết được đơn vị đo dung tích: ml (mi-li-lít); quan hệ giữa l và ml. 
+– Nhận biết được đơn vị đo nhiệt độ (oC). 
+– Nhận bi ết được m ệnh giá c ủa các t ờ tiền Việt Nam  (trong ph ạm vi        
+100 000 đồng); nhận biết được tờ tiền hai trăm ngh ìn đồng và năm trăm 
+nghìn đồng (không yêu cầu học sinh đọc, viết số chỉ mệnh giá). 
+– Nhận biết được tháng trong năm. 
+Thực hành đo đại lượng – Sử dụng được một số dụng cụ thông dụng (một số loại cân thông dụng, 
+thước thẳng có chia vạch đến mi-li-mét, nhiệt kế,...) để thực hành cân, đo, 
+đong, đếm. 
+– Đọc được giờ chính xác đến 5 phút và từng phút trên đồng hồ. 
+Tính toán và ước lượng với 
+các số đo đại lượng 
+ 
+– Thực hiện được việc chuyển đổi và tính toán v ới các số đo độ dài (mm, 
+cm, dm, m, km); diện tích (cm2); khối lượng (g, kg); dung tích (ml, l); thời 
+gian (phút, giờ, ngày, tuần lễ, tháng, năm); tiền Việt Nam đã học. 
+– Tính được chu vi c ủa hình tam giác, hình tứ giác, hình chữ nhật, hình 
+vuông khi biết độ dài các cạnh. 
+
+
+
+===== PAGE 33 =====
+33 
+Nội dung Yêu cầu cần đạt 
+– Tính được diện tích hình chữ nhật, hình vuông.  
+– Thực hi ện đư ợc vi ệc ư ớc lư ợng các k ết qu ả đo lư ờng trong m ột s ố 
+trường hợp đơn giản (ví dụ: cân nặng của một con gà khoảng 2kg,...). 
+– Giải quyết được một số vấn đề thực tiễn liên quan đến đo lường. 
+MỘT SỐ YẾU TỐ THỐNG KÊ VÀ XÁC SUẤT 
+Một số yếu tố thống kê 
+Một s ố yếu t ố 
+thống kê 
+Thu th ập, phân lo ại, s ắp 
+xếp các số liệu  
+Nhận biết được cách thu thập, phân loại, ghi chép  số liệu thống k ê (trong 
+một số tình huống đơn giản) theo các tiêu chí cho trước. 
+Đọc, mô tả bảng số liệu  Đọc và mô tả được các số liệu ở dạng bảng. 
+Nhận xét v ề các s ố liệu 
+trong bảng 
+Nêu được một số nhận xét đơn giản từ bảng số liệu. 
+Một số yếu tố xác suất 
+Một s ố yếu t ố xác 
+suất 
+Nhận biết và mô tả các khả 
+năng xảy ra (có tính n gẫu 
+nhiên) của một sự kiện 
+ 
+Nhận biết v à mô t ả được các khả năng xảy ra (có tính ng ẫu nhiên) c ủa 
+một sự kiện khi thực hiện (1 lần) thí nghiệm đơn giản (ví dụ: nhận ra được 
+hai kh ả năng xảy ra đối với mặt xuất hiện của đồng xu khi tung 1 l ần; 
+nhận ra được hai khả năng xảy ra đối với m àu của quả bóng lấy ra từ hộp 
+kín đựng các quả bóng có hai màu xanh hoặc đỏ;...). 
+HOẠT ĐỘNG THỰC HÀNH VÀ TRẢI NGHIỆM 
+Nhà trường tổ chức cho học sinh một số hoạt động sau và có thể bổ sung các hoạt động khác tuỳ vào điều kiện cụ thể. 
+Hoạt động 1: Thực hành ứng dụng các kiến thức toán học vào thực tiễn, chẳng hạn: 
+
+
+
+===== PAGE 34 =====
+34 
+Nội dung Yêu cầu cần đạt 
+– Thực hành các ho ạt động liên quan đ ến tính toán, đo lư ờng và ước lượng như: thực hành tính và ư ớc lượng chu vi, di ện 
+tích của một số hình phẳng trong thực tế liên quan đến các hình phẳng đã được học; thực hành đo, cân, đong và ư ớc lượng 
+độ dài, khối lượng, dung tích, nhiệt độ,... 
+– Thực hành thu th ập, phân loại, sắp xếp số liệu thống kê (theo các tiêu chí cho trư ớc) về một số đối tượng thống kê trong 
+trường, lớp.  
+Hoạt động 2: Tổ chức các ho ạt động ngoài gi ờ chính khoá (ví d ụ: trò ch ơi học Toán hoặc các ho ạt động “Học vui – Vui 
+học”; trò chơi liên quan đến mua bán, trao đổi hàng hoá; lắp ghép, gấp, xếp hình; tung đồng xu, xúc xắc,...) liên quan đến ôn 
+tập, củng cố các kiến thức toán. 
+ 
+LỚP 4 
+Nội dung Yêu cầu cần đạt 
+SỐ VÀ PHÉP TÍNH 
+Số tự nhiên 
+Số tự nhiên Số và c ấu t ạo th ập phân 
+của một số 
+– Đọc, viết được các số có nhiều chữ số (đến lớp triệu). 
+– Nhận biết được cấu tạo thập phân c ủa một số và giá tr ị theo vị trí của 
+từng chữ số trong mỗi số. 
+– Nhận biết được số chẵn, số lẻ. 
+– Làm quen với dãy số tự nhiên và đặc điểm. 
+So sánh các số  – Nhận biết được cách so sánh hai số trong phạm vi lớp triệu. 
+– Thực hi ện đư ợc vi ệc s ắp x ếp các s ố theo th ứ tự (từ bé đ ến l ớn ho ặc 
+
+
+
+===== PAGE 35 =====
+35 
+Nội dung Yêu cầu cần đạt 
+ngược lại) trong một nhóm có không quá 4 số (trong phạm vi lớp triệu). 
+Làm tròn số Làm tròn được số đến tròn ch ục, tròn tr ăm, tròn nghìn, tròn m ười nghìn, 
+tròn tr ăm ngh ìn (ví d ụ: làm tròn s ố 12 345 đ ến hàng trăm th ì được s ố      
+12 300). 
+Các phép tính v ới 
+số tự nhiên 
+Phép cộng, phép trừ – Thực hiện được các phép cộng, phép trừ các số tự nhiên có nhiều chữ số 
+(có nhớ không quá ba lượt và không liên tiếp). 
+– Vận dụng được tính chất giao hoán, tính ch ất kết hợp của phép cộng và 
+quan hệ giữa phép cộng và phép trừ trong thực hành tính toán. 
+Phép nhân, phép chia – Tính được số trung bình cộng của hai hay nhiều số. 
+– Thực hiện được phép nhân với các số có không quá hai chữ số. 
+– Thực hiện được phép chia cho số có không quá hai chữ số. 
+– Thực hiện được phép nhân v ới 10; 100; 1000 ;... và phép chia cho 10; 
+100; 1000;... 
+– Vận dụng được tính chất giao hoán, tính ch ất kết hợp của phép nhân và 
+mối quan hệ giữa phép nhân với phép chia trong thực hành tính toán. 
+Tính nhẩm  – Vận dụng được tính chất của phép tính để tính nhẩm và tính bằng cách 
+thuận tiện nhất. 
+– Ước lượng được trong những tính toán đơn giản (ví dụ: chia 572 cho 21 
+thì được thương không thể là 30). 
+Biểu thức số và biểu thức 
+chữ 
+– Làm quen v ới biểu thức chứa một, hai, ba ch ữ và tính đư ợc giá tr ị của 
+biểu thức chứa một, hai, hoặc ba chữ (trường hợp đơn giản). 
+
+
+
+===== PAGE 36 =====
+36 
+Nội dung Yêu cầu cần đạt 
+– Vận dụng được tính ch ất phân ph ối của phép nhân đ ối với phép c ộng 
+trong tính giá trị của biểu thức. 
+ Thực hành gi ải quy ết v ấn 
+đề liên quan đ ến các phép 
+tính đã học 
+Giải quyết được một số vấn đề gắn với việc giải các bài toán có đ ến hai 
+hoặc ba bư ớc tính (trong ph ạm vi các s ố và phép tính đ ã học) liên quan 
+đến thành ph ần và k ết quả của phép tính; liên quan đ ến các m ối quan h ệ 
+so sánh trực tiếp hoặc các mối quan hệ phụ thuộc trực tiếp và đơn giản (ví 
+dụ: bài toán liên quan đ ến tìm s ố trung bình c ộng của hai s ố; tìm hai s ố 
+khi biết tổng và hiệu của hai số đó; bài toán liên quan đến rút về đơn vị).  
+Phân số 
+Phân số Khái ni ệm ban đ ầu v ề 
+phân số 
+– Nhận biết được khái niệm ban đầu về phân số, tử số, mẫu số. 
+– Đọc, viết được các phân số. 
+Tính chất cơ bản của phân 
+số 
+– Nhận biết được tính chất cơ bản của phân số. 
+– Thực hiện được việc rút gọn phân số trong những trường hợp đơn giản. 
+– Thực hiện được việc quy đồng mẫu số hai phân số trong trường hợp có 
+một mẫu số chia hết cho mẫu số còn lại. 
+So sánh phân số – So sánh và s ắp xếp được thứ tự các phân s ố trong những trường hợp 
+sau: các phân số có cùng mẫu số; có một mẫu số chia hết cho các mẫu số 
+còn lại. 
+– Xác định được phân số lớn nhất, bé nhất (trong một nhóm có không quá 
+4 phân s ố) trong nh ững trường hợp sau: các phân s ố có cùng mẫu số; có 
+một mẫu số chia hết cho các mẫu số còn lại. 
+Các phép tính với Các phép tính cộng, trừ, – Thực hiện được phép c ộng, phép tr ừ phân số trong những trường hợp  
+
+
+
+===== PAGE 37 =====
+37 
+Nội dung Yêu cầu cần đạt 
+phân số nhân, chia với phân số sau: các phân số có cùng mẫu số; có một mẫu số chia hết cho các mẫu số 
+còn lại.  
+– Thực hiện được phép nhân, phép chia hai phân số. 
+– Giải quyết được một số vấn đề gắn với việc giải các bài toán (có đến hai 
+hoặc ba bước tính) liên quan đ ến 4 phép tính v ới phân số (ví dụ: bài toán 
+liên quan đến tìm phân số của một số). 
+HÌNH HỌC VÀ ĐO LƯỜNG 
+Hình học trực quan 
+Hình ph ẳng và 
+hình khối 
+Quan sát, nh ận biết, mô t ả 
+hình dạng và đặc điểm của 
+một s ố hình ph ẳng đơn 
+giản 
+– Nhận biết được góc nhọn, góc tù, góc bẹt. 
+– Nhận biết được hai đường thẳng vuông góc, hai đường thẳng song song. 
+– Nhận biết được hình bình hành, hình thoi. 
+ 
+Thực hành đo, v ẽ, l ắp 
+ghép, tạo hình gắn với một 
+số hình phẳng và hình khối 
+đã học  
+ 
+– Thực hiện được việc vẽ đường thẳng vuông góc, đường thẳng song song 
+bằng thước thẳng và êke. 
+– Thực hiện được việc đo, vẽ, lắp ghép, tạo lập một số hình phẳng và hình 
+khối đã học. 
+– Giải quyết được một số vấn đề liên quan đến đo góc, vẽ hình, lắp ghép, 
+tạo lập hình gắn với một số hình phẳng và hình khối đã học. 
+Đo lường 
+Đo lường Biểu tượng về đại lượng và – Nhận biết được các đơn v ị đo khối lượng: yến, tạ, tấn và quan hệ giữa 
+
+
+
+===== PAGE 38 =====
+38 
+Nội dung Yêu cầu cần đạt 
+đơn vị đo đại lượng các đơn vị đó với kg. 
+– Nhận biết được các đơn vị đo diện tích: dm2 (đề-xi-mét vuông), m2 (mét 
+vuông), mm2 (mi-li-mét vuông) và quan hệ giữa các đơn vị đó. 
+– Nhận biết được các đơn vị đo thời gian: giây, thế kỉ và quan hệ giữa các 
+đơn vị đo thời gian đã học. 
+– Nhận biết được đơn vị đo góc: độ (o). 
+Thực hành đo đại lượng – Sử dụng được một số dụng cụ thông dụng để thực hành cân, đo, đong, 
+đếm, xem thời gian với các đơn vị đo đã học. 
+– Sử dụng được thước đo góc để đo các góc: 60o; 90o; 120o; 180o. 
+Tính toán và ước lượng với 
+các số đo đại lượng 
+ 
+– Thực hiện được việc chuyển đổi và tính toán v ới các số đo độ dài (mm, 
+cm, dm, m, km); diện tích (mm2, cm2, dm2, m2); khối lượng (g, kg, yến, tạ, 
+tấn); dung tích (ml, l); thời gian (giây, phút, giờ, ngày, tuần lễ, tháng, năm, 
+thế kỉ); tiền Việt Nam đã học. 
+– Thực hi ện đư ợc vi ệc ư ớc lư ợng các k ết qu ả đo lư ờng trong m ột s ố 
+trường hợp đơn giản (ví dụ: con bò cân nặng khoảng 3 tạ,...). 
+– Giải quyết được một số vấn đề thực tiễn liên quan đ ến đo độ dài, diện 
+tích, khối lượng, dung tích, thời gian, tiền Việt Nam. 
+MỘT SỐ YẾU TỐ THỐNG KÊ VÀ XÁC SUẤT 
+Một số yếu tố thống kê 
+Một s ố yếu t ố 
+thống kê 
+Thu th ập, phân lo ại, s ắp 
+xếp các số liệu  
+– Nhận biết được về dãy số liệu thống kê.  
+– Nhận biết được cách sắp xếp dãy số liệu thống k ê theo các tiêu chí cho 
+
+
+
+===== PAGE 39 =====
+39 
+Nội dung Yêu cầu cần đạt 
+trước. 
+Đọc, mô t ả biểu đ ồ cột. 
+Biểu diễn s ố liệu vào biểu 
+đồ cột 
+– Đọc và mô tả được các số liệu ở dạng biểu đồ cột. 
+– Sắp xếp được số liệu vào bi ểu đồ cột (không yêu c ầu học sinh v ẽ biểu 
+đồ). 
+Hình thành và gi ải quy ết 
+vấn đ ề đơn giản xuất hiện 
+từ các s ố liệu và bi ểu đ ồ 
+cột đã có 
+ 
+– Nêu được một số nhận xét đơn giản từ biểu đồ cột. 
+– Tính được giá trị trung bình của các số liệu trong bảng hay biểu đồ cột. 
+– Làm quen v ới việc phát hiện vấn đề hoặc quy luật đ ơn giản dựa tr ên 
+quan sát các số liệu từ biểu đồ cột. 
+– Giải quyết được những vấn đề đ ơn giản liên quan đ ến các số liệu thu 
+được từ biểu đồ cột. 
+ 
+Một số yếu tố xác suất 
+Một s ố yếu t ố xác 
+suất 
+Kiểm đếm số lần lặp  lại 
+của một khả năng xảy ra 
+nhiều lần của một sự kiện 
+Kiểm đếm được số lần lặp  lại của một khả năng xảy ra (nhiều lần) của 
+một sự kiện khi thực hiện (nhiều lần) thí nghiệm, trò chơi đơn giản (ví dụ: 
+trong một vài trò chơi như tung đồng xu, lấy bóng từ hộp kín,...). 
+HOẠT ĐỘNG THỰC HÀNH VÀ TRẢI NGHIỆM 
+Nhà trường tổ chức cho học sinh một số hoạt động sau và có thể bổ sung các hoạt động khác tuỳ vào điều kiện cụ thể. 
+Hoạt động 1: Thực hành ứng dụng các kiến thức toán học vào thực tiễn và các chủ đề liên môn, chẳng hạn: 
+– Thực hành các hoạt động liên quan đến tính toán, đo lường và ước lượng như: tính toán và ước lượng chu vi, diện tích, góc 
+của một số hình phẳng trong thực tế liên quan đ ến các hình ph ẳng đã học; tính toán và ư ớc lượng về khối lượng, dung 
+tích,...; xác định năm, thế kỉ đánh dấu sự ra đời (diễn ra) của một số phát minh khoa học, sự kiện văn hoá – xã hội, lịch sử,... 
+
+
+
+===== PAGE 40 =====
+40 
+Nội dung Yêu cầu cần đạt 
+– Thực hành thu thập, phân tích, biểu diễn các số liệu thống kê (thông qua một số tình huống đơn giản gắn với những vấn đề 
+phát triển kinh tế, xã hội hoặc có tính toàn cầu như biến đổi khí hậu, phát triển bền vững, giáo dục tài chính, chủ quyền biển 
+đảo, biên giới, giáo dục STEM,...). 
+– Thực hành mua bán, trao đổi tiền tệ.  
+Hoạt động 2: Tổ chức các ho ạt động ngoài gi ờ chính khoá (ví d ụ: trò ch ơi học toán hoặc các ho ạt động “Học vui – Vui 
+học”; trò chơi liên quan đến mua bán, trao đổi hàng hoá; lắp ghép, gấp, xếp hình; tung đồng xu, xúc xắc,...) liên quan đến ôn 
+tập, củng cố các kiến thức toán hoặc giải quyết vấn đề nảy sinh trong tình huống thực tiễn. 
+Hoạt động 3 (n ếu nhà trư ờng có đi ều kiện thực hiện): Tổ chức giao lưu v ới học sinh có năng khi ếu toán trong trư ờng và 
+trường bạn. 
+ 
+LỚP 5 
+Nội dung Yêu cầu cần đạt 
+SỐ VÀ PHÉP TÍNH 
+Số tự nhiên 
+Số tự nhiên và các 
+phép tính với số tự 
+nhiên 
+Ôn t ập v ề số tự nhiên và 
+các phép tính v ới s ố tự 
+nhiên 
+ 
+Củng cố và hoàn thiện các kĩ năng: 
+– Đọc, viết, so sánh, xếp thứ tự được các số tự nhiên. 
+– Thực hiện được các phép tính cộng, trừ, nhân, chia các số tự nhiên. Vận 
+dụng được tính chất của phép tính v ới số tự nhiên để tính nhẩm và tính 
+hợp lí. 
+– Ước lượng và làm tròn được số trong những tính toán đơn giản. 
+– Giải quyết được vấn đề gắn với việc giải các bài toán có đến bốn bước 
+
+
+
+===== PAGE 41 =====
+41 
+Nội dung Yêu cầu cần đạt 
+tính liên quan đến các phép tính về số tự nhiên; liên quan đến quan hệ phụ 
+thuộc trực tiếp và đơn giản. 
+Phân số 
+Phân số và các 
+phép tính với phân 
+số 
+Ôn t ập v ề phân s ố và các 
+phép tính với phân số  
+ 
+Củng cố và hoàn thiện các kĩ năng: 
+– Rút gọn được phân số. 
+– Quy đồng, so sánh, x ếp thứ tự được các phân s ố trong trường hợp có 
+một mẫu số chia hết cho các mẫu số còn lại. 
+– Thực hiện được phép c ộng, phép trừ các phân s ố trong trường hợp có 
+một mẫu số chia hết cho các mẫu số còn lại và nhân, chia phân số. 
+– Thực hiện được phép cộng, phép trừ hai phân số bằng cách lấy mẫu số 
+chung là tích của hai mẫu số. 
+– Nhận bi ết đư ợc phân s ố thập phân và cách vi ết phân s ố thập phân ở 
+dạng hỗn số. 
+– Giải quyết được vấn đề gắn với việc giải các bài toán (có một hoặc một 
+vài bước tính) liên quan đến các phép tính về phân số. 
+Số thập phân 
+Số thập phân Số thập phân – Đọc, viết được số thập phân. 
+– Nhận biết được số thập phân gồm phần nguyên, phần thập phân và hàng 
+của số thập phân. 
+– Thể hiện được các số đo đại lượng bằng cách dùng số thập phân. 
+So sánh các số thập phân – Nhận biết được cách so sánh hai số thập phân. 
+
+
+
+===== PAGE 42 =====
+42 
+Nội dung Yêu cầu cần đạt 
+– Thực hiện được việc sắp xếp các số thập phân theo thứ tự (từ bé đến lớn 
+hoặc ngược lại) trong một nhóm có không quá 4 số thập phân. 
+Làm tròn số thập phân – Làm tròn được một số thập phân t ới số tự nhiên gần nhất hoặc tới số 
+thập phân có một hoặc hai chữ số ở phần thập phân. 
+Các phép tính v ới 
+số thập phân 
+Các phép tính c ộng, tr ừ, 
+nhân, chia v ới s ố thập 
+phân  
+– Thực hiện được phép cộng, phép trừ hai số thập phân. 
+– Thực hiện được phép nhân một số với số thập phân có không quá hai 
+chữ số ở dạng: a,b và 0,ab. 
+– Thực hiện được phép chia một số với số thập phân có không quá hai 
+chữ số khác không ở dạng: a,b và 0,ab.  
+– Vận dụng được tính chất của các phép tính với số thập phân và quan hệ 
+giữa các phép tính đó trong thực hành tính toán. 
+– Thực hiện được phép nhân, chia nh ẩm một số thập phân v ới (cho) 10; 
+100; 1000;... hoặc với (cho) 0,1; 0,01; 0,001;... 
+– Giải quyết vấn đề gắn với việc giải các bài t oán (có một hoặc một vài 
+bước tính) liên quan đến các phép tính với các số thập phân. 
+Tỉ số. Tỉ số phần trăm 
+Tỉ số. T ỉ số phần 
+trăm 
+Tỉ số. Tỉ số phần trăm – Nhận biết được tỉ số, tỉ số phần trăm của hai đại lượng cùng loại. 
+– Giải quyết được một số vấn đề gắn với việc giải các bài toán liên quan 
+đến: tìm hai số khi biết tổng (hoặc hiệu) và tỉ số của hai số đó; tính tỉ số 
+phần trăm của hai số; tìm giá trị phần trăm của một số cho trước. 
+– Nhận biết được tỉ lệ bản đồ. Vận dụng được tỉ lệ bản đồ để giải quyết 
+
+
+
+===== PAGE 43 =====
+43 
+Nội dung Yêu cầu cần đạt 
+một số tình huống thực tiễn. 
+Sử dụng máy tính  
+cầm tay 
+Làm quen với việc sử dụng máy tính c ầm tay để thực hiện các phép tính 
+cộng, trừ, nhân, chia các s ố tự nhiên; tính tỉ số phần trăm của hai số; tính 
+giá trị phần trăm của một số cho trước. 
+HÌNH HỌC VÀ ĐO LƯỜNG 
+Hình học trực quan 
+Hình ph ẳng và 
+hình khối 
+Quan sát, nh ận biết, mô t ả 
+hình dạng và đặc điểm của 
+một số hình phẳng và hình 
+khối đơn giản 
+– Nhận biết được hình thang, đường tròn, một số loại hình tam giác nh ư 
+tam giác nhọn, tam giác vuông, tam giác tù, tam giác đều. 
+– Nhận biết được hình khai triển của hình lập phương, hình hộp chữ nhật 
+và hình trụ. 
+Thực hành v ẽ, l ắp ghép, 
+tạo hình g ắn v ới m ột s ố 
+hình phẳng và hình khối đã 
+học 
+– Vẽ được hình thang, hình bình hành, hình thoi (sử dụng lưới ô vuông). 
+– Vẽ được đường cao của hình tam giác. 
+– Vẽ được đường tròn có tâm và độ dài bán kính hoặc đường kính cho trước. 
+– Giải quyết được một số vấn đề về đo, vẽ, lắp ghép, tạo hình gắn với một 
+số hình phẳng và hình kh ối đã học, liên quan đ ến ứng dụng của hình học 
+trong thực tiễn, liên quan đ ến nội dung các môn h ọc như Mĩ thuật, Công 
+nghệ, Tin học. 
+Đo lường 
+Đo lường Biểu tượng về đại lượng và 
+đơn vị đo đại lượng 
+– Nhận biết được các đơn vị đo diện tích: km2 (ki-lô-mét vuông), ha (héc-ta).  
+– Nhận biết được “thể tích” thông qua một số biểu tượng cụ thể. 
+– Nhận biết được một số đơn vị đo thể tích thông dụng: cm3 (xăng-ti-mét 
+
+
+
+===== PAGE 44 =====
+44 
+Nội dung Yêu cầu cần đạt 
+khối), dm3 (đề-xi-mét khối), m3 (mét khối). 
+– Nhận biết được vận tốc của một chuyển động đều; tên g ọi, kí hiệu của 
+một số đơn vị đo vận tốc: km/h (km/giờ), m/s (m/giây). 
+Thực hành đo đại lượng Sử dụng được một s ố dụng cụ thông dụng để thực hành cân, đo, đong, 
+đếm, xem th ời gian, mua bán v ới các đơn v ị đo đại lượng và ti ền tệ đã 
+học. 
+Tính toán và ước lượng với 
+các số đo đại lượng 
+ 
+– Thực hiện được việc chuyển đổi và tính toán với các số đo thể tích (cm3, 
+dm3, m3) và số đo thời gian. 
+– Tính được diện tích hình tam giác, hình thang. 
+– Tính được chu vi và diện tích hình tròn. 
+– Tính được diện tích xung quanh, di ện tích toàn ph ần, thể tích của hình 
+hộp chữ nhật, hình lập phương. 
+– Thực hiện được việc ước lượng thể tích trong m ột số trường hợp đơn 
+giản (ví dụ: thể tích của hộp phấn viết bảng,...). 
+– Giải quyết được một số vấn đề thực tiễn liên quan đến đo thể tích, dung 
+tích, thời gian. 
+– Giải quyết được một số vấn đề gắn với việc giải các bài toán liên quan 
+đến chuyển đ ộng đ ều (tìm v ận t ốc, quãng đường, th ời gian c ủa m ột 
+chuyển động đều).  
+MỘT SỐ YẾU TỐ THỐNG KÊ VÀ XÁC SUẤT 
+Một số yếu tố thống kê 
+
+
+
+===== PAGE 45 =====
+45 
+Nội dung Yêu cầu cần đạt 
+Một s ố yếu t ố 
+thống kê 
+Thu th ập, phân lo ại, s ắp 
+xếp các số liệu  
+Thực hiện được việc thu thập, phân loại, so sánh, sắp xếp số liệu thống kê 
+theo các tiêu chí cho trước. 
+Đọc, mô t ả biểu đ ồ thống 
+kê hình qu ạt tròn . Biểu 
+diễn s ố liệu b ằng bi ểu đ ồ 
+thống kê hình quạt tròn 
+ 
+– Đọc và mô tả được các số liệu ở dạng biểu đồ hình quạt tròn. 
+– Sắp xếp được số liệu vào bi ểu đồ hình quạt tròn (không yêu c ầu học 
+sinh vẽ hình).  
+– Lựa ch ọn được cách bi ểu di ễn (b ằng dãy s ố liệu, b ảng s ố liệu, ho ặc 
+bằng biểu đồ) các số liệu thống kê. 
+Hình thành và gi ải quy ết 
+vấn đ ề đơn giản xuất hiện 
+từ các s ố liệu và bi ểu đ ồ 
+thống kê hình qu ạt tròn đã 
+có 
+ 
+– Nêu được một số nhận xét đơn giản từ biểu đồ hình quạt tròn. 
+– Làm quen v ới việc phát hiện vấn đề hoặc quy luật đ ơn giản dựa tr ên 
+quan sát các số liệu từ biểu đồ hình quạt tròn. 
+– Giải quyết được những vấn đề đơn giản liên quan đến các số liệu thu được từ 
+biểu đồ hình quạt tròn. 
+– Nhận biết được mối liên hệ giữa thống kê với các kiến thức khác trong 
+môn Toán và trong thực tiễn (ví dụ: số thập phân, tỉ số phần trăm,...). 
+Một số yếu tố xác suất 
+Một s ố yếu t ố xác 
+suất 
+Tỉ số mô t ả số lần lặp  lại 
+của một khả năng xảy ra 
+(nhiều lần) của một sự kiện 
+trong m ột thí nghi ệm so 
+với tổng số lần thực hiện 
+thí nghi ệm đó ở những 
+Sử dụng được tỉ số để mô tả số lần lặp lại của một khả năng xảy ra (nhiều 
+lần) của một sự kiện trong một thí nghiệm so với tổng số lần thực hiện thí 
+nghiệm đó ở những trường hợp đơn giản (ví dụ: sử dụng tỉ số 2
+5  để mô tả 
+2 lần xảy ra khả năng “mặt sấp đồng xu xuất hiện” của khi tung đồng xu 5 
+lần). 
+
+
+
+===== PAGE 46 =====
+46 
+Nội dung Yêu cầu cần đạt 
+trường hợp đơn giản  
+HOẠT ĐỘNG THỰC HÀNH VÀ TRẢI NGHIỆM 
+Nhà trường tổ chức cho học sinh một số hoạt động sau và có thể bổ sung các hoạt động khác tuỳ vào điều kiện cụ thể. 
+Hoạt động 1: Thực hành ứng dụng các kiến thức toán học vào thực tiễn và các chủ đề liên môn, chẳng hạn: 
+– Thực hành tổng hợp các hoạt động liên quan đến tính toán, đo lường và ước lượng như: tính toán và ước lượng thể tích của 
+một số hình khối trong thực tiễn liên quan đ ến các hình đã học; tính toán và ư ớc lượng về vận tốc, quãng đường, thời gian 
+trong chuyển động đều. 
+– Thực hành thu thập, phân tích, biểu diễn các số liệu thống kê (thông qua một số tình huống đơn giản gắn với những vấn đề 
+phát triển kinh t ế – xã hội hoặc có tính toàn c ầu như bi ến đổi khí h ậu, phát tri ển bền vững, giáo dục tài chính, ch ủ quyền 
+biên giới, biển đảo, giáo dục STEM,...). 
+– Thực hành mua bán, trao đổi, chi tiêu hợp lí; thực hành tính tiền lãi, lỗ trong mua bán; tính lãi suất trong tiền gửi tiết kiệm 
+và vay vốn.  
+Hoạt động 2: Tổ chức các hoạt động ngoài giờ chính khoá (ví dụ: trò chơi “Bảy mảnh nghìn hình (tangram)” hoặc các hoạt 
+động “Học vui – Vui học”; trò chơi liên quan đ ến mua bán, trao đ ổi hàng hoá; l ắp ghép, gấp, xếp hình; tung đồng xu, xúc 
+xắc,...) liên quan đến ôn tập, củng cố các kiến thức toán hoặc giải quyết vấn đề nảy sinh trong tình huống thực tiễn. 
+Hoạt động 3 (n ếu nhà trư ờng có đi ều kiện thực hiện): Tổ chức giao lưu v ới học sinh có kh ả năng và yêu thích môn Toán 
+trong trường và trường bạn. 
+ 
+LỚP 6 
+Nội dung Yêu cầu cần đạt 
+SỐ VÀ ĐẠI SỐ  

@@ -1,0 +1,733 @@
+[
+  {
+    "objective_id": "math_3_multiplication_repeated_addition",
+    "subject": "Toán",
+    "subject_display": "Toán",
+    "grade": 3,
+    "topic": "Phép nhân",
+    "objective_text": "Nhận biết được ý nghĩa của phép nhân thông qua tình huống có các nhóm đồ vật bằng nhau; liên hệ phép nhân với phép cộng các số hạng bằng nhau.",
+    "cognitive_level": "understand",
+    "difficulty_band": "easy",
+    "allowed_difficulty_range": [
+      "easy",
+      "medium"
+    ],
+    "required_skills": [
+      "recognize_equal_groups",
+      "connect_repeated_addition_to_multiplication",
+      "calculate_small_products",
+      "interpret_simple_word_problem"
+    ],
+    "prerequisites": [
+      "Biet phep cong cac so tu nhien",
+      "Dem duoc so luong do vat theo nhom",
+      "Hieu khai niem cac nhom co so luong bang nhau"
+    ],
+    "grade_scope": {
+      "min_grade": 2,
+      "target_grade": 3,
+      "max_grade": 3
+    },
+    "complexity_signals": {
+      "number_of_steps": 1,
+      "max_factor": 10,
+      "requires_abstract_symbolic_reasoning": false,
+      "requires_multi_step_reasoning": false,
+      "uses_visual_grouping": true,
+      "abstractness": "low"
+    },
+    "recommended_question_types": [
+      "visual_grouping",
+      "multiple_choice",
+      "matching_expression_to_picture",
+      "fill_in_blank"
+    ],
+    "misconceptions": [
+      {
+        "id": "mc-mul-add-operands",
+        "misconception": "Hoc sinh hieu 3 x 4 la 3 + 4.",
+        "correct_concept": "3 x 4 bieu thi 3 nhom, moi nhom co 4 don vi, tuc la 4 + 4 + 4."
+      },
+      {
+        "id": "mc-mul-count-groups-only",
+        "misconception": "Hoc sinh chi dem so nhom thay vi tong so do vat.",
+        "correct_concept": "Can nhan so nhom voi so do vat trong moi nhom de tim tong so do vat."
+      }
+    ],
+    "scope_policy": {
+      "in_scope": [
+        "nhom do vat bang nhau",
+        "phep cong lap",
+        "phep nhan trong pham vi bang nhan co ban",
+        "bai toan co loi van mot buoc"
+      ],
+      "below_grade": "simplify_and_generate",
+      "at_grade": "generate_normally",
+      "above_grade": "downgrade_or_warn",
+      "out_of_program": "flag_and_suggest_related_objective",
+      "not_allowed": [
+        "bieu thuc dai so",
+        "bai toan nhieu buoc phuc tap",
+        "phan phoi phep nhan duoi dang ky hieu dai so",
+        "so thap phan hoac phan so neu chua thuoc objective"
+      ]
+    },
+    "grounding_passages": [
+      "Phep nhan co the duoc gioi thieu qua cac tinh huong gom nhieu nhom do vat co so luong bang nhau.",
+      "Bieu thuc 3 x 4 co the hieu la 3 nhom, moi nhom 4 do vat, tuong ung voi 4 + 4 + 4.",
+      "Voi hoc sinh lop 3, bai toan nen la mot buoc, dung so nho va boi canh gan gui."
+    ],
+    "default_examples": [
+      {
+        "raw_text": "3 gio tao, moi gio 4 qua",
+        "structured": {
+          "item": "qua tao",
+          "group": "gio",
+          "num_groups": 3,
+          "items_per_group": 4,
+          "expected_result": 12
+        }
+      }
+    ],
+    "search_aliases": [
+      "phep nhan",
+      "phép nhân",
+      "cong lap",
+      "cộng lặp",
+      "nhom bang nhau",
+      "nhóm bằng nhau",
+      "3 gio tao",
+      "3 giỏ táo"
+    ],
+    "language": "vi",
+    "source_ref": "GDPT_2018_math_primary_curated_v1"
+  },
+  {
+    "objective_id": "math_3_division_equal_sharing",
+    "subject": "Toán",
+    "subject_display": "Toán",
+    "grade": 3,
+    "topic": "Phép chia",
+    "objective_text": "Hiểu được phép chia qua tình huống chia đều và chia theo nhóm; thực hiện được phép chia trong phạm vi bảng chia cơ bản.",
+    "cognitive_level": "understand",
+    "difficulty_band": "medium",
+    "allowed_difficulty_range": [
+      "easy",
+      "medium"
+    ],
+    "required_skills": [
+      "understand_equal_sharing",
+      "understand_grouping_division",
+      "calculate_basic_division",
+      "interpret_simple_word_problem"
+    ],
+    "prerequisites": [
+      "Biet phep nhan co ban",
+      "Hieu nhom bang nhau"
+    ],
+    "grade_scope": {
+      "min_grade": 3,
+      "target_grade": 3,
+      "max_grade": 3
+    },
+    "complexity_signals": {
+      "number_of_steps": 1,
+      "uses_visual_grouping": true,
+      "abstractness": "medium"
+    },
+    "recommended_question_types": [
+      "visual_grouping",
+      "multiple_choice",
+      "matching"
+    ],
+    "misconceptions": [
+      {
+        "id": "mc-g3-divisor-meaning",
+        "misconception": "Hoc sinh khong biet so chia bieu thi so phan hay so trong moi nhom tuy tinh huong.",
+        "correct_concept": "Y nghia cua so chia phu thuoc vao bai toan chia deu hay chia theo nhom."
+      }
+    ],
+    "scope_policy": {
+      "in_scope": [
+        "chia deu",
+        "chia theo nhom",
+        "bang chia co ban",
+        "bai toan mot buoc"
+      ],
+      "below_grade": "simplify_and_generate",
+      "at_grade": "generate_normally",
+      "above_grade": "downgrade_or_warn",
+      "out_of_program": "flag_and_suggest_related_objective",
+      "not_allowed": [
+        "chia so thap phan",
+        "chia phan so",
+        "bai toan ti le phuc tap"
+      ]
+    },
+    "grounding_passages": [
+      "Phep chia lop 3 nen duoc dat trong boi canh chia deu hoac chia thanh cac nhom bang nhau.",
+      "Cau hoi nen dung bang chia co ban va bai toan mot buoc."
+    ],
+    "default_examples": [
+      {
+        "raw_text": "12 cai keo chia deu cho 3 ban",
+        "structured": {
+          "item": "cai keo",
+          "total": 12,
+          "groups": 3,
+          "expected_each": 4
+        }
+      }
+    ],
+    "search_aliases": [
+      "phep chia",
+      "phép chia",
+      "chia deu",
+      "chia đều",
+      "chia theo nhom",
+      "chia theo nhóm",
+      "bang chia",
+      "bảng chia"
+    ],
+    "language": "vi",
+    "source_ref": "GDPT_2018_math_primary_curated_v1"
+  },
+  {
+    "objective_id": "math_3_geometry_perimeter_area_intro",
+    "subject": "Toán",
+    "subject_display": "Toán",
+    "grade": 3,
+    "topic": "Chu vi và diện tích ban đầu",
+    "objective_text": "Nhận biết và tính được chu vi một số hình đơn giản; làm quen với diện tích qua đếm ô vuông và tính diện tích hình chữ nhật, hình vuông trong tình huống đơn giản.",
+    "cognitive_level": "apply",
+    "difficulty_band": "medium",
+    "allowed_difficulty_range": [
+      "easy",
+      "medium"
+    ],
+    "required_skills": [
+      "recognize_rectangle_square",
+      "calculate_perimeter",
+      "count_unit_squares",
+      "calculate_rectangle_area"
+    ],
+    "prerequisites": [
+      "Biet cong nhieu so",
+      "Biet phep nhan co ban",
+      "Nhan biet hinh vuong va hinh chu nhat"
+    ],
+    "grade_scope": {
+      "min_grade": 3,
+      "target_grade": 3,
+      "max_grade": 4
+    },
+    "complexity_signals": {
+      "number_of_steps": 1,
+      "requires_formula_use": true,
+      "abstractness": "medium"
+    },
+    "recommended_question_types": [
+      "fill_in_blank",
+      "multiple_choice",
+      "matching_formula_to_shape"
+    ],
+    "misconceptions": [
+      {
+        "id": "mc-g3-perimeter-area",
+        "misconception": "Hoc sinh nham chu vi voi dien tich.",
+        "correct_concept": "Chu vi do do dai xung quanh hinh; dien tich do phan mat phang ben trong hinh."
+      }
+    ],
+    "scope_policy": {
+      "in_scope": [
+        "chu vi hinh vuong",
+        "chu vi hinh chu nhat",
+        "dien tich bang o vuong",
+        "dien tich hinh chu nhat don gian"
+      ],
+      "below_grade": "simplify_and_generate",
+      "at_grade": "generate_normally",
+      "above_grade": "downgrade_or_warn",
+      "out_of_program": "flag_and_suggest_related_objective",
+      "not_allowed": [
+        "dien tich hinh tam giac",
+        "the tich",
+        "hinh tron",
+        "chung minh hinh hoc"
+      ]
+    },
+    "grounding_passages": [
+      "Hinh hoc lop 3 co the gioi thieu chu vi va dien tich qua hinh vuong, hinh chu nhat va o vuong don vi.",
+      "Can phan biet chu vi la do dai duong bao quanh, dien tich la do lon phan mat."
+    ],
+    "default_examples": [
+      {
+        "raw_text": "Hinh chu nhat dai 5 cm, rong 3 cm",
+        "structured": {
+          "shape": "hinh chu nhat",
+          "length": 5,
+          "width": 3,
+          "perimeter": 16,
+          "area": 15
+        }
+      }
+    ],
+    "search_aliases": [
+      "chu vi",
+      "dien tich",
+      "diện tích",
+      "hinh chu nhat",
+      "hình chữ nhật",
+      "hinh vuong",
+      "hình vuông"
+    ],
+    "language": "vi",
+    "source_ref": "GDPT_2018_math_primary_curated_v1"
+  },
+  {
+    "objective_id": "math_3_measurement_time_money_temperature",
+    "subject": "Toán",
+    "subject_display": "Toán",
+    "grade": 3,
+    "topic": "Đo lường và ứng dụng",
+    "objective_text": "Sử dụng được một số đơn vị đo độ dài, khối lượng, dung tích, thời gian, tiền Việt Nam và nhiệt độ trong tình huống thực tế đơn giản.",
+    "cognitive_level": "apply",
+    "difficulty_band": "medium",
+    "allowed_difficulty_range": [
+      "easy",
+      "medium"
+    ],
+    "required_skills": [
+      "read_measurements",
+      "convert_simple_units",
+      "read_clock_calendar",
+      "solve_one_step_measurement_problem"
+    ],
+    "prerequisites": [
+      "Cong tru trong pham vi 1000",
+      "Biet mot so don vi do lop 2"
+    ],
+    "grade_scope": {
+      "min_grade": 3,
+      "target_grade": 3,
+      "max_grade": 3
+    },
+    "complexity_signals": {
+      "number_of_units": 5,
+      "number_of_steps": 1,
+      "abstractness": "medium"
+    },
+    "recommended_question_types": [
+      "matching",
+      "multiple_choice",
+      "fill_in_blank"
+    ],
+    "misconceptions": [
+      {
+        "id": "mc-g3-unit-conversion",
+        "misconception": "Hoc sinh doi don vi theo cam tinh ma khong dua vao quan he giua cac don vi.",
+        "correct_concept": "Can dung quan he don vi da hoc, vi du 1 m = 100 cm, 1 kg = 1000 g neu nam trong bai."
+      }
+    ],
+    "scope_policy": {
+      "in_scope": [
+        "cm m mm",
+        "g kg",
+        "ml l",
+        "gio phut",
+        "tien Viet Nam",
+        "nhiet do don gian"
+      ],
+      "below_grade": "simplify_and_generate",
+      "at_grade": "generate_normally",
+      "above_grade": "downgrade_or_warn",
+      "out_of_program": "flag_and_suggest_related_objective",
+      "not_allowed": [
+        "doi don vi phuc tap nhieu buoc",
+        "van toc",
+        "dien tich phuc tap",
+        "the tich"
+      ]
+    },
+    "grounding_passages": [
+      "Do luong lop 3 mo rong sang cac don vi quen thuoc va bai toan mot buoc trong doi song.",
+      "Noi dung nen giu gan voi tinh huong thuc te va don vi da hoc."
+    ],
+    "default_examples": [
+      {
+        "raw_text": "Mot quyen sach day 8 mm",
+        "structured": {
+          "object": "quyen sach",
+          "value": 8,
+          "unit": "mm"
+        }
+      }
+    ],
+    "search_aliases": [
+      "do luong",
+      "đo lường",
+      "nhiet do",
+      "nhiệt độ",
+      "thoi gian",
+      "thời gian",
+      "tien",
+      "tiền"
+    ],
+    "language": "vi",
+    "source_ref": "GDPT_2018_math_primary_curated_v1"
+  },
+  {
+    "objective_id": "math_3_numbers_100000_rounding_roman",
+    "subject": "Toán",
+    "subject_display": "Toán",
+    "grade": 3,
+    "topic": "Số tự nhiên đến 100 000",
+    "objective_text": "Đọc, viết, so sánh các số trong phạm vi 100 000; nhận biết cấu tạo thập phân, số tròn nghìn, tròn mười nghìn, chữ số La Mã trong phạm vi 20 và làm quen với làm tròn số.",
+    "language": "vi",
+    "source_ref": "source_documents/toan1-5.pdf; source_documents/GDPT_2018.md",
+    "search_aliases": [
+      "số đến 100000",
+      "so den 100000",
+      "số tự nhiên lớp 3",
+      "so tu nhien lop 3",
+      "làm tròn",
+      "lam tron",
+      "chữ số La Mã",
+      "chu so la ma"
+    ],
+    "cognitive_level": "understand",
+    "difficulty_band": "medium",
+    "allowed_difficulty_range": [
+      "easy",
+      "medium"
+    ],
+    "required_skills": [
+      "read_write_numbers_100000",
+      "compare_numbers",
+      "round_numbers",
+      "recognize_roman_numerals"
+    ],
+    "prerequisites": [
+      "Biết số đến 1000",
+      "Hiểu hàng trăm, chục, đơn vị"
+    ],
+    "grade_scope": {
+      "min_grade": 3,
+      "target_grade": 3,
+      "max_grade": 3
+    },
+    "complexity_signals": {
+      "number_range_max": 100000,
+      "number_of_steps": 1,
+      "abstractness": "medium"
+    },
+    "recommended_question_types": [
+      "fill_in_blank",
+      "multiple_choice",
+      "matching"
+    ],
+    "misconceptions": [
+      {
+        "misconception": "Học sinh nhầm lẫn khi vận dụng Số tự nhiên đến 100 000.",
+        "correct_concept": "Cần bám sát yêu cầu cần đạt và dùng ví dụ phù hợp lớp 3."
+      }
+    ],
+    "scope_policy": {
+      "in_scope": [
+        "Số tự nhiên đến 100 000",
+        "số đến 100000",
+        "so den 100000",
+        "số tự nhiên lớp 3",
+        "so tu nhien lop 3",
+        "làm tròn"
+      ],
+      "below_grade": "simplify_and_generate",
+      "at_grade": "generate_normally",
+      "above_grade": "downgrade_or_warn",
+      "out_of_program": "flag_and_suggest_related_objective",
+      "not_allowed": [
+        "nội dung vượt phạm vi lớp 3",
+        "kiến thức chưa có trong mục tiêu này"
+      ]
+    },
+    "grounding_passages": [
+      "Lớp 3 đọc, viết được các số trong phạm vi 10 000 và 100 000, nhận biết cấu tạo thập phân của một số.",
+      "Lớp 3 làm quen với làm tròn số đến tròn chục, tròn trăm, tròn nghìn, tròn mười nghìn."
+    ],
+    "default_examples": [
+      {
+        "raw_text": "Ví dụ phù hợp với Số tự nhiên đến 100 000",
+        "structured": {
+          "topic": "Số tự nhiên đến 100 000"
+        }
+      }
+    ]
+  },
+  {
+    "objective_id": "math_3_multiplication_division_within_100",
+    "subject": "Toán",
+    "subject_display": "Toán",
+    "grade": 3,
+    "topic": "Nhân chia trong phạm vi 100",
+    "objective_text": "Vận dụng các bảng nhân, bảng chia 2 đến 9; thực hiện phép nhân với số có một chữ số, phép chia cho số có một chữ số, nhận biết phép chia hết và phép chia có dư; giải quyết bài toán có đến hai bước tính liên quan đến nhân, chia.",
+    "language": "vi",
+    "source_ref": "source_documents/toan1-5.pdf; source_documents/GDPT_2018.md",
+    "search_aliases": [
+      "nhân chia trong phạm vi 100",
+      "nhan chia trong pham vi 100",
+      "bảng nhân",
+      "bang nhan",
+      "bảng chia",
+      "bang chia",
+      "chia có dư",
+      "chia co du",
+      "bài toán nhân chia",
+      "bai toan nhan chia"
+    ],
+    "cognitive_level": "apply",
+    "difficulty_band": "medium",
+    "allowed_difficulty_range": [
+      "easy",
+      "medium"
+    ],
+    "required_skills": [
+      "use_multiplication_tables_2_to_9",
+      "use_division_tables_2_to_9",
+      "multiply_by_one_digit",
+      "divide_by_one_digit",
+      "recognize_remainder",
+      "solve_one_two_step_word_problem"
+    ],
+    "prerequisites": [
+      "Hiểu ý nghĩa phép nhân và phép chia",
+      "Biết các bảng nhân, chia cơ bản"
+    ],
+    "grade_scope": {
+      "min_grade": 3,
+      "target_grade": 3,
+      "max_grade": 3
+    },
+    "complexity_signals": {
+      "number_range_max": 100,
+      "number_of_steps": 2,
+      "requires_multi_step_reasoning": true,
+      "abstractness": "medium"
+    },
+    "recommended_question_types": [
+      "multiple_choice",
+      "fill_in_blank",
+      "matching_operation_to_story"
+    ],
+    "misconceptions": [
+      {
+        "misconception": "Học sinh nhầm lẫn khi vận dụng Nhân chia trong phạm vi 100.",
+        "correct_concept": "Cần bám sát yêu cầu cần đạt và dùng ví dụ phù hợp lớp 3."
+      }
+    ],
+    "scope_policy": {
+      "in_scope": [
+        "Nhân chia trong phạm vi 100",
+        "nhân chia trong phạm vi 100",
+        "nhan chia trong pham vi 100",
+        "bảng nhân",
+        "bang nhan",
+        "bảng chia"
+      ],
+      "below_grade": "simplify_and_generate",
+      "at_grade": "generate_normally",
+      "above_grade": "downgrade_or_warn",
+      "out_of_program": "flag_and_suggest_related_objective",
+      "not_allowed": [
+        "nội dung vượt phạm vi lớp 3",
+        "kiến thức chưa có trong mục tiêu này"
+      ]
+    },
+    "grounding_passages": [
+      "Lớp 3 vận dụng các bảng nhân, bảng chia 2, 3,..., 9 trong thực hành tính.",
+      "Lớp 3 thực hiện phép nhân với số có một chữ số, phép chia cho số có một chữ số, nhận biết phép chia hết và phép chia có dư.",
+      "Lớp 3 giải quyết một số vấn đề gắn với bài toán có đến hai bước tính trong phạm vi các số và phép tính đã học."
+    ],
+    "default_examples": [
+      {
+        "raw_text": "Ví dụ phù hợp với Nhân chia trong phạm vi 100",
+        "structured": {
+          "topic": "Nhân chia trong phạm vi 100"
+        }
+      }
+    ]
+  },
+  {
+    "objective_id": "math_3_expressions_unknowns_word_problems",
+    "subject": "Toán",
+    "subject_display": "Toán",
+    "grade": 3,
+    "topic": "Biểu thức số và bài toán có lời văn",
+    "objective_text": "Làm quen với biểu thức số; tính giá trị biểu thức có đến hai dấu phép tính, có hoặc không có dấu ngoặc; xác định thành phần chưa biết của phép tính và giải bài toán có đến hai bước tính.",
+    "language": "vi",
+    "source_ref": "source_documents/toan1-5.pdf; source_documents/GDPT_2018.md",
+    "search_aliases": [
+      "biểu thức số",
+      "bieu thuc so",
+      "dấu ngoặc",
+      "dau ngoac",
+      "thành phần chưa biết",
+      "thanh phan chua biet",
+      "bài toán hai bước",
+      "bai toan hai buoc"
+    ],
+    "cognitive_level": "apply",
+    "difficulty_band": "medium",
+    "allowed_difficulty_range": [
+      "easy",
+      "medium"
+    ],
+    "required_skills": [
+      "evaluate_expression_two_operations",
+      "use_parentheses",
+      "find_unknown_component",
+      "solve_two_step_word_problem"
+    ],
+    "prerequisites": [
+      "Biết bốn phép tính cơ bản",
+      "Hiểu thứ tự thực hiện đơn giản"
+    ],
+    "grade_scope": {
+      "min_grade": 3,
+      "target_grade": 3,
+      "max_grade": 3
+    },
+    "complexity_signals": {
+      "number_of_steps": 2,
+      "requires_order_of_operations": true,
+      "abstractness": "medium"
+    },
+    "recommended_question_types": [
+      "multiple_choice",
+      "fill_in_blank",
+      "matching_operation_to_story"
+    ],
+    "misconceptions": [
+      {
+        "misconception": "Học sinh nhầm lẫn khi vận dụng Biểu thức số và bài toán có lời văn.",
+        "correct_concept": "Cần bám sát yêu cầu cần đạt và dùng ví dụ phù hợp lớp 3."
+      }
+    ],
+    "scope_policy": {
+      "in_scope": [
+        "Biểu thức số và bài toán có lời văn",
+        "biểu thức số",
+        "bieu thuc so",
+        "dấu ngoặc",
+        "dau ngoac",
+        "thành phần chưa biết"
+      ],
+      "below_grade": "simplify_and_generate",
+      "at_grade": "generate_normally",
+      "above_grade": "downgrade_or_warn",
+      "out_of_program": "flag_and_suggest_related_objective",
+      "not_allowed": [
+        "nội dung vượt phạm vi lớp 3",
+        "kiến thức chưa có trong mục tiêu này"
+      ]
+    },
+    "grounding_passages": [
+      "Lớp 3 làm quen với biểu thức số và tính giá trị biểu thức có đến hai dấu phép tính, có hoặc không có dấu ngoặc.",
+      "Lớp 3 xác định thành phần chưa biết của phép tính thông qua các giá trị đã biết."
+    ],
+    "default_examples": [
+      {
+        "raw_text": "Ví dụ phù hợp với Biểu thức số và bài toán có lời văn",
+        "structured": {
+          "topic": "Biểu thức số và bài toán có lời văn"
+        }
+      }
+    ]
+  },
+  {
+    "objective_id": "math_3_statistics_probability_table_simple",
+    "subject": "Toán",
+    "subject_display": "Toán",
+    "grade": 3,
+    "topic": "Bảng số liệu và khả năng xảy ra",
+    "objective_text": "Nhận biết cách thu thập, phân loại, ghi chép số liệu theo tiêu chí cho trước; đọc, mô tả và nhận xét bảng số liệu; nhận biết và mô tả khả năng xảy ra của một sự kiện trong thí nghiệm đơn giản.",
+    "language": "vi",
+    "source_ref": "source_documents/toan1-5.pdf; source_documents/GDPT_2018.md",
+    "search_aliases": [
+      "bảng số liệu",
+      "bang so lieu",
+      "thống kê lớp 3",
+      "thong ke lop 3",
+      "khả năng xảy ra",
+      "kha nang xay ra",
+      "tung đồng xu",
+      "tung dong xu"
+    ],
+    "cognitive_level": "understand",
+    "difficulty_band": "medium",
+    "allowed_difficulty_range": [
+      "easy",
+      "medium"
+    ],
+    "required_skills": [
+      "collect_classify_record_data",
+      "read_data_table",
+      "make_simple_data_comment",
+      "describe_simple_likelihood"
+    ],
+    "prerequisites": [
+      "Biết đọc số và so sánh số",
+      "Đã làm quen biểu đồ tranh lớp 2"
+    ],
+    "grade_scope": {
+      "min_grade": 3,
+      "target_grade": 3,
+      "max_grade": 3
+    },
+    "complexity_signals": {
+      "number_of_categories": 4,
+      "requires_probability_language": true,
+      "abstractness": "medium"
+    },
+    "recommended_question_types": [
+      "multiple_choice",
+      "matching",
+      "fill_in_blank"
+    ],
+    "misconceptions": [
+      {
+        "misconception": "Học sinh nhầm lẫn khi vận dụng Bảng số liệu và khả năng xảy ra.",
+        "correct_concept": "Cần bám sát yêu cầu cần đạt và dùng ví dụ phù hợp lớp 3."
+      }
+    ],
+    "scope_policy": {
+      "in_scope": [
+        "Bảng số liệu và khả năng xảy ra",
+        "bảng số liệu",
+        "bang so lieu",
+        "thống kê lớp 3",
+        "thong ke lop 3",
+        "khả năng xảy ra"
+      ],
+      "below_grade": "simplify_and_generate",
+      "at_grade": "generate_normally",
+      "above_grade": "downgrade_or_warn",
+      "out_of_program": "flag_and_suggest_related_objective",
+      "not_allowed": [
+        "nội dung vượt phạm vi lớp 3",
+        "kiến thức chưa có trong mục tiêu này"
+      ]
+    },
+    "grounding_passages": [
+      "Lớp 3 đọc và mô tả được số liệu ở dạng bảng, nêu được một số nhận xét đơn giản từ bảng số liệu.",
+      "Lớp 3 nhận biết và mô tả khả năng xảy ra của một sự kiện khi thực hiện một lần thí nghiệm đơn giản."
+    ],
+    "default_examples": [
+      {
+        "raw_text": "Ví dụ phù hợp với Bảng số liệu và khả năng xảy ra",
+        "structured": {
+          "topic": "Bảng số liệu và khả năng xảy ra"
+        }
+      }
+    ]
+  }
+]

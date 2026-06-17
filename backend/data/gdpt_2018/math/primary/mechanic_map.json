@@ -1,0 +1,132 @@
+{
+  "count_objects": {
+    "easy": ["quiz", "matching", "fill_in_blank"],
+    "medium": ["quiz", "matching"],
+    "hard": ["quiz"]
+  },
+  "read_write_numbers": {
+    "easy": ["fill_in_blank", "matching", "quiz"],
+    "medium": ["quiz", "fill_in_blank"],
+    "hard": ["quiz"]
+  },
+  "compare_numbers": {
+    "easy": ["quiz", "matching"],
+    "medium": ["quiz", "fill_in_blank"],
+    "hard": ["quiz"]
+  },
+  "add_within_20": {
+    "easy": ["quiz", "fill_in_blank"],
+    "medium": ["quiz"],
+    "hard": ["quiz"]
+  },
+  "subtract_within_20": {
+    "easy": ["quiz", "fill_in_blank"],
+    "medium": ["quiz"],
+    "hard": ["quiz"]
+  },
+  "recognize_shapes": {
+    "easy": ["matching", "quiz"],
+    "medium": ["matching", "quiz"],
+    "hard": ["quiz"]
+  },
+  "understand_place_value": {
+    "easy": ["matching", "fill_in_blank"],
+    "medium": ["quiz", "fill_in_blank"],
+    "hard": ["quiz"]
+  },
+  "add_within_1000": {
+    "easy": ["fill_in_blank", "quiz"],
+    "medium": ["quiz"],
+    "hard": ["quiz"]
+  },
+  "subtract_within_1000": {
+    "easy": ["fill_in_blank", "quiz"],
+    "medium": ["quiz"],
+    "hard": ["quiz"]
+  },
+  "recognize_equal_groups": {
+    "easy": ["matching", "quiz", "fill_in_blank"],
+    "medium": ["quiz", "matching"],
+    "hard": ["quiz"]
+  },
+  "connect_repeated_addition_to_multiplication": {
+    "easy": ["matching", "fill_in_blank"],
+    "medium": ["quiz", "matching"],
+    "hard": ["quiz"]
+  },
+  "understand_equal_sharing": {
+    "easy": ["matching", "quiz"],
+    "medium": ["quiz", "matching"],
+    "hard": ["quiz"]
+  },
+  "calculate_basic_division": {
+    "easy": ["fill_in_blank", "quiz"],
+    "medium": ["quiz"],
+    "hard": ["quiz"]
+  },
+  "calculate_perimeter": {
+    "easy": ["fill_in_blank", "matching"],
+    "medium": ["quiz", "fill_in_blank"],
+    "hard": ["quiz"]
+  },
+  "calculate_rectangle_area": {
+    "easy": ["fill_in_blank", "matching"],
+    "medium": ["quiz", "fill_in_blank"],
+    "hard": ["quiz"]
+  },
+  "read_measurements": {
+    "easy": ["matching", "quiz", "fill_in_blank"],
+    "medium": ["quiz", "matching"],
+    "hard": ["quiz"]
+  },
+  "read_table": {
+    "easy": ["matching", "quiz"],
+    "medium": ["quiz", "fill_in_blank"],
+    "hard": ["quiz"]
+  },
+  "read_bar_chart": {
+    "easy": ["matching", "quiz"],
+    "medium": ["quiz", "fill_in_blank"],
+    "hard": ["quiz"]
+  },
+  "read_write_fractions": {
+    "easy": ["matching", "fill_in_blank"],
+    "medium": ["quiz", "matching"],
+    "hard": ["quiz"]
+  },
+  "compare_fractions": {
+    "easy": ["matching", "quiz"],
+    "medium": ["quiz", "fill_in_blank"],
+    "hard": ["quiz"]
+  },
+  "read_write_decimals": {
+    "easy": ["fill_in_blank", "matching"],
+    "medium": ["quiz", "fill_in_blank"],
+    "hard": ["quiz"]
+  },
+  "compare_decimals": {
+    "easy": ["quiz", "matching"],
+    "medium": ["quiz", "fill_in_blank"],
+    "hard": ["quiz"]
+  },
+  "understand_percent": {
+    "easy": ["matching", "fill_in_blank"],
+    "medium": ["quiz", "matching"],
+    "hard": ["quiz"]
+  },
+  "calculate_volume_rectangular_prism": {
+    "easy": ["fill_in_blank", "matching"],
+    "medium": ["quiz", "fill_in_blank"],
+    "hard": ["quiz"]
+  },
+  "calculate_speed_distance_time": {
+    "easy": ["matching", "fill_in_blank"],
+    "medium": ["quiz", "fill_in_blank"],
+    "hard": ["quiz"]
+  },
+  "recognize_likelihood": {
+    "easy": ["matching", "quiz"],
+    "medium": ["quiz", "matching"],
+    "hard": ["quiz"]
+  }
+}
