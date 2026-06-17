@@ -1,8 +1,9 @@
-import "../styles/globals.css";
+import "./globals.css";
+import { AuthProvider } from "@/features/auth/auth-context";
 
 export const metadata = {
-  title: "Veridoc",
-  description: "Faithful paper-to-proposal frontend workspace",
+  title: "LearnGame",
+  description: "AI-assisted learning game generator",
 };
 
 export default function RootLayout({
@@ -12,7 +13,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }

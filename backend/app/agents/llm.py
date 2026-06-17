@@ -11,6 +11,8 @@ import json
 from functools import lru_cache
 from typing import Any
 
+from openai import AsyncOpenAI
+
 from app.config import settings
 
 
