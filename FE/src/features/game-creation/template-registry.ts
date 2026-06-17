@@ -22,6 +22,16 @@ export const TEMPLATE_REGISTRY: TemplateMetadata[] = [
     bestFor: 'Elementary lessons, quick recall, math facts, vocabulary, science concepts',
     example: 'Answer a multiplication or vocabulary question correctly to move 10% closer to a treasure cave.',
   },
+  {
+    type: 'battleship',
+    title: 'Trivia Battleship',
+    description: '2-player hot-seat game — answer trivia correctly to earn a shot at the opponent\'s grid',
+    icon: '⚓',
+    itemCount: 20,
+    interactionType: '2-player turn-based combat',
+    bestFor: 'Grades 6-12, competitive review, factual recall, vocabulary, cause & effect',
+    example: 'Answer a history question correctly to bomb your opponent\'s fleet. Hit = free turn.',
+  },
 ]
 
 export function getTemplateMetadata(type: GameTemplateType): TemplateMetadata {

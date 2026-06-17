@@ -14,6 +14,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Spinner } from '@/components/ui/spinner'
 import type { GameTemplateType } from '@/types/app'
 
+function templateTypeToProductId(type: GameTemplateType | null): string {
+  if (type === 'battleship') return 'battleship'
+  return 'treasure_hunt'
+}
+
 interface LessonForm {
   title: string
   content: string
@@ -55,9 +60,12 @@ function LessonSetupContent() {
         return
       }
 
+      const product_template_id = templateTypeToProductId(selectedTemplate)
+
       const game = await beWebApi.generateGame({
         title: form.title.trim(),
         input: form.content.trim(),
+        product_template_id,
       })
 
       router.push(`/dashboard/lesson/${game.lessonId}/validate/${game.gameId}`)

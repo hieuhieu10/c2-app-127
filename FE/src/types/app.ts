@@ -34,6 +34,7 @@ export type GameTemplateType =
   | 'fill-in-blank'
   | 'ordering'
   | 'true-false'
+  | 'battleship'
 
 export interface GameTemplate {
   id: string

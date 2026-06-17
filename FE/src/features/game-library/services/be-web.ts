@@ -150,14 +150,19 @@ export const beWebApi = {
     return request<BeWebGame>('/api/games/generate', {
       method: 'POST',
       body: JSON.stringify({
-        product_template_id: 'treasure_hunt',
         num_items: 10,
         subject: 'General',
         difficulty: 'medium',
         grade: 3,
+        product_template_id: 'treasure_hunt',
         ...input,
       }),
     })
+  },
+
+  getBattleshipPlayUrl(gameId: string | number): string {
+    const token = getAccessToken()
+    return `${BE_WEB_BASE_URL}/api/games/${gameId}/play${token ? `?token=${encodeURIComponent(token)}` : ''}`
   },
 
   getGame(gameId: string | number) {
@@ -240,11 +245,12 @@ export function mapBeWebLesson(game: BeWebGame): Lesson {
 }
 
 export function mapBeWebGame(game: BeWebGame): Game {
+  const templateType = productTemplateToGameTemplate(game.productTemplateId)
   return {
     id: String(game.gameId),
     lessonId: String(game.lessonId),
-    templateType: productTemplateToGameTemplate(game.productTemplateId),
-    items: game.items.map(mapBeWebItem),
+    templateType,
+    items: game.items.map((item) => mapBeWebItem(item, templateType)),
     settings: {
       numItems: game.settings?.numItems,
       playerCount: 2,
@@ -256,10 +262,10 @@ export function mapBeWebGame(game: BeWebGame): Game {
   }
 }
 
-export function mapBeWebItem(item: BeWebGameItem): GameItem {
+export function mapBeWebItem(item: BeWebGameItem, templateType?: GameTemplateType): GameItem {
   return {
     id: String(item.id),
-    type: 'press-the-button',
+    type: templateType ?? 'press-the-button',
     question: item.question,
     correctAnswer: item.correctAnswer,
     options: item.options,
@@ -275,6 +281,7 @@ export function mapBeWebItem(item: BeWebGameItem): GameItem {
 
 function productTemplateToGameTemplate(productTemplateId: string): GameTemplateType {
   if (productTemplateId === 'treasure_hunt') return 'press-the-button'
+  if (productTemplateId === 'battleship') return 'battleship'
   return 'multiple-choice'
 }
 
