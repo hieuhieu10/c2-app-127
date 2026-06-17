@@ -20,6 +20,9 @@ def retrieve_node(state: GenerationState) -> GenerationState:
         objective_id=state.get("objective_id"),
         prompt=state["prompt"],
         source_text=state.get("source_text"),
+        uploaded_file_id=state.get("uploaded_file_id"),
+        upload_type=state.get("upload_type", "none"),
+        teacher_requested_difficulty=state.get("difficulty", "medium"),
     )
     # Adopt the resolved objective id so downstream items reference a real objective.
     return {"context": ctx, "objective_id": ctx.objective_id or state.get("objective_id")}
