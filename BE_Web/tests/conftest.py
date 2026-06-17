@@ -15,6 +15,7 @@ from app.schemas.ai import AIGameResponse
 
 class MockAIClient:
     def __init__(self, response: AIGameResponse | None = None) -> None:
+        self.last_request = None
         self.response = response or AIGameResponse(
             ok=True,
             template_id="quiz",
@@ -35,6 +36,7 @@ class MockAIClient:
         )
 
     async def generate(self, request):
+        self.last_request = request
         return self.response
 
 

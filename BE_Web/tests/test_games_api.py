@@ -178,6 +178,31 @@ def test_generate_game_creates_review_ready_payload_for_owner(client):
     assert body["items"][0]["options"][0] != body["items"][0]["correctAnswer"]
 
 
+def test_generate_game_uses_lesson_input_as_ai_prompt(client):
+    headers = auth_headers(client, email="owner@example.com")
+    mock_ai_client = MockAIClient()
+    app.dependency_overrides[get_ai_client] = lambda: mock_ai_client
+
+    response = client.post(
+        "/api/games/generate",
+        headers=headers,
+        json={
+            "title": "test",
+            "input": "Create 10 questions for practicing the 6 times table.",
+            "product_template_id": "treasure_hunt",
+            "grade": 3,
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json()["title"] == "test"
+    assert response.json()["input"] == "Create 10 questions for practicing the 6 times table."
+    assert mock_ai_client.last_request is not None
+    assert mock_ai_client.last_request.prompt == "Create 10 questions for practicing the 6 times table."
+    assert mock_ai_client.last_request.source_text == "Create 10 questions for practicing the 6 times table."
+    assert mock_ai_client.last_request.override_template == "quiz"
+
+
 def test_list_games_returns_current_user_games_newest_first(client):
     headers = auth_headers(client, email="owner@example.com")
 
