@@ -268,7 +268,6 @@ app/
   retrieval/
 data/
   gdpt_2018/
-  templates.json
   fixtures/
 tests/
 scripts/

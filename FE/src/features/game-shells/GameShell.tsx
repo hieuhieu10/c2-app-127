@@ -3,8 +3,7 @@
 import { useEffect, useState } from 'react'
 import type { Game, GameItem } from '@/types/app'
 import { Button } from '@/components/ui/button'
-import { TreasureHuntShell } from './treasure-hunt/TreasureHuntShell'
-import { BattleshipShell } from './battleship/BattleshipShell'
+import { getGameByType } from './registry'
 
 interface GameShellProps {
   game: Game
@@ -12,13 +11,11 @@ interface GameShellProps {
   fullscreen?: boolean
 }
 
-export function GameShell({ game, previewMode = false, fullscreen = false }: GameShellProps) {
-  if (game.templateType === 'press-the-button') {
-    return <TreasureHuntShell game={game} previewMode={previewMode} fullscreen={fullscreen} />
-  }
-
-  if (game.templateType === 'battleship') {
-    return <BattleshipShell game={game} previewMode={previewMode} />
+export function GameShell({ game, previewMode = false }: GameShellProps) {
+  const def = getGameByType(game.templateType)
+  if (def) {
+    const Shell = def.Shell
+    return <Shell game={game} previewMode={previewMode} />
   }
 
   return <StandardGameShell game={game} previewMode={previewMode} />

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; }
+  * { box-sizing: border-box; }
+  ::-webkit-scrollbar { width: 9px; height: 9px; }
+  ::-webkit-scrollbar-thumb { background: #d7dbe4; border-radius: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+</style>
+</helmet>
+
+<div style="height:100vh;min-height:780px;display:flex;font-family:'Be Vietnam Pro',sans-serif;background:#f4f5f8;color:#1b2333;overflow:hidden;font-size:15px;">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside style="width:256px;flex:0 0 auto;background:#ffffff;border-right:1px solid #e9ebf1;display:flex;flex-direction:column;padding:18px 16px;">
+
+    <!-- logo -->
+    <div style="display:flex;align-items:center;gap:11px;padding:4px 6px 18px;">
+      <div style="width:36px;height:36px;border-radius:10px;background:#4f46e5;display:flex;align-items:center;justify-content:center;flex:0 0 auto;box-shadow:0 4px 10px rgba(79,70,229,.28);">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="#fff"><path d="M4 3l9 5-9 5z"></path></svg>
+      </div>
+      <div>
+        <div style="font-weight:700;font-size:16px;letter-spacing:-.2px;">Học Mà Chơi</div>
+        <div style="font-size:11.5px;color:#8b94a6;letter-spacing:.2px;">Trình tạo trò chơi · AI</div>
+      </div>
+    </div>
+
+    <!-- new button -->
+    <button style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:none;cursor:pointer;background:#4f46e5;color:#fff;font-family:inherit;font-weight:600;font-size:14.5px;padding:11px;border-radius:11px;box-shadow:0 4px 12px rgba(79,70,229,.25);">
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M10 4v12M4 10h12"></path></svg>
+      Tạo trò chơi mới
+    </button>
+
+    <!-- nav -->
+    <nav style="display:flex;flex-direction:column;gap:2px;margin-top:18px;">
+      <a style="display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:9px;text-decoration:none;color:#4f46e5;background:#eef0fe;font-weight:600;font-size:14px;">
+        <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="6" height="6" rx="1.5"></rect><rect x="11" y="3" width="6" height="6" rx="1.5"></rect><rect x="3" y="11" width="6" height="6" rx="1.5"></rect><rect x="11" y="11" width="6" height="6" rx="1.5"></rect></svg>
+        Trò chơi của tôi
+      </a>
+      <a style="display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:9px;text-decoration:none;color:#5b6577;font-weight:500;font-size:14px;">
+        <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M4 5.5A1.5 1.5 0 015.5 4H9v12H5.5A1.5 1.5 0 014 14.5z"></path><path d="M16 5.5A1.5 1.5 0 0014.5 4H11v12h3.5A1.5 1.5 0 0016 14.5z"></path></svg>
+        Thư viện mẫu
+      </a>
+      <a style="display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:9px;text-decoration:none;color:#5b6577;font-weight:500;font-size:14px;">
+        <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="7" cy="7" r="2.5"></circle><circle cx="14" cy="8" r="2"></circle><path d="M3 16c0-2.2 1.8-4 4-4s4 1.8 4 4M12 16c0-1.6.8-3 2-3.6"></path></svg>
+        Lớp học của tôi
+      </a>
+      <a style="display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:9px;text-decoration:none;color:#5b6577;font-weight:500;font-size:14px;">
+        <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 16V9M10 16V4M16 16v-5"></path></svg>
+        Phân tích
+      </a>
+    </nav>
+
+    <!-- recent -->
+    <div style="margin-top:22px;flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;">
+      <div style="font-size:11.5px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:#9aa2b2;padding:0 11px 8px;">Gần đây</div>
+      <div style="display:flex;flex-direction:column;gap:1px;overflow:hidden;">
+        <a style="display:block;padding:8px 11px;border-radius:8px;text-decoration:none;color:#1b2333;font-size:13.5px;font-weight:500;background:#f4f5f8;">Phân số bằng nhau · Lớp 4</a>
+        <a style="display:block;padding:8px 11px;border-radius:8px;text-decoration:none;color:#5b6577;font-size:13.5px;">Quang hợp ở lá cây · Lớp 5</a>
+        <a style="display:block;padding:8px 11px;border-radius:8px;text-decoration:none;color:#5b6577;font-size:13.5px;">Từ loại tiếng Việt · Lớp 3</a>
+        <a style="display:block;padding:8px 11px;border-radius:8px;text-decoration:none;color:#5b6577;font-size:13.5px;">Bản đồ hành chính · Lớp 4</a>
+      </div>
+    </div>
+
+    <!-- user -->
+    <div style="display:flex;align-items:center;gap:10px;padding:10px;border-top:1px solid #eef0f4;margin-top:8px;">
+      <div style="width:34px;height:34px;border-radius:50%;background:#dfe3ee;color:#4a5570;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px;flex:0 0 auto;">NL</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Cô Nguyễn Lan</div>
+        <div style="font-size:11.5px;color:#8b94a6;">GV Toán · Lớp 4A</div>
+      </div>
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="#9aa2b2" stroke-width="1.6"><circle cx="10" cy="10" r="2.4"></circle><path d="M10 3v2M10 15v2M3 10h2M15 10h2M5 5l1.4 1.4M13.6 13.6L15 15M15 5l-1.4 1.4M6.4 13.6L5 15"></path></svg>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main style="flex:1;min-width:0;display:flex;flex-direction:column;">
+
+    <!-- top bar -->
+    <header style="height:60px;flex:0 0 auto;border-bottom:1px solid #e9ebf1;background:#ffffff;display:flex;align-items:center;padding:0 26px;gap:14px;">
+      <div style="display:flex;align-items:center;gap:9px;min-width:0;">
+        <span style="font-size:13.5px;color:#9aa2b2;">Trò chơi của tôi</span>
+        <span style="color:#cfd4df;">/</span>
+        <span style="font-size:16px;font-weight:600;letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Phân số bằng nhau</span>
+        <span style="flex:0 0 auto;font-size:12px;font-weight:600;color:#b06f00;background:#fdf3e0;border:1px solid #f5e2bb;border-radius:7px;padding:3px 9px;">Bản nháp</span>
+      </div>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:10px;">
+        <button style="border:1px solid #e3e6ee;background:#fff;color:#5b6577;font-family:inherit;font-size:13.5px;font-weight:500;padding:8px 14px;border-radius:9px;cursor:pointer;">Lưu nháp</button>
+        <div style="width:34px;height:34px;border-radius:9px;border:1px solid #e3e6ee;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#8b94a6;">
+          <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10" cy="10" r="7.2"></circle><path d="M10 14.5v-.2M10 11.4c0-1.6 1.8-1.7 1.8-3.3A1.8 1.8 0 0010 6.4c-1 0-1.7.6-1.9 1.5" stroke-linecap="round"></path></svg>
+        </div>
+      </div>
+    </header>
+
+    <!-- thread -->
+    <div style="flex:1;min-height:0;overflow-y:auto;background:#f4f5f8;">
+      <div style="max-width:800px;margin:0 auto;padding:30px 24px 14px;display:flex;flex-direction:column;gap:22px;">
+
+        <!-- teacher message -->
+        <div style="align-self:flex-end;max-width:80%;">
+          <div style="background:#4f46e5;color:#fff;border-radius:16px 16px 5px 16px;padding:14px 16px;box-shadow:0 6px 18px rgba(79,70,229,.22);">
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:11px;">
+              <span style="font-size:12.5px;font-weight:500;background:rgba(255,255,255,.18);border-radius:7px;padding:3px 9px;">Môn: Toán</span>
+              <span style="font-size:12.5px;font-weight:500;background:rgba(255,255,255,.18);border-radius:7px;padding:3px 9px;">Lớp 4</span>
+              <span style="font-size:12.5px;font-weight:500;background:rgba(255,255,255,.18);border-radius:7px;padding:3px 9px;">Độ khó: Trung bình</span>
+              <span style="font-size:12.5px;font-weight:500;background:rgba(255,255,255,.18);border-radius:7px;padding:3px 9px;">Mục tiêu: Phân số bằng nhau</span>
+              <span style="display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:500;background:rgba(255,255,255,.18);border-radius:7px;padding:3px 9px;">
+                <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3h6l3 3v11H6z"></path><path d="M12 3v3h3"></path></svg>
+                phanso.pdf
+              </span>
+            </div>
+            <div style="font-size:15px;line-height:1.5;">Tạo cho mình một trò chơi ôn tập về <b>phân số bằng nhau</b> cho học sinh lớp 4, vui và dễ hiểu nhé.</div>
+          </div>
+        </div>
+
+        <!-- assistant -->
+        <div style="display:flex;gap:13px;align-items:flex-start;">
+          <div style="width:38px;height:38px;border-radius:11px;background:#eef0fe;display:flex;align-items:center;justify-content:center;flex:0 0 auto;">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="#4f46e5"><path d="M10 2l1.7 4.6L16.5 8l-4.8 1.4L10 14l-1.7-4.6L3.5 8l4.8-1.4z"></path></svg>
+          </div>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:14px;">
+
+            <div style="font-size:14px;color:#5b6577;">Mình đã chạy xong quy trình tạo trò chơi <span style="color:#9aa2b2;">· hoàn tất trong 12 giây</span></div>
+
+            <!-- pipeline card -->
+            <div style="background:#fff;border:1px solid #e9ebf1;border-radius:16px;padding:6px 18px;box-shadow:0 1px 2px rgba(16,24,40,.04),0 6px 20px rgba(16,24,40,.04);">
+              <!-- step 1 -->
+              <div style="display:flex;gap:13px;align-items:flex-start;padding:14px 0;border-bottom:1px solid #f1f2f6;">
+                <div style="width:30px;height:30px;border-radius:50%;background:#e7f7f0;color:#0d9f6e;display:flex;align-items:center;justify-content:center;flex:0 0 auto;"><svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5l3.5 3.5 8.5-9"></path></svg></div>
+                <div style="flex:1;"><div style="font-size:14.5px;font-weight:600;">Phân tích tài liệu</div><div style="font-size:13px;color:#8b94a6;margin-top:1px;">Đọc 4 trang PDF · trích 12 đoạn nội dung</div></div>
+                <sc-if value="{{ showStageTags }}" hint-placeholder-val="{{ true }}"><span style="flex:0 0 auto;align-self:center;font-size:12px;font-weight:500;color:#5b6577;background:#f3f4f8;border:1px solid #e9ebf1;border-radius:7px;padding:3px 9px;">PyMuPDF · OCR</span></sc-if>
+              </div>
+              <!-- step 2 -->
+              <div style="display:flex;gap:13px;align-items:flex-start;padding:14px 0;border-bottom:1px solid #f1f2f6;">
+                <div style="width:30px;height:30px;border-radius:50%;background:#e7f7f0;color:#0d9f6e;display:flex;align-items:center;justify-content:center;flex:0 0 auto;"><svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5l3.5 3.5 8.5-9"></path></svg></div>
+                <div style="flex:1;"><div style="font-size:14.5px;font-weight:600;">Tra cứu khung chương trình GDPT 2018</div><div style="font-size:13px;color:#8b94a6;margin-top:1px;">3 yêu cầu cần đạt liên quan · Toán lớp 4 — Số &amp; phép tính</div></div>
+                <sc-if value="{{ showStageTags }}" hint-placeholder-val="{{ true }}"><span style="flex:0 0 auto;align-self:center;font-size:12px;font-weight:500;color:#5b6577;background:#f3f4f8;border:1px solid #e9ebf1;border-radius:7px;padding:3px 9px;">RAG</span></sc-if>
+              </div>
+              <!-- step 3 -->
+              <div style="display:flex;gap:13px;align-items:flex-start;padding:14px 0;border-bottom:1px solid #f1f2f6;">
+                <div style="width:30px;height:30px;border-radius:50%;background:#e7f7f0;color:#0d9f6e;display:flex;align-items:center;justify-content:center;flex:0 0 auto;"><svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5l3.5 3.5 8.5-9"></path></svg></div>
+                <div style="flex:1;"><div style="font-size:14.5px;font-weight:600;">Đề xuất mẫu trò chơi</div><div style="font-size:13px;color:#8b94a6;margin-top:1px;">Chọn mẫu <b style="color:#1b2333;">Ghép cặp khái niệm</b> · độ phù hợp 86%</div></div>
+                <sc-if value="{{ showStageTags }}" hint-placeholder-val="{{ true }}"><span style="flex:0 0 auto;align-self:center;font-size:12px;font-weight:500;color:#4f46e5;background:#eef0fe;border:1px solid #dfe1fc;border-radius:7px;padding:3px 9px;">Bộ điều phối</span></sc-if>
+              </div>
+              <!-- step 4 -->
+              <div style="display:flex;gap:13px;align-items:flex-start;padding:14px 0;">
+                <div style="width:30px;height:30px;border-radius:50%;background:#e7f7f0;color:#0d9f6e;display:flex;align-items:center;justify-content:center;flex:0 0 auto;"><svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5l3.5 3.5 8.5-9"></path></svg></div>
+                <div style="flex:1;"><div style="font-size:14.5px;font-weight:600;">Sinh nội dung trò chơi</div><div style="font-size:13px;color:#8b94a6;margin-top:1px;">8 cặp ghép · JSON hợp lệ theo schema của mẫu</div></div>
+                <sc-if value="{{ showStageTags }}" hint-placeholder-val="{{ true }}"><span style="flex:0 0 auto;align-self:center;font-size:12px;font-weight:500;color:#4f46e5;background:#eef0fe;border:1px solid #dfe1fc;border-radius:7px;padding:3px 9px;">Bộ sinh nội dung</span></sc-if>
+              </div>
+            </div>
+
+            <!-- SAFETY GATE — prominent -->
+            <div style="background:#fff;border:1px solid #e9ebf1;border-radius:16px;overflow:hidden;box-shadow:0 1px 2px rgba(16,24,40,.04),0 8px 24px rgba(16,24,40,.05);">
+              <div style="display:flex;align-items:center;gap:11px;padding:15px 18px;border-bottom:1px solid #f1f2f6;background:#fbfcfe;">
+                <div style="width:32px;height:32px;border-radius:9px;background:#eef0fe;color:#4f46e5;display:flex;align-items:center;justify-content:center;flex:0 0 auto;"><svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M10 2.5l6 2v4.5c0 4-2.6 6.6-6 8-3.4-1.4-6-4-6-8V4.5z"></path><path d="M7.4 10l1.8 1.8 3.6-3.8" stroke-linecap="round"></path></svg></div>
+                <div style="flex:1;"><div style="font-size:15px;font-weight:700;">Kiểm định nội dung &amp; an toàn</div><div style="font-size:12.5px;color:#8b94a6;">Bộ kiểm định tự động trước khi xuất bản</div></div>
+                <sc-if value="{{ safetyWarning }}" hint-placeholder-val="{{ true }}"><span style="flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#b06f00;background:#fdf3e0;border:1px solid #f3deb0;border-radius:9px;padding:5px 11px;"><span style="width:7px;height:7px;border-radius:50%;background:#d98a04;"></span>Đạt · 1 cảnh báo</span></sc-if>
+                <sc-if value="{{ safetyPass }}" hint-placeholder-val="{{ false }}"><span style="flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#047a55;background:#e7f7f0;border:1px solid #c4ecd9;border-radius:9px;padding:5px 11px;"><span style="width:7px;height:7px;border-radius:50%;background:#0d9f6e;"></span>Đạt toàn bộ</span></sc-if>
+              </div>
+              <div style="padding:6px 18px;">
+                <!-- check 1 -->
+                <div style="display:flex;gap:13px;align-items:flex-start;padding:13px 0;border-bottom:1px solid #f4f5f8;">
+                  <div style="width:26px;height:26px;border-radius:50%;background:#e7f7f0;color:#0d9f6e;display:flex;align-items:center;justify-content:center;flex:0 0 auto;"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5l3.5 3.5 8.5-9"></path></svg></div>
+                  <div style="flex:1;"><div style="font-size:14px;font-weight:600;">Đáp án được tài liệu xác nhận</div><div style="font-size:12.5px;color:#8b94a6;margin-top:1px;">Kiểm tra suy luận đáp án (entailment) — 8/8 câu khớp nguồn</div></div>
+                  <span style="flex:0 0 auto;align-self:center;font-size:12.5px;font-weight:600;color:#047a55;">Đạt</span>
+                </div>
+                <!-- check 2 — distractor (warning or pass) -->
+                <sc-if value="{{ safetyWarning }}" hint-placeholder-val="{{ true }}">
+                  <div style="display:flex;gap:13px;align-items:flex-start;padding:13px 0;border-bottom:1px solid #f4f5f8;">
+                    <div style="width:26px;height:26px;border-radius:50%;background:#fdf3e0;color:#b06f00;display:flex;align-items:center;justify-content:center;flex:0 0 auto;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M10 6v5M10 14v.2"></path></svg></div>
+                    <div style="flex:1;"><div style="font-size:14px;font-weight:600;">Phương án nhiễu sai một cách rõ ràng</div><div style="font-size:12.5px;color:#8b94a6;margin-top:1px;">Phát hiện 1 phương án có thể gây nhầm — đã tự loại &amp; tạo lại</div></div>
+                    <span style="flex:0 0 auto;align-self:center;font-size:12.5px;font-weight:600;color:#b06f00;">Đã khắc phục</span>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ safetyPass }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;gap:13px;align-items:flex-start;padding:13px 0;border-bottom:1px solid #f4f5f8;">
+                    <div style="width:26px;height:26px;border-radius:50%;background:#e7f7f0;color:#0d9f6e;display:flex;align-items:center;justify-content:center;flex:0 0 auto;"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5l3.5 3.5 8.5-9"></path></svg></div>
+                    <div style="flex:1;"><div style="font-size:14px;font-weight:600;">Phương án nhiễu sai một cách rõ ràng</div><div style="font-size:12.5px;color:#8b94a6;margin-top:1px;">Tất cả phương án nhiễu đều được xác minh là sai</div></div>
+                    <span style="flex:0 0 auto;align-self:center;font-size:12.5px;font-weight:600;color:#047a55;">Đạt</span>
+                  </div>
+                </sc-if>
+                <!-- check 3 -->
+                <div style="display:flex;gap:13px;align-items:flex-start;padding:13px 0;">
+                  <div style="width:26px;height:26px;border-radius:50%;background:#e7f7f0;color:#0d9f6e;display:flex;align-items:center;justify-content:center;flex:0 0 auto;"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5l3.5 3.5 8.5-9"></path></svg></div>
+                  <div style="flex:1;"><div style="font-size:14px;font-weight:600;">Phù hợp độ tuổi &amp; chương trình</div><div style="font-size:12.5px;color:#8b94a6;margin-top:1px;">Bộ phân loại: phù hợp lớp 4 · bám sát yêu cầu cần đạt GDPT 2018</div></div>
+                  <span style="flex:0 0 auto;align-self:center;font-size:12.5px;font-weight:600;color:#047a55;">Đạt</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- post-gate steps -->
+            <div style="background:#fff;border:1px solid #e9ebf1;border-radius:16px;padding:6px 18px;box-shadow:0 1px 2px rgba(16,24,40,.04),0 6px 20px rgba(16,24,40,.04);">
+              <div style="display:flex;gap:13px;align-items:flex-start;padding:14px 0;border-bottom:1px solid #f1f2f6;">
+                <div style="width:30px;height:30px;border-radius:50%;background:#e7f7f0;color:#0d9f6e;display:flex;align-items:center;justify-content:center;flex:0 0 auto;"><svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5l3.5 3.5 8.5-9"></path></svg></div>
+                <div style="flex:1;"><div style="font-size:14.5px;font-weight:600;">Kiểm tra cấu trúc dữ liệu (schema)</div><div style="font-size:13px;color:#8b94a6;margin-top:1px;">Hợp lệ — đúng định dạng của mẫu “Ghép cặp khái niệm”</div></div>
+              </div>
+              <div style="display:flex;gap:13px;align-items:flex-start;padding:14px 0;">
+                <div style="width:30px;height:30px;border-radius:50%;background:#e7f7f0;color:#0d9f6e;display:flex;align-items:center;justify-content:center;flex:0 0 auto;"><svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5l3.5 3.5 8.5-9"></path></svg></div>
+                <div style="flex:1;"><div style="font-size:14.5px;font-weight:600;">Dựng trò chơi</div><div style="font-size:13px;color:#8b94a6;margin-top:1px;">Đã ghép nội dung vào khung trò chơi có sẵn</div></div>
+              </div>
+            </div>
+
+            <!-- ready card -->
+            <div style="display:flex;align-items:center;gap:16px;background:linear-gradient(180deg,#f3f4ff,#eef0fe);border:1px solid #dfe1fc;border-radius:16px;padding:18px 20px;">
+              <div style="flex:1;">
+                <div style="font-size:15.5px;font-weight:700;">Trò chơi đã sẵn sàng</div>
+                <div style="font-size:13.5px;color:#5b6577;margin-top:2px;">Xem trước, chỉnh sửa từng câu rồi duyệt &amp; xuất bản cho lớp của bạn.</div>
+              </div>
+              <button style="flex:0 0 auto;display:inline-flex;align-items:center;gap:8px;border:none;cursor:pointer;background:#4f46e5;color:#fff;font-family:inherit;font-weight:600;font-size:14.5px;padding:12px 20px;border-radius:11px;box-shadow:0 6px 16px rgba(79,70,229,.28);">
+                Xem trước &amp; duyệt
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h11M11 5l5 5-5 5"></path></svg>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- composer -->
+    <div style="flex:0 0 auto;background:#f4f5f8;padding:8px 24px 22px;">
+      <div style="max-width:800px;margin:0 auto;background:#fff;border:1px solid #e3e6ee;border-radius:18px;box-shadow:0 2px 6px rgba(16,24,40,.05),0 12px 30px rgba(16,24,40,.06);padding:13px 15px;">
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:11px;">
+          <span style="display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:#3730a3;background:#eef0fe;border:1px solid #e0e2fb;border-radius:9px;padding:5px 11px;cursor:pointer;">Môn: Toán <svg width="11" height="11" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 8l5 5 5-5"></path></svg></span>
+          <span style="display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:#475067;background:#f1f3f7;border:1px solid #e7e9f0;border-radius:9px;padding:5px 11px;cursor:pointer;">Lớp 4 <svg width="11" height="11" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 8l5 5 5-5"></path></svg></span>
+          <span style="display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:#475067;background:#f1f3f7;border:1px solid #e7e9f0;border-radius:9px;padding:5px 11px;cursor:pointer;">Độ khó: Trung bình <svg width="11" height="11" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 8l5 5 5-5"></path></svg></span>
+          
+        </div>
+        <div style="font-size:15px;color:#9aa2b2;padding:2px 4px 12px;">Mô tả trò chơi bạn muốn tạo, hoặc yêu cầu chỉnh sửa…</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="display:inline-flex;align-items:center;gap:7px;font-size:13px;color:#5b6577;background:#f4f5f8;border:1px solid #e7e9f0;border-radius:9px;padding:6px 11px;">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="#0d9f6e" stroke-width="1.8"><path d="M6 3h6l3 3v11H6z"></path><path d="M12 3v3h3"></path></svg>
+            phanso.pdf
+            <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="#9aa2b2" stroke-width="2" stroke-linecap="round"><path d="M6 6l8 8M14 6l-8 8"></path></svg>
+          </span>
+          <button style="display:inline-flex;align-items:center;gap:6px;border:1px solid #e3e6ee;background:#fff;color:#5b6577;font-family:inherit;font-size:13px;font-weight:500;padding:7px 12px;border-radius:9px;cursor:pointer;">
+            <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9l-4.5 4.5a2.5 2.5 0 01-3.5-3.5l5-5a1.6 1.6 0 012.3 2.3l-5 5"></path></svg>
+            Đính kèm
+          </button>
+          <div style="margin-left:auto;width:42px;height:42px;border-radius:50%;background:#4f46e5;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 5px 14px rgba(79,70,229,.3);">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 16V5M5 10l5-5 5 5"></path></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;safetyResult&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;Có cảnh báo&quot;, &quot;options&quot;: [&quot;Đạt toàn bộ&quot;, &quot;Có cảnh báo&quot;], &quot;tsType&quot;: &quot;string&quot; },
+  &quot;showStageTags&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot; }
+}">
+class Component extends DCLogic {
+  renderVals() {
+    const safety = this.props.safetyResult ?? 'Có cảnh báo';
+    const warning = safety === 'Có cảnh báo';
+    return {
+      showStageTags: this.props.showStageTags ?? true,
+      safetyWarning: warning,
+      safetyPass: !warning,
+    };
+  }
+}
+</script>
+</body>
+</html>

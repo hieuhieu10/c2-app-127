@@ -1,12 +1,13 @@
 """LangGraph wiring for the agent workflow.
 
-    retrieve -> recommend -> generate -> validate --done--> END
-                                            ^   |
-                                            |   +--repair--> repair --> validate
-                                            |
-                                            +--give_up--> finalize_failure -> END
+    guardrail --ok--> retrieve -> recommend -> generate -> validate --done--> END
+        |                                          ^   |
+        +--blocked--> END                          |   +--repair--> repair --> validate
+                                                    |
+                                                    +--give_up--> finalize_failure -> END
 
-The recommend node is skipped logically when a template override is supplied (handled
+The guardrail node screens the request (scope / relevance / child-safety) and short-circuits
+to END when it rejects. The recommend node is skipped logically when a template override is supplied (handled
 inside the node). The conditional edge after `validate` drives the repair loop up to
 `settings.max_repairs`.
 """
@@ -24,6 +25,7 @@ from app.agents.generator import (
     retrieve_node,
     validate_node,
 )
+from app.agents.guardrail import after_guardrail, guardrail_node
 from app.agents.recommender import recommend_node
 from app.agents.state import GenerationState
 
@@ -44,6 +46,7 @@ def _route_after_recommend(state: GenerationState) -> str:
 def build_graph():
     g = StateGraph(GenerationState)
 
+    g.add_node("guardrail", guardrail_node)
     g.add_node("retrieve", retrieve_node)
     g.add_node("recommend", recommend_node)
     g.add_node("generate", generate_node)
@@ -51,7 +54,10 @@ def build_graph():
     g.add_node("repair", repair_node)
     g.add_node("finalize_failure", _finalize_failure)
 
-    g.set_entry_point("retrieve")
+    g.set_entry_point("guardrail")
+    g.add_conditional_edges(
+        "guardrail", after_guardrail, {"ok": "retrieve", "blocked": END}
+    )
     g.add_edge("retrieve", "recommend")
     g.add_conditional_edges(
         "recommend", _route_after_recommend, {"ok": "generate", "error": END}

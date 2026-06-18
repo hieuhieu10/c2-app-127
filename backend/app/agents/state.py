@@ -29,3 +29,7 @@ class GenerationState(TypedDict, total=False):
     repair_attempts: int
     ok: bool
     error: str | None  # terminal error message (e.g. exhausted repairs)
+
+    # --- guardrail (input screening) ---
+    blocked: bool  # True when an input guardrail rejected the request
+    guardrail: dict[str, Any]  # GuardrailReport.model_dump() when blocked

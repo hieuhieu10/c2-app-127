@@ -6,6 +6,7 @@ from typing import Literal
 
 from pydantic import Field
 
+from ..spec import GameSpec
 from .base import BaseGameItem, GameContentBase
 
 
@@ -49,3 +50,21 @@ class BattleshipContent(GameContentBase):
             "since the player sees only one question at a time."
         ),
     )
+
+
+SPEC = GameSpec(
+    id="battleship",
+    name="Trivia Battleship",
+    description=(
+        "2-player hot-seat game: answer a trivia question correctly to earn the right to bomb "
+        "the opponent's 6×6 grid. A hit rewards another turn. Best for competitive factual review."
+    ),
+    content_type_fit=("facts", "definitions", "concepts", "cause-effect", "vocabulary"),
+    grade_range=(6, 12),
+    content_model=BattleshipContent,
+    active=True,
+    playable=True,
+    min_items=20,
+    default_num_items=20,
+    sort_order=20,
+)

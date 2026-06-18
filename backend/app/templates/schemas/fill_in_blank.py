@@ -6,6 +6,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from ..spec import GameSpec
 from .base import GameContentBase
 
 
@@ -43,3 +44,18 @@ class FillBlankContent(GameContentBase):
         max_length=20,
         description="The fill-in-the-blank items.",
     )
+
+
+SPEC = GameSpec(
+    id="fill_in_blank",
+    name="Fill in the blank",
+    description=(
+        "Complete sentences by choosing the missing word(s). Best for key terminology in context."
+    ),
+    content_type_fit=("vocabulary", "key-terms", "definitions", "formulas"),
+    grade_range=(1, 12),
+    content_model=FillBlankContent,
+    active=True,
+    playable=False,
+    sort_order=60,
+)

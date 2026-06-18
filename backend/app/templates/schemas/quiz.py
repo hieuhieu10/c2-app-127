@@ -6,6 +6,7 @@ from typing import Literal
 
 from pydantic import Field
 
+from ..spec import GameSpec
 from .base import BaseGameItem, GameContentBase
 
 
@@ -21,3 +22,19 @@ class QuizContent(GameContentBase):
         max_length=20,
         description="The quiz questions, each with one correct answer and misconception distractors.",
     )
+
+
+SPEC = GameSpec(
+    id="quiz",
+    name="Multiple-choice quiz",
+    description=(
+        "Questions with one correct answer and misconception-targeting distractors. "
+        "Best for checking factual recall and concept understanding."
+    ),
+    content_type_fit=("facts", "definitions", "concepts", "cause-effect"),
+    grade_range=(1, 12),
+    content_model=QuizContent,
+    active=True,
+    playable=False,
+    sort_order=40,
+)

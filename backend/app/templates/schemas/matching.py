@@ -6,6 +6,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from ..spec import GameSpec
 from .base import GameContentBase
 
 
@@ -56,3 +57,19 @@ class MatchingContent(GameContentBase):
         ),
     )
     hint: str = Field(..., min_length=1, description="A short hint for the whole matching set.")
+
+
+SPEC = GameSpec(
+    id="matching",
+    name="Matching / memory",
+    description=(
+        "Match terms to definitions, events to dates, or causes to effects. "
+        "Best for relating paired concepts."
+    ),
+    content_type_fit=("term-definition", "pairs", "classification", "vocabulary"),
+    grade_range=(1, 12),
+    content_model=MatchingContent,
+    active=True,
+    playable=False,
+    sort_order=50,
+)

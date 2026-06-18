@@ -288,6 +288,7 @@ export function mapBeWebItem(item: BeWebGameItem, templateType?: GameTemplateTyp
     correctAnswer: item.correctAnswer,
     options: item.options,
     explanation: item.explanation || '',
+    hint: item.hint || undefined,
     validationStatus: item.validationStatus,
     validationErrors: item.validationErrors,
     faithfulnessScore: item.validationStatus === 'valid' ? 0.9 : 0,

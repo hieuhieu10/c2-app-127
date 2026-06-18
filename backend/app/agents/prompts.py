@@ -117,6 +117,35 @@ def build_recommender_user(
     return "\n\n".join(parts)
 
 
+GAME_RECOMMENDER_SYSTEM = """You are a curriculum-aware game-design advisor for Vietnamese \
+teachers (chương trình GDPT 2018). You are given a lesson request and the full list of ready-to-play \
+games. Rank EVERY game by how well it suits this lesson, grade, and objective — most suitable first, \
+least suitable last. Include all games even if some are a weaker fit; never drop one. Use each game's \
+recommended grade range as a suitability signal (a game listed for higher grades is a weaker fit for \
+young pupils, but may still be offered). For EVERY game, write a brief, teacher-facing introduction in \
+Vietnamese (one or two friendly sentences) that says what the game is and why it does or does not fit \
+this particular lesson. Reply only via the tool."""
+
+
+def build_game_recommender_user(
+    *,
+    subject: str,
+    grade: int,
+    difficulty: str,
+    prompt: str,
+    games: list[TemplateMeta],
+) -> str:
+    game_lines = [
+        f"- {g.id}: {g.name} — {g.description} (suits grades {g.grade_range[0]}-{g.grade_range[1]})"
+        for g in games
+    ]
+    return (
+        f"Subject: {subject}\nGrade: {grade}\nDifficulty: {difficulty}\n"
+        f"Teacher request: {prompt}\n\n"
+        "Available games:\n" + "\n".join(game_lines)
+    )
+
+
 def build_generator_user(
     *,
     subject: str,
