@@ -15,9 +15,34 @@ export interface TreasurePlayer {
 
 export const FINISH_POSITION = 50
 
+interface PathPoint {
+  x: number
+  y: number
+}
+
 const PLAYER_PRESETS = [
   { id: 'player-1', name: 'Alex', avatar: '🧒', color: '#f97316' },
   { id: 'player-2', name: 'Bella', avatar: '👧', color: '#0ea5e9' },
+]
+
+const PLAYER_1_PATH: PathPoint[] = [
+  { x: 8, y: 79 },
+  { x: 17, y: 63 },
+  { x: 30, y: 57 },
+  { x: 42, y: 45 },
+  { x: 55, y: 33 },
+  { x: 70, y: 36 },
+  { x: 88, y: 34 },
+]
+
+const PLAYER_2_PATH: PathPoint[] = [
+  { x: 8, y: 79 },
+  { x: 17, y: 63 },
+  { x: 30, y: 57 },
+  { x: 42, y: 65 },
+  { x: 56, y: 72 },
+  { x: 72, y: 69 },
+  { x: 88, y: 71 },
 ]
 
 export function createTreasurePlayers(settings?: GameSettings): TreasurePlayer[] {
@@ -77,18 +102,45 @@ export function getWinner(players: TreasurePlayer[]): TreasurePlayer {
 }
 
 export function getPathPoint(progress: number, laneIndex: number, laneCount: number) {
-  const clamped = Math.min(Math.max(progress, 0), 100) / 100
-  const pathIndex = laneIndex % 2
-  const sharedProgress = Math.min(clamped, 0.24)
-  const branchProgress = Math.max(0, (clamped - 0.24) / 0.76)
-  const x = clamped < 0.24 ? 8 + sharedProgress * 92 : 30 + branchProgress * 62
-  const sharedY = 78 - sharedProgress * 88
-  const branchBaseY = pathIndex === 0 ? 33 : 70
-  const branchWave = Math.sin(branchProgress * Math.PI * 2) * (pathIndex === 0 ? 11 : 9)
-  const y = clamped < 0.24 ? sharedY + laneIndex * 2 : branchBaseY + branchWave
+  const clampedProgress = Math.min(Math.max(progress, 0), 100)
+  const path = laneIndex % 2 === 0 ? PLAYER_1_PATH : PLAYER_2_PATH
+  const point = interpolatePath(path, clampedProgress)
+  const startOffsetStrength = Math.max(0, 1 - clampedProgress / 22)
+  const startOffset = laneIndex % 2 === 0 ? -2.2 : 2.2
+  const y = point.y + startOffset * startOffsetStrength
 
   return {
-    left: `${x}%`,
+    left: `${point.x}%`,
     top: `${Math.min(Math.max(y, 12), 84)}%`,
   }
+}
+
+function interpolatePath(path: PathPoint[], progress: number): PathPoint {
+  if (path.length === 0) return { x: 0, y: 0 }
+  if (path.length === 1) return path[0]
+
+  const segmentLengths = path.slice(1).map((point, index) => {
+    const previous = path[index]
+    return Math.hypot(point.x - previous.x, point.y - previous.y)
+  })
+  const totalLength = segmentLengths.reduce((sum, length) => sum + length, 0)
+  let distance = (Math.min(Math.max(progress, 0), 100) / 100) * totalLength
+
+  for (let index = 0; index < segmentLengths.length; index += 1) {
+    const segmentLength = segmentLengths[index]
+    const start = path[index]
+    const end = path[index + 1]
+
+    if (distance <= segmentLength) {
+      const ratio = segmentLength === 0 ? 0 : distance / segmentLength
+      return {
+        x: start.x + (end.x - start.x) * ratio,
+        y: start.y + (end.y - start.y) * ratio,
+      }
+    }
+
+    distance -= segmentLength
+  }
+
+  return path[path.length - 1]
 }

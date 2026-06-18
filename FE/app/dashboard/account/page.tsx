@@ -1,6 +1,6 @@
 'use client'
 
-import { FormEvent, useEffect, useMemo, useState } from 'react'
+import { ChangeEvent, FormEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { DashboardHeader } from '@/components/layout/dashboard-header'
 import { Button } from '@/components/ui/button'
@@ -8,16 +8,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Spinner } from '@/components/ui/spinner'
+import { UserAvatar } from '@/components/ui/user-avatar'
 import { useAuth } from '@/features/auth/auth-context'
-import { getUserInitials } from '@/lib/utils'
 
 export default function AccountPage() {
   const router = useRouter()
-  const { user, loading, updateProfile, changePassword } = useAuth()
+  const { user, loading, updateProfile, changePassword, uploadAvatar } = useAuth()
   const [name, setName] = useState('')
   const [profileError, setProfileError] = useState<string | null>(null)
   const [profileSuccess, setProfileSuccess] = useState<string | null>(null)
   const [profileSaving, setProfileSaving] = useState(false)
+  const [avatarFile, setAvatarFile] = useState<File | null>(null)
+  const [avatarError, setAvatarError] = useState<string | null>(null)
+  const [avatarSuccess, setAvatarSuccess] = useState<string | null>(null)
+  const [avatarUploading, setAvatarUploading] = useState(false)
+  const avatarInputRef = useRef<HTMLInputElement | null>(null)
 
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
@@ -50,8 +55,6 @@ export default function AccountPage() {
       </div>
     )
   }
-
-  const initials = getUserInitials(user.name, user.email)
 
   async function handleProfileSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -105,6 +108,40 @@ export default function AccountPage() {
     }
   }
 
+  async function uploadSelectedAvatar(file: File) {
+    setAvatarError(null)
+    setAvatarSuccess(null)
+
+    if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
+      setAvatarError('Avatar must be a PNG, JPEG, or WebP image')
+      return
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      setAvatarError('Avatar must be 2MB or smaller')
+      return
+    }
+
+    setAvatarUploading(true)
+    try {
+      await uploadAvatar(file)
+      setAvatarFile(file)
+      setAvatarSuccess('Avatar uploaded successfully')
+    } catch (error) {
+      setAvatarError(error instanceof Error ? error.message : 'Failed to upload avatar')
+    } finally {
+      setAvatarUploading(false)
+    }
+  }
+
+  async function handleAvatarChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0]
+    if (!file) return
+    setAvatarFile(file)
+    await uploadSelectedAvatar(file)
+    event.target.value = ''
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/5">
       <DashboardHeader />
@@ -124,17 +161,53 @@ export default function AccountPage() {
             <CardContent>
               <form className="space-y-5" onSubmit={(event) => void handleProfileSubmit(event)}>
                 <div className="flex items-center gap-4 rounded-lg border border-border bg-muted/30 p-4">
-                  <div
-                    className="flex h-14 w-14 items-center justify-center rounded-full border border-border bg-secondary text-lg font-semibold text-secondary-foreground"
-                    title={avatarTitle}
-                    aria-label={avatarTitle}
-                  >
-                    {initials}
+                  <div className="space-y-2">
+                    <button
+                      type="button"
+                      className={`group relative rounded-full transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${avatarUploading ? 'opacity-70' : ''}`}
+                      onClick={() => avatarInputRef.current?.click()}
+                      aria-label="Change avatar"
+                    >
+                      <UserAvatar
+                        name={user.name}
+                        email={user.email}
+                        avatarUrl={user.avatarUrl}
+                        sizeClassName="h-14 w-14"
+                        textClassName="text-lg"
+                        className="transition-transform group-hover:scale-[1.02]"
+                        title={avatarTitle}
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/0 text-[11px] font-semibold text-white transition group-hover:bg-black/45 group-focus-visible:bg-black/45">
+                        <span className="opacity-0 transition group-hover:opacity-100 group-focus-visible:opacity-100">
+                          {avatarUploading ? 'Uploading' : 'Change'}
+                        </span>
+                      </div>
+                    </button>
+                    <input
+                      ref={avatarInputRef}
+                      id="avatar-file"
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp"
+                      hidden
+                      onChange={(event) => void handleAvatarChange(event)}
+                    />
                   </div>
                   <div className="min-w-0">
                     <p className="font-medium text-foreground">{user.name}</p>
                     <p className="truncate text-sm text-muted-foreground">{user.email}</p>
                   </div>
+                </div>
+
+                <div className="space-y-3 rounded-lg border border-border bg-muted/20 p-4">
+                  <div>
+                    <Label htmlFor="avatar-file">Avatar</Label>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Click avatar to change. PNG, JPEG, or WebP up to 2MB.
+                    </p>
+                  </div>
+                  {avatarFile ? <p className="text-sm text-muted-foreground">{avatarFile.name}</p> : null}
+                  {avatarError ? <p className="text-sm text-destructive">{avatarError}</p> : null}
+                  {avatarSuccess ? <p className="text-sm text-emerald-600">{avatarSuccess}</p> : null}
                 </div>
 
                 <div className="space-y-2">

@@ -21,9 +21,10 @@ import { getCharacterAsset, treasureHuntAssets } from './assets'
 interface TreasureHuntShellProps {
   game: Game
   previewMode?: boolean
+  fullscreen?: boolean
 }
 
-export function TreasureHuntShell({ game }: TreasureHuntShellProps) {
+export function TreasureHuntShell({ game, fullscreen = false }: TreasureHuntShellProps) {
   const [players, setPlayers] = useState<TreasurePlayer[]>(() => createTreasurePlayers(game.settings))
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState('')
@@ -84,7 +85,11 @@ export function TreasureHuntShell({ game }: TreasureHuntShellProps) {
   const feedbackCopy = getFeedbackCopy(feedback, currentQuestion.correctAnswer)
 
   return (
-    <div className="overflow-hidden rounded-lg border border-emerald-200 bg-sky-50 text-slate-900 shadow-xl">
+    <div
+      className={`overflow-hidden bg-sky-50 text-slate-900 shadow-xl ${
+        fullscreen ? 'rounded-lg border border-white/20' : 'rounded-lg border border-emerald-200'
+      }`}
+    >
       <div className="bg-gradient-to-r from-cyan-400 via-sky-300 to-emerald-300 px-5 py-4">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
@@ -98,8 +103,14 @@ export function TreasureHuntShell({ game }: TreasureHuntShellProps) {
         </div>
       </div>
 
-      <div className="grid gap-4 bg-gradient-to-br from-sky-100 via-amber-50 to-lime-100 p-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)]">
-        <TreasureMap players={players} activePlayerId={activePlayer.id} />
+      <div
+        className={`grid gap-4 bg-gradient-to-br from-sky-100 via-amber-50 to-lime-100 p-4 ${
+          fullscreen
+            ? 'min-h-[calc(100vh-126px)] lg:grid-cols-[minmax(0,1.55fr)_minmax(340px,0.45fr)]'
+            : 'lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)]'
+        }`}
+      >
+        <TreasureMap players={players} activePlayerId={activePlayer.id} fullscreen={fullscreen} />
 
         <aside className="space-y-4">
           <div className="rounded-lg border border-white/70 bg-white/80 p-4 shadow-lg">
@@ -146,9 +157,21 @@ export function TreasureHuntShell({ game }: TreasureHuntShellProps) {
   )
 }
 
-function TreasureMap({ players, activePlayerId }: { players: TreasurePlayer[]; activePlayerId: string }) {
+function TreasureMap({
+  players,
+  activePlayerId,
+  fullscreen = false,
+}: {
+  players: TreasurePlayer[]
+  activePlayerId: string
+  fullscreen?: boolean
+}) {
   return (
-    <div className="relative min-h-[430px] overflow-hidden rounded-lg border-4 border-emerald-800/20 bg-[#77c95b] shadow-[inset_0_0_50px_rgba(20,83,45,0.28)] md:min-h-[540px]">
+    <div
+      className={`relative overflow-hidden rounded-lg border-4 border-emerald-800/20 bg-[#77c95b] shadow-[inset_0_0_50px_rgba(20,83,45,0.28)] ${
+        fullscreen ? 'min-h-[520px] lg:min-h-[calc(100vh-170px)]' : 'min-h-[430px] md:min-h-[540px]'
+      }`}
+    >
       <AssetImage
         src={treasureHuntAssets.map.background}
         alt=""
