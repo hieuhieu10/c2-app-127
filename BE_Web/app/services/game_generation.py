@@ -30,8 +30,6 @@ async def generate_game(db: Session, request: GenerateGameRequest, ai_client: AI
     if not ai_template_id:
         raise HTTPException(400, f"Unknown product_template_id '{request.product_template_id}'")
 
-    ai_grade = max(request.grade, 6)
-
     lesson = Lesson(
         user_id=current_user.id,
         title=request.title,
@@ -54,11 +52,9 @@ async def generate_game(db: Session, request: GenerateGameRequest, ai_client: AI
     db.add(game)
     db.flush()
 
-    # BE_AI currently exposes active content templates only for grades 6-12.
-    # Persist the lesson's real grade in BE_Web, but clamp the AI request upward for compatibility.
     ai_request = LessonRequest(
         subject=lesson.subject,
-        grade=ai_grade,
+        grade=lesson.grade,
         difficulty=lesson.difficulty,  # type: ignore[arg-type]
         prompt=lesson.input_text,
         objective_id=lesson.objective_id,
