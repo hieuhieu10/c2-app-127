@@ -51,16 +51,6 @@ export interface BeWebGameSummary {
   updatedAt: string
 }
 
-export interface GenerateGameInput {
-  title: string
-  input: string
-  product_template_id?: string
-  num_items?: number
-  subject?: string
-  grade?: number
-  difficulty?: 'easy' | 'medium' | 'hard'
-}
-
 export interface AuthUser {
   id: number
   email: string
@@ -154,20 +144,6 @@ export const beWebApi = {
   signOut() {
     return request<{ success: boolean }>('/api/auth/signout', {
       method: 'POST',
-    })
-  },
-
-  generateGame(input: GenerateGameInput) {
-    return request<BeWebGame>('/api/games/generate', {
-      method: 'POST',
-      body: JSON.stringify({
-        num_items: 10,
-        subject: 'General',
-        difficulty: 'medium',
-        grade: 3,
-        product_template_id: 'treasure_hunt',
-        ...input,
-      }),
     })
   },
 

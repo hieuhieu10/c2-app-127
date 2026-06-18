@@ -8,9 +8,9 @@ This document describes the current project architecture in this branch. The two
 
 The architecture has three runtime layers:
 
-- **FE - Next.js**: teacher UI, game creation, validation/review screens, and playable shells.
-- **BE_Web - FastAPI**: authentication, app persistence, game drafts, teacher edits, approval/publish workflow, and BE_AI orchestration.
-- **BE_AI - FastAPI agent backend**: GDPT retrieval, teacher-context extraction, difficulty/scope assessment, template recommendation, LLM generation, validation, and repair.
+- **FE - Next.js**: teacher UI, game creation chat, recommendation selection, validation/review screens, and playable shells.
+- **BE_AI - FastAPI agent backend**: guardrails, GDPT retrieval, teacher-context extraction, difficulty/scope assessment, game recommendation, streaming generation, validation, and repair.
+- **BE_Web - FastAPI**: authentication, app persistence, saved games, teacher edits, approval/publish workflow, avatar upload, and static game serving.
 
 Supporting systems:
 
@@ -32,9 +32,9 @@ flowchart LR
     Static[Static Battleship assets]
 
     Teacher --> FE
+    FE -->|REST /recommend/games, /generate/stream| BEAI
     FE -->|REST /api/auth, /api/games| BEW
     BEW --> DB
-    BEW -->|POST /generate| BEAI
     BEW -->|GET /static/battleship.html| BEAI
     BEAI --> KB
     BEAI --> LLM
@@ -45,26 +45,45 @@ flowchart LR
 
 ![Data flow diagram](statics/dataFlow.png)
 
-The data-flow diagram shows the main request path:
+The data-flow diagram shows the persisted BE_Web path. The current game-creation UI also has a newer direct BE_AI streaming path described below.
 
-1. Teacher enters `title`, `input`, `grade`, `subject`, and `difficulty`.
-2. FE sends `POST /api/games/generate` to BE_Web.
-3. BE_Web creates a `Lesson` and `Game` draft.
-4. BE_Web calls BE_AI `/generate` with a `LessonRequest`.
-5. BE_AI retrieves the GDPT objective and extracts teacher context.
-6. BE_AI assesses scope/difficulty, recommends a content template, generates content with an LLM, then validates schema.
-7. If valid, BE_AI returns `GameResponse ok=true`; if invalid, it repairs with the LLM until repair attempts are exhausted.
-8. BE_Web stores the raw AI response and maps AI content into `GameItems`.
-9. FE shows the teacher review screen.
-10. Teacher can edit item content or approve/publish the game.
+## Current FE Game Creation Flow
+
+```mermaid
+sequenceDiagram
+    participant T as Teacher
+    participant FE as Next.js FE
+    participant AI as BE_AI
+
+    T->>FE: enter subject, grade, difficulty, prompt, source text
+    FE->>AI: POST /recommend/games
+    AI->>AI: guardrail + curriculum-aware game recommendation
+    AI-->>FE: ranked playable game recommendations
+    T->>FE: choose a recommended game
+    FE->>AI: POST /generate/stream with override_template
+    AI-->>FE: SSE stage events + safety report + generated content
+    FE->>FE: show review/editor and playable shell preview
+```
+
+Current FE source:
+
+- `FE/app/dashboard/game/new/page.tsx`
+- `FE/src/features/game-creation/ai-api.ts`
+
+Current BE_AI endpoints:
+
+- `POST /recommend/games`
+- `POST /generate/stream`
+- `POST /generate/full`
+- `POST /generate`
 
 ## Runtime Components
 
 | Component | Path | Responsibility |
 |---|---|---|
-| FE | `FE/` | Teacher UI, template selection, game creation form, validation/review workspace, game shells. |
-| BE_Web | `BE_Web/` | Auth, persistence, draft games, teacher review APIs, mapping AI content to app game items. |
-| BE_AI | `backend/` | GDPT retrieval, teacher-context extraction, template recommendation, generation, schema validation, repair. |
+| FE | `FE/` | Teacher UI, game creation chat, recommendation selection, validation/review workspace, game shells. |
+| BE_Web | `BE_Web/` | Auth, persistence, saved games, teacher review APIs, avatar upload, and static game serving. |
+| BE_AI | `backend/` | Guardrails, GDPT retrieval, teacher-context extraction, game recommendation, streaming generation, schema validation, repair. |
 | Runtime KB | `backend/data/gdpt_2018/` | JSON objectives loaded into BE_AI memory at startup/request runtime. |
 | Canonical KB | `knowledge_base/gdpt_2018/` | Reviewable source documents and curated objectives for Toan grade 1-5. |
 | DB | `BE_Web/be_web.db` by default | Users, lessons, games, game items, review events. |
@@ -121,7 +140,7 @@ Scoring signals:
 - Alias/topic subset match.
 - Direct `objective_id` match bypasses scoring and returns confidence `1.0`.
 
-## BE_Web Game Creation Flow
+## BE_Web Saved-Game Review Flow
 
 ```mermaid
 sequenceDiagram
@@ -129,32 +148,20 @@ sequenceDiagram
     participant FE as Next.js FE
     participant WEB as BE_Web
     participant DB as DB
-    participant AI as BE_AI
 
-    T->>FE: choose product template and fill title/input
-    FE->>WEB: POST /api/games/generate
-    WEB->>DB: create Lesson + Game draft
-    WEB->>AI: POST /generate with override_template
-    AI->>AI: retrieve -> generate -> validate/repair
-    AI-->>WEB: GameResponse
-    WEB->>DB: store raw AI response + mapped GameItems
-    WEB-->>FE: GameResponse for review
+    T->>FE: open saved game from dashboard
+    FE->>WEB: GET /api/games or GET /api/games/{game_id}
+    WEB->>DB: load user's saved Lesson/Game/GameItems
+    WEB-->>FE: saved game payload
     FE->>WEB: PATCH item edits / approve / publish
+    WEB->>DB: persist review event and status
 ```
-
-Current BE_Web mappings:
-
-| Product template | AI template | Mapper |
-|---|---|---|
-| `treasure_hunt` | `quiz` | `quiz_content_to_items` |
-| `battleship` | `battleship` | `battleship_content_to_items` |
 
 Current BE_Web behavior in this branch:
 
-- It sends `lesson.grade` directly to BE_AI, so primary grades remain grade 1-5.
-- It sends `lesson.input_text` as BE_AI `prompt`.
-- It sends `lesson.input_text` as BE_AI `source_text`.
-- It calls BE_AI `/generate`, not `/generate/full`.
+- It does not generate new games.
+- It owns authentication, saved games, teacher edits, review events, approval, publishing, avatar upload, and static upload serving.
+- Current FE game creation uses BE_AI `/recommend/games` and `/generate/stream`.
 
 ## Teacher Review Flow
 
@@ -207,23 +214,6 @@ Persistence tables:
   "validation_errors": [],
   "repair_attempts": 0,
   "error": null
-}
-```
-
-### BE_Web `GenerateGameRequest`
-
-Current branch schema:
-
-```json
-{
-  "title": "Math facts",
-  "input": "Create a short multiplication game.",
-  "product_template_id": "treasure_hunt",
-  "num_items": 10,
-  "subject": "General",
-  "grade": 3,
-  "difficulty": "medium",
-  "objective_id": null
 }
 ```
 

@@ -1,7 +1,7 @@
 # Evaluation Evidence
 
 Date: 2026-06-18  
-Branch observed: `dang`
+Branch observed: `yennt`
 
 This file records manual checks and command outputs collected from the local workspace. The manual retrieval checks do not call an LLM and can run without API keys.
 
@@ -171,15 +171,15 @@ Command:
 
 ```powershell
 cd BE_Web
-.venv\Scripts\python -m pytest
+uv run pytest
 ```
 
 Actual output summary:
 
 ```text
-collected 18 items
-tests\test_games_api.py .................. [100%]
-18 passed, 1 warning in 1.89s
+collected 19 items
+tests\test_games_api.py ................... [100%]
+19 passed, 2 warnings in 1.34s
 ```
 
 Result: pass.
@@ -190,24 +190,17 @@ Command:
 
 ```powershell
 cd backend
-python -m pytest
+uv run pytest
 ```
 
 Actual output summary:
 
 ```text
 collected 66 items
-65 passed, 1 failed, 1 warning in 5.66s
+66 passed, 2 warnings in 2.06s
 ```
 
-Failure observed:
-
-```text
-FAILED tests/test_guardrail.py::test_http_block_returns_422
-assert 200 == 422
-```
-
-Interpretation: the guardrail test expects `/recommend/games` to reject an out-of-scope chemistry request with HTTP 422, but the current route returned 200. This is a real regression or outdated test expectation and should be resolved before claiming full backend green.
+Result: pass. `/recommend/games` returns an inline `blocked=true` payload for guardrail blocks so the frontend can show the message without treating it as an unexpected HTTP failure.
 
 ### FE Build
 
@@ -242,4 +235,4 @@ Known gaps:
 - No manual LLM generation evidence is included because no API key was used.
 - No browser screenshot evidence is included.
 - No end-to-end FE -> BE_Web -> BE_AI live run is included.
-- Current BE_Web branch does not yet pass uploaded lesson context from FE to BE_AI.
+- BE_Web no longer owns the old `/api/games/generate` draft-generation path; current game creation uses the BE_AI recommendation/generation flow from FE.

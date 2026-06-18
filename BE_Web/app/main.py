@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from app.api import auth, games, templates
+from app.api import auth, games
 from app.core.settings import settings
 from app.db import models  # noqa: F401
 from app.db.schema_compat import ensure_schema_compatibility
@@ -32,7 +32,6 @@ app.add_middleware(
 app.mount("/uploads", StaticFiles(directory=str(uploads_dir)), name="uploads")
 
 app.include_router(auth.router)
-app.include_router(templates.router)
 app.include_router(games.router)
 
 

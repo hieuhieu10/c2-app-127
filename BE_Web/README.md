@@ -1,33 +1,39 @@
 # BE_Web
 
-FastAPI backend for the Next.js frontend. The browser calls BE_Web only; BE_Web owns app workflow data, persists game drafts, and calls BE_AI for recommendation/generation.
+BE_Web là FastAPI backend phục vụ authentication, saved games, teacher review/edit APIs, approval/publish state, avatar upload và static upload serving.
 
-## Run
+Luồng tạo game hiện tại gọi BE_AI trực tiếp từ FE để recommend và stream generation. BE_Web không còn sở hữu endpoint tạo draft cũ `/api/games/generate`.
+
+## Cài Đặt Và Chạy
 
 ```powershell
 cd BE_Web
 Copy-Item .env.example .env
-python -m uvicorn app.main:app --reload --port 8001
+uv sync --extra dev
+uv run uvicorn app.main:app --reload --port 8001
 ```
 
-By default this uses `sqlite:///./be_web.db` for local development. To run with PostgreSQL, edit `BE_Web/.env` and set `DATABASE_URL`, for example:
+`requirements.txt` được giữ để fallback/export runtime. Local development nên dùng `uv`.
+
+Mặc định BE_Web dùng SQLite:
 
 ```text
-postgresql+psycopg://user:password@localhost:5432/be_web
+sqlite:///./be_web.db
 ```
 
-Set `BE_AI_BASE_URL` to the internal BE_AI service URL. Default: `http://localhost:8000`.
+Nếu dùng PostgreSQL, sửa `BE_Web/.env`:
 
-## Create Database Tables
-
-If you want to create PostgreSQL tables manually after setting `DATABASE_URL`, run:
-
-```powershell
-cd BE_Web
-python scripts\create_tables.py
+```text
+DATABASE_URL=postgresql+psycopg://user:password@localhost:5432/be_web
 ```
 
-Expected tables:
+`BE_AI_BASE_URL` là URL nội bộ của BE_AI, dùng khi cần battleship play endpoint. Mặc định:
+
+```text
+http://localhost:8000
+```
+
+## Bảng Dữ Liệu
 
 - `users`
 - `lessons`
@@ -35,13 +41,24 @@ Expected tables:
 - `game_items`
 - `game_review_events`
 
-## Main APIs
+## API Chính
 
-- `GET /api/templates`
-- `POST /api/games/generate`
+- `GET /api/games`
 - `GET /api/games/{game_id}`
 - `PATCH /api/games/{game_id}/items/{item_id}`
 - `POST /api/games/{game_id}/items/{item_id}/recheck`
 - `POST /api/games/{game_id}/items/{item_id}/regenerate`
 - `POST /api/games/{game_id}/approve`
 - `POST /api/games/{game_id}/publish`
+- `GET /api/games/{game_id}/play`
+- `POST /api/auth/signup`
+- `POST /api/auth/signin`
+- `GET /api/auth/me`
+- `POST /api/auth/me/avatar`
+
+## Test
+
+```powershell
+cd BE_Web
+uv run pytest
+```

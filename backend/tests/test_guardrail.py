@@ -90,7 +90,7 @@ async def test_llm_error_fails_open(monkeypatch):
 # ── HTTP surface ─────────────────────────────────────────────────────────────
 
 
-def test_http_block_returns_422(monkeypatch):
+def test_recommend_games_block_returns_inline_payload(monkeypatch):
     from fastapi.testclient import TestClient
 
     from app.main import app
@@ -100,7 +100,8 @@ def test_http_block_returns_422(monkeypatch):
         "/recommend/games",
         json={"subject": "Hóa học", "grade": 11, "difficulty": "medium", "prompt": "oxi hóa khử"},
     )
-    assert resp.status_code == 422
-    detail = resp.json()["detail"]
-    assert detail["code"] == "out_of_scope_subject"
-    assert detail["message"] and detail["suggestion"]
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["blocked"] is True
+    assert body["message"] and body["suggestion"]
+    assert body["recommendations"] == []

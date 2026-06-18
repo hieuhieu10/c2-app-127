@@ -1,54 +1,54 @@
-# LearnGame - GDPT-Aware Learning Game Generator
+# LearnGame - hệ thống tạo trò chơi học tập bám GDPT 2018
 
-LearnGame is a teacher-facing game generation system. Teachers create a lesson-game request, review generated questions, edit items, approve the game, and play it through a game shell.
+LearnGame là hệ thống hỗ trợ giáo viên tạo trò chơi học tập từ yêu cầu tự nhiên, có kiểm tra theo chương trình GDPT 2018. Giáo viên nhập yêu cầu bài học, xem nội dung AI sinh ra, chỉnh sửa câu hỏi, duyệt và đưa vào game shell để chơi trên lớp.
 
-The current MVP focuses on:
+MVP hiện tập trung vào:
 
-- Vietnamese GDPT 2018 curriculum grounding.
-- Primary-school Mathematics knowledge base, grade 1-5.
-- Teacher review before publishing.
-- Treasure Hunt and Trivia Battleship product shells, with BE_Web currently exposing Treasure Hunt in `/api/templates`.
+- Chuẩn chương trình GDPT 2018.
+- Knowledge base môn Toán cấp tiểu học, lớp 1-5.
+- Quy trình giáo viên review trước khi sử dụng.
+- Game shell Treasure Hunt và Trivia Battleship.
+- Luồng tạo game hiện tại gọi BE_AI để đề xuất game và stream quá trình sinh nội dung.
 
-## Architecture
+## Kiến Trúc
 
-Detailed component and data-flow diagrams are in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
-
-Short version:
+Tài liệu chi tiết nằm ở [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ```text
 FE Next.js
-  -> BE_Web FastAPI + DB
-  -> BE_AI FastAPI agent workflow
-  -> GDPT 2018 JSON KB + optional LLM provider
+  -> BE_AI FastAPI agent workflow cho recommend/generate stream
+  -> BE_Web FastAPI + DB cho auth, saved games, review APIs
+  -> GDPT 2018 JSON KB + LLM provider tùy chọn
 ```
 
-BE_AI owns curriculum retrieval, template recommendation, content generation, schema validation, and repair. BE_Web owns authentication, persistence, teacher review workflow, and mapping AI content into frontend game items.
+BE_AI phụ trách curriculum retrieval, game recommendation, content generation, schema validation, repair và streaming pipeline events. BE_Web phụ trách authentication, persistence, saved-game APIs và teacher review workflow.
 
-## Repository Layout
+## Cấu Trúc Repository
 
 ```text
-FE/                         Next.js frontend
-BE_Web/                     Teacher-facing FastAPI backend
-backend/                    BE_AI agent workflow backend
-backend/data/gdpt_2018/     Runtime GDPT 2018 KB used by BE_AI
-knowledge_base/gdpt_2018/   Canonical KB sources and reviewed JSON
-docs/                       Architecture and evaluation evidence
+FE/                         Frontend Next.js
+BE_Web/                     Backend web-facing cho auth, saved games, review
+backend/                    Backend AI agent workflow
+backend/data/gdpt_2018/     Runtime GDPT 2018 KB dùng bởi BE_AI
+knowledge_base/gdpt_2018/   Canonical KB để review và chỉnh sửa
+docs/                       Tài liệu kiến trúc và eval evidence
 scripts/                    AI logging / course utility scripts
 ```
 
-## Prerequisites
+## Yêu Cầu Môi Trường
 
 - Python 3.11+
+- `uv` để quản lý môi trường Python backend
 - Node.js 20+
-- npm
-- Optional: PostgreSQL. Local development defaults to SQLite for BE_Web.
-- One LLM API key for real generation: OpenAI, DeepSeek, or Anthropic.
+- `npm`
+- PostgreSQL là tùy chọn. Local development của BE_Web mặc định dùng SQLite.
+- Một LLM API key nếu muốn chạy generation thật: OpenAI, DeepSeek hoặc Anthropic.
 
-Unit tests for retrieval, schemas, validation, and BE_Web API can run without an LLM key.
+Các unit test cho retrieval, schema, validation và BE_Web API có thể chạy không cần LLM key.
 
-## Environment Variables
+## Biến Môi Trường
 
-Create root `.env` from `.env.example`:
+Tạo file `.env` ở repo root từ `.env.example`:
 
 ```powershell
 Copy-Item .env.example .env
@@ -56,20 +56,20 @@ Copy-Item .env.example .env
 
 ### BE_AI
 
-Loaded by `backend/app/config.py` from the repo root `.env`.
+BE_AI đọc `.env` từ repo root qua `backend/app/config.py`.
 
-| Variable | Required | Notes |
+| Biến | Bắt buộc | Ghi chú |
 |---|---:|---|
-| `LLM_PROVIDER` | No | `auto`, `openai`, `deepseek`, or `anthropic`; default `auto`. |
-| `OPENAI_API_KEY` | For OpenAI | Used when `LLM_PROVIDER=openai` or auto picks OpenAI. |
-| `DEEPSEEK_API_KEY` | For DeepSeek | Used when `LLM_PROVIDER=deepseek` or auto picks DeepSeek. |
-| `DEEPSEEK_BASE_URL` | No | Default `https://api.deepseek.com`. |
-| `ANTHROPIC_API_KEY` | For Anthropic | Used when `LLM_PROVIDER=anthropic` or auto fallback. |
-| `DEFAULT_MODEL` | No | If empty, provider default is used. |
-| `MAX_REPAIRS` | No | Defaults to `2`. |
-| `MAX_TOKENS` | No | Defaults to `4096`. |
+| `LLM_PROVIDER` | Không | `auto`, `openai`, `deepseek` hoặc `anthropic`; mặc định `auto`. |
+| `OPENAI_API_KEY` | Khi dùng OpenAI | Dùng khi `LLM_PROVIDER=openai` hoặc `auto` chọn OpenAI. |
+| `DEEPSEEK_API_KEY` | Khi dùng DeepSeek | Dùng khi `LLM_PROVIDER=deepseek` hoặc `auto` chọn DeepSeek. |
+| `DEEPSEEK_BASE_URL` | Không | Mặc định `https://api.deepseek.com`. |
+| `ANTHROPIC_API_KEY` | Khi dùng Anthropic | Dùng khi `LLM_PROVIDER=anthropic` hoặc `auto` fallback. |
+| `DEFAULT_MODEL` | Không | Nếu để trống, hệ thống dùng default model của provider. |
+| `MAX_REPAIRS` | Không | Mặc định `2`. |
+| `MAX_TOKENS` | Không | Mặc định `4096`. |
 
-Provider priority when `LLM_PROVIDER=auto`:
+Thứ tự ưu tiên khi `LLM_PROVIDER=auto`:
 
 ```text
 OpenAI -> DeepSeek -> Anthropic
@@ -77,76 +77,73 @@ OpenAI -> DeepSeek -> Anthropic
 
 ### BE_Web
 
-Loaded by `BE_Web/app/core/settings.py` from `BE_Web/.env` if present, otherwise `BE_Web/.env.example`.
+BE_Web đọc `BE_Web/.env` nếu có, nếu không sẽ dùng `BE_Web/.env.example`.
 
-| Variable | Required | Default |
+| Biến | Bắt buộc | Mặc định |
 |---|---:|---|
-| `DATABASE_URL` | No | `sqlite:///./be_web.db` |
-| `BE_AI_BASE_URL` | No | `http://localhost:8000` |
-| `BE_AI_TIMEOUT_SECONDS` | No | `30.0` |
-| `CORS_ORIGINS` | No | `["http://localhost:3000"]` |
-| `JWT_SECRET_KEY` | Recommended | `change-me` |
-| `ACCESS_TOKEN_EXPIRE_MINUTES` | No | 10080 |
+| `DATABASE_URL` | Không | `sqlite:///./be_web.db` |
+| `BE_AI_BASE_URL` | Không | `http://localhost:8000` |
+| `BE_AI_TIMEOUT_SECONDS` | Không | `30.0` |
+| `CORS_ORIGINS` | Không | `["http://localhost:3000"]` |
+| `JWT_SECRET_KEY` | Nên có | `change-me` |
+| `ACCESS_TOKEN_EXPIRE_MINUTES` | Không | `10080` |
 
-### Frontend
+### FE
 
-| Variable | Required | Default |
+| Biến | Bắt buộc | Mặc định |
 |---|---:|---|
-| `NEXT_PUBLIC_BE_WEB_URL` | No | `http://localhost:8001` |
+| `NEXT_PUBLIC_BE_WEB_URL` | Không | `http://localhost:8001` |
+| `NEXT_PUBLIC_AI_URL` | Không | `http://localhost:8000` |
 
-## Setup
+## Cài Đặt
 
-### 1. Install BE_AI
+Nếu chưa có `uv`:
+
+```powershell
+python -m pip install uv
+```
+
+Hai backend Python đều giữ `requirements.txt` để fallback/export runtime, nhưng local development nên dùng `uv sync --extra dev`.
+
+### 1. Cài BE_AI
 
 ```powershell
 cd backend
-python -m venv .venv
-.venv\Scripts\python -m pip install -r requirements.txt
+uv sync --extra dev
 ```
 
-Alternative editable dev install:
-
-```powershell
-cd backend
-python -m venv .venv
-.venv\Scripts\python -m pip install -e ".[dev]"
-```
-
-### 2. Install BE_Web
+### 2. Cài BE_Web
 
 ```powershell
 cd BE_Web
-python -m venv .venv
-.venv\Scripts\python -m pip install -e ".[dev]"
+uv sync --extra dev
 ```
 
-Local SQLite works without setup. For PostgreSQL, set:
+SQLite local chạy được ngay. Nếu dùng PostgreSQL, đặt:
 
 ```text
 DATABASE_URL=postgresql+psycopg://user:password@localhost:5432/be_web
 ```
 
-Then create tables through app startup or a local table creation script if available in your branch.
-
-### 3. Install FE
+### 3. Cài FE
 
 ```powershell
 cd FE
 npm install
 ```
 
-## Run Locally
+## Chạy Local
 
-Open three terminals.
+Mở ba terminal.
 
 ### Terminal 1 - BE_AI
 
 ```powershell
 cd backend
-.venv\Scripts\uvicorn app.main:app --reload --port 8000
+uv run uvicorn app.main:app --reload --port 8000
 ```
 
-Docs:
+Swagger UI:
 
 ```text
 http://127.0.0.1:8000/docs
@@ -156,10 +153,10 @@ http://127.0.0.1:8000/docs
 
 ```powershell
 cd BE_Web
-.venv\Scripts\uvicorn app.main:app --reload --port 8001
+uv run uvicorn app.main:app --reload --port 8001
 ```
 
-Docs:
+Swagger UI:
 
 ```text
 http://127.0.0.1:8001/docs
@@ -178,11 +175,11 @@ App:
 http://localhost:3000
 ```
 
-## Sample Queries
+## Ví Dụ Gọi API
 
-### BE_AI Full Generation
+### BE_AI full generation
 
-Use this when you want BE_AI to retrieve GDPT context, recommend a content template, generate, validate, and repair.
+Dùng khi muốn BE_AI tự retrieve GDPT context, recommend template, generate, validate và repair.
 
 ```powershell
 $body = @{
@@ -205,9 +202,9 @@ Invoke-RestMethod `
   -Body $body
 ```
 
-### BE_AI Explicit Template Generation
+### BE_AI explicit template generation
 
-Use `/generate` when the caller already selected a content template.
+Dùng `/generate` khi caller đã chọn content template.
 
 ```json
 {
@@ -224,7 +221,27 @@ Use `/generate` when the caller already selected a content template.
 }
 ```
 
-### BE_Web Auth + Generate Draft
+### Luồng FE hiện tại
+
+Trang `/dashboard/game/new` gọi `/recommend/games` trước. Sau khi giáo viên chọn game, FE gọi `/generate/stream`.
+
+```powershell
+$recommendBody = @{
+  subject = "Toan"
+  grade = 3
+  difficulty = "medium"
+  prompt = "Tao game matching ve phep nhan la phep cong lap"
+  source_text = "Vi du: 3 gio tao, moi gio 4 qua"
+} | ConvertTo-Json
+
+Invoke-RestMethod `
+  -Method Post `
+  -Uri "http://127.0.0.1:8000/recommend/games" `
+  -ContentType "application/json" `
+  -Body $recommendBody
+```
+
+### BE_Web auth và saved game APIs
 
 ```powershell
 $signup = Invoke-RestMethod `
@@ -239,35 +256,24 @@ $signup = Invoke-RestMethod `
 
 $token = $signup.accessToken
 
-$gameBody = @{
-  title = "Math facts"
-  input = "Create a short game for practicing multiplication facts."
-  product_template_id = "treasure_hunt"
-  subject = "Toan"
-  grade = 3
-  difficulty = "medium"
-} | ConvertTo-Json
-
 Invoke-RestMethod `
-  -Method Post `
-  -Uri "http://127.0.0.1:8001/api/games/generate" `
-  -Headers @{ Authorization = "Bearer $token" } `
-  -ContentType "application/json" `
-  -Body $gameBody
+  -Method Get `
+  -Uri "http://127.0.0.1:8001/api/games" `
+  -Headers @{ Authorization = "Bearer $token" }
 ```
 
-Current BE_Web behavior: BE_Web stores the requested grade and sends that same `lesson.grade` to BE_AI. It sends the teacher request `input` as both BE_AI `prompt` and `source_text`.
+BE_Web hiện phụ trách auth, saved-game listing, review/edit, approve/publish, avatar upload và battleship play serving. Game creation hiện đi qua BE_AI endpoints do FE gọi.
 
-## Tests
+## Test
 
 ```powershell
 cd backend
-python -m pytest
+uv run pytest
 ```
 
 ```powershell
 cd BE_Web
-.venv\Scripts\python -m pytest
+uv run pytest
 ```
 
 ```powershell
@@ -275,25 +281,18 @@ cd FE
 npm run build
 ```
 
-Latest local evidence is recorded in [docs/EVAL_EVIDENCE.md](docs/EVAL_EVIDENCE.md).
-
-## Known Gaps In Current Branch
-
-- FE create page currently sends `title`, `input`, and `product_template_id`; it does not yet send uploaded lesson file context through BE_Web.
-- BE_Web currently exposes only Treasure Hunt from `/api/templates`, although Battleship shell code exists.
-- BE_Web currently calls BE_AI `/generate` with forced `override_template`, not `/generate/full`.
-- FE production build may fail in restricted network environments because `next/font/google` tries to fetch Google Fonts.
+Eval evidence mới nhất nằm ở [docs/EVAL_EVIDENCE.md](docs/EVAL_EVIDENCE.md).
 
 ## AI Logging
 
-Course AI logging hooks remain under `scripts/`. On Windows:
+Course AI logging hooks nằm trong `scripts/`. Trên Windows:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\setup_hooks.ps1
 ```
 
-Manual ChatGPT/web logging:
+Log thủ công cho ChatGPT/web:
 
 ```powershell
-scripts\_pyrun.cmd scripts\log_manual.py --tool chatgpt --prompt "<what you did>"
+scripts\_pyrun.cmd scripts\log_manual.py --tool chatgpt --prompt "<noi dung da lam>"
 ```

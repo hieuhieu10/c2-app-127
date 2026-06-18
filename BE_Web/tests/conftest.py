@@ -6,38 +6,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from app.api.games import get_ai_client
 from app.db import models  # noqa: F401
 from app.db.session import Base, get_db
 from app.main import app
-from app.schemas.ai import AIGameResponse
-
-
-class MockAIClient:
-    def __init__(self, response: AIGameResponse | None = None) -> None:
-        self.last_request = None
-        self.response = response or AIGameResponse(
-            ok=True,
-            template_id="quiz",
-            content={
-                "title": "Sample quiz",
-                "objective_id": "OBJ-1",
-                "items": [
-                    {
-                        "question": "What is 2 + 2?",
-                        "correct_answer": "4",
-                        "distractors": ["3", "5", "6"],
-                        "hint": "Add the two numbers.",
-                        "explanation": "2 + 2 equals 4.",
-                        "objective_id": "OBJ-1",
-                    }
-                ],
-            },
-        )
-
-    async def generate(self, request):
-        self.last_request = request
-        return self.response
 
 
 @pytest.fixture()
@@ -58,11 +29,13 @@ def client() -> TestClient:
             db.close()
 
     app.dependency_overrides[get_db] = override_db
-    app.dependency_overrides[get_ai_client] = lambda: MockAIClient()
+    app.state.testing_session_local = TestingSessionLocal
     try:
         yield TestClient(app)
     finally:
         app.dependency_overrides.clear()
+        if hasattr(app.state, "testing_session_local"):
+            delattr(app.state, "testing_session_local")
 
 
 def auth_headers(

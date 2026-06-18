@@ -1,8 +1,8 @@
-# Primary Mathematics Shared Metadata
+# Metadata Runtime Dùng Chung Cho Toán Tiểu Học
 
-This folder is for shared primary-school Mathematics metadata only.
+Thư mục này là bản runtime mirror của metadata dùng chung cho môn Toán cấp tiểu học.
 
-Do **not** put grade-specific objectives here. Objectives live in:
+Không đặt objective riêng theo lớp ở đây. Objective theo từng khối nằm tại:
 
 ```text
 math/grade_1/objectives.json
@@ -12,13 +12,19 @@ math/grade_4/objectives.json
 math/grade_5/objectives.json
 ```
 
-Current shared files:
+File dùng chung hiện có:
 
-- `mechanic_map.json`: maps skill/objective type + difficulty to available game
-  templates.
+- `mechanic_map.json`: map loại kỹ năng/objective và difficulty sang game templates phù hợp.
 
-Use this folder for future shared files such as:
+Nguồn canonical để review nằm ở:
 
-- `difficulty_rules.json`
-- `common_template_config_rules.json`
-- `primary_math_scope_policy.json`
+```text
+knowledge_base/gdpt_2018/math/primary/
+```
+
+Khi sửa bản canonical, mirror lại sang runtime bằng:
+
+```powershell
+cd backend
+uv run python scripts/repair_primary_math_kb.py
+```

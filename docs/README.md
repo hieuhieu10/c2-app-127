@@ -1,17 +1,17 @@
-# Project Documentation
+# Tài Liệu Dự Án
 
-This folder contains the review documents for the LearnGame GDPT-aware game generator.
+Thư mục này chứa tài liệu review cho LearnGame, hệ thống tạo game học tập bám GDPT 2018.
 
-## Files
+## File
 
-| File | Purpose |
+| File | Mục đích |
 |---|---|
-| [ARCHITECTURE.md](ARCHITECTURE.md) | Component architecture and data-flow explanation. |
-| [EVAL_EVIDENCE.md](EVAL_EVIDENCE.md) | Manual evaluation cases and local verification output. |
-| [statics/architecture_diagram.svg](statics/architecture_diagram.svg) | Visual architecture diagram. |
-| [statics/dataFlow.png](statics/dataFlow.png) | Visual end-to-end data flow diagram. |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Mô tả component architecture và data flow. |
+| [EVAL_EVIDENCE.md](EVAL_EVIDENCE.md) | Manual test cases và output kiểm chứng local. |
+| [statics/architecture_diagram.svg](statics/architecture_diagram.svg) | Sơ đồ architecture dạng hình. |
+| [statics/dataFlow.png](statics/dataFlow.png) | Sơ đồ data flow end-to-end. |
 
-## Diagram Preview
+## Xem Nhanh Sơ Đồ
 
 ### Architecture
 
