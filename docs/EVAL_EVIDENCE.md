@@ -1,13 +1,13 @@
-# Evaluation Evidence
+# Eval Evidence
 
-Date: 2026-06-18  
-Branch observed: `yennt`
+Ngày ghi nhận: 2026-06-18  
+Nhánh quan sát: `yennt`
 
-This file records manual checks and command outputs collected from the local workspace. The manual retrieval checks do not call an LLM and can run without API keys.
+File này ghi lại manual checks và output kiểm chứng local. Các manual retrieval checks không gọi LLM nên có thể chạy không cần API key.
 
-## Manual Test Harness
+## Bộ Lệnh Manual Test
 
-Command used from `backend/`:
+Lệnh chạy từ thư mục `backend/`:
 
 ```powershell
 @'
@@ -38,16 +38,16 @@ for name, kwargs in cases:
         "adjustments": ctx.alignment_result.recommended_adjustments if ctx.alignment_result else [],
     }
     print(json.dumps(out, ensure_ascii=False))
-'@ | python -
+'@ | uv run python -
 ```
 
-## Manual Test Cases
+## Các Manual Test Case
 
-### TC01 - Grade 3 Multiplication, No Upload
+### TC01 - Phép nhân lớp 3, không upload tài liệu
 
-Purpose: verify keyword retrieval maps "phep nhan la phep cong lap" to the grade 3 repeated-addition objective.
+Mục tiêu: kiểm tra keyword retrieval map `"phep nhan la phep cong lap"` vào objective phép nhân là phép cộng lặp của lớp 3.
 
-Input:
+Đầu vào:
 
 ```json
 {
@@ -58,19 +58,19 @@ Input:
 }
 ```
 
-Actual output:
+Output thực tế:
 
 ```json
 {"case": "TC01_grade3_multiplication_no_upload", "objective_id": "math_3_multiplication_repeated_addition", "matched_confidence": 0.95, "scope_status": "in_scope", "final_difficulty": "medium", "upload_type": "none", "time_limit_minutes": null, "warnings": [], "adjustments": ["Use default age-appropriate examples from the GDPT objective."]}
 ```
 
-Result: pass.
+Kết quả: pass.
 
-### TC02 - Grade 3 Slide Context, 10-Minute Activity
+### TC02 - Slide lớp 3, hoạt động 10 phút
 
-Purpose: verify teacher slide context is extracted and short time limit downgrades difficulty.
+Mục tiêu: kiểm tra teacher slide context được trích xuất và time limit ngắn làm difficulty giảm xuống.
 
-Input:
+Đầu vào:
 
 ```json
 {
@@ -85,19 +85,19 @@ Input:
 }
 ```
 
-Actual output:
+Output thực tế:
 
 ```json
 {"case": "TC02_grade3_slide_context_10min", "objective_id": "math_3_multiplication_repeated_addition", "matched_confidence": 1.0, "scope_status": "in_scope", "final_difficulty": "easy", "upload_type": "slide", "time_limit_minutes": 10, "warnings": [], "adjustments": []}
 ```
 
-Result: pass.
+Kết quả: pass.
 
-### TC03 - Grade 3 Above-Scope Hard Request
+### TC03 - Request lớp 3 vượt scope và hard
 
-Purpose: verify above-grade signals and hard difficulty are flagged/downgraded.
+Mục tiêu: kiểm tra tín hiệu above-grade và requested difficulty ngoài range được flag/downgrade.
 
-Input:
+Đầu vào:
 
 ```json
 {
@@ -109,19 +109,19 @@ Input:
 }
 ```
 
-Actual output:
+Output thực tế:
 
 ```json
 {"case": "TC03_grade3_above_scope_hard", "objective_id": "math_3_multiplication_repeated_addition", "matched_confidence": 1.0, "scope_status": "above_grade", "final_difficulty": "medium", "upload_type": "none", "time_limit_minutes": null, "warnings": ["Teacher requested difficulty is outside the GDPT allowed range for this objective.", "Teacher material or request includes content above the target grade scope."], "adjustments": ["Use medium as the highest allowed difficulty.", "Downgrade to one-step, concrete, age-appropriate tasks.", "Use default age-appropriate examples from the GDPT objective."]}
 ```
 
-Result: pass.
+Kết quả: pass.
 
-### TC04 - Grade 5 Percent And Discount
+### TC04 - Tỉ số phần trăm và giảm giá lớp 5
 
-Purpose: verify grade 5 percentage/discount prompt retrieves the correct percent objective.
+Mục tiêu: kiểm tra prompt về phần trăm/giảm giá lớp 5 retrieve đúng percent objective.
 
-Input:
+Đầu vào:
 
 ```json
 {
@@ -132,19 +132,19 @@ Input:
 }
 ```
 
-Actual output:
+Output thực tế:
 
 ```json
 {"case": "TC04_grade5_percent_discount", "objective_id": "math_5_percent_ratio", "matched_confidence": 0.95, "scope_status": "in_scope", "final_difficulty": "medium", "upload_type": "none", "time_limit_minutes": null, "warnings": [], "adjustments": ["Use default age-appropriate examples from the GDPT objective."]}
 ```
 
-Result: pass.
+Kết quả: pass.
 
-### TC05 - Grade 2 Place Value
+### TC05 - Cấu tạo số có ba chữ số lớp 2
 
-Purpose: verify grade 2 place-value prompt retrieves the correct 3-digit number objective.
+Mục tiêu: kiểm tra prompt về hàng trăm/chục/đơn vị lớp 2 retrieve đúng objective.
 
-Input:
+Đầu vào:
 
 ```json
 {
@@ -155,26 +155,26 @@ Input:
 }
 ```
 
-Actual output:
+Output thực tế:
 
 ```json
 {"case": "TC05_grade2_place_value", "objective_id": "math_2_numbers_1000_place_value", "matched_confidence": 0.95, "scope_status": "in_scope", "final_difficulty": "easy", "upload_type": "none", "time_limit_minutes": null, "warnings": [], "adjustments": ["Use default age-appropriate examples from the GDPT objective."]}
 ```
 
-Result: pass.
+Kết quả: pass.
 
-## Automated Verification Evidence
+## Bằng Chứng Kiểm Chứng Tự Động
 
-### BE_Web Tests
+### Test BE_Web
 
-Command:
+Lệnh:
 
 ```powershell
 cd BE_Web
 uv run pytest
 ```
 
-Actual output summary:
+Tóm tắt output thực tế:
 
 ```text
 collected 19 items
@@ -182,57 +182,58 @@ tests\test_games_api.py ................... [100%]
 19 passed, 2 warnings in 1.34s
 ```
 
-Result: pass.
+Kết quả: pass.
 
-### BE_AI Backend Tests
+### Test BE_AI Backend
 
-Command:
+Lệnh:
 
 ```powershell
 cd backend
 uv run pytest
 ```
 
-Actual output summary:
+Tóm tắt output thực tế:
 
 ```text
 collected 66 items
 66 passed, 2 warnings in 2.06s
 ```
 
-Result: pass. `/recommend/games` returns an inline `blocked=true` payload for guardrail blocks so the frontend can show the message without treating it as an unexpected HTTP failure.
+Kết quả: pass. `/recommend/games` trả inline payload `blocked=true` khi guardrail block để frontend có thể hiển thị message mà không coi đó là lỗi HTTP bất ngờ.
 
-### FE Build
+### Build FE
 
-Command:
+Lệnh:
 
 ```powershell
 cd FE
 npm.cmd run build
 ```
 
-Actual output summary:
+Tóm tắt output thực tế:
 
 ```text
 next/font: error:
 Failed to fetch `Be Vietnam Pro` from Google Fonts.
 ```
 
-Result: blocked by restricted network access to Google Fonts during `next build`. The app may build in a network-enabled environment, or the font should be made local/self-hosted for offline CI.
+Kết quả: bị chặn bởi network restriction khi `next build` fetch Google Fonts. App có thể build trong môi trường có network, hoặc nên chuyển font sang local/self-hosted để CI offline ổn định.
 
-## Coverage Summary
+## Tóm Tắt Coverage
 
-Current evidence covers:
+Evidence hiện bao phủ:
 
-- Objective retrieval for Toan grade 2, 3, and 5.
+- Objective retrieval cho Toán lớp 2, 3 và 5.
 - Teacher slide context extraction.
 - Short-duration difficulty downgrade.
 - Above-grade scope warning.
 - BE_Web authenticated game API test suite.
+- BE_AI guardrail/retrieval/recommender/generator/schema tests.
 
-Known gaps:
+Các điểm còn thiếu:
 
-- No manual LLM generation evidence is included because no API key was used.
-- No browser screenshot evidence is included.
-- No end-to-end FE -> BE_Web -> BE_AI live run is included.
-- BE_Web no longer owns the old `/api/games/generate` draft-generation path; current game creation uses the BE_AI recommendation/generation flow from FE.
+- Chưa có manual LLM generation evidence vì không dùng API key thật.
+- Chưa có browser screenshot evidence.
+- Chưa có end-to-end live run đầy đủ qua FE.
+- Chat-flow generated games hiện lưu local browser; chưa sync vào BE_Web DB.
