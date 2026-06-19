@@ -1,18 +1,63 @@
 from __future__ import annotations
 
 from app.core.settings import settings
-from app.api.games import get_ai_client
-from app.main import app
-from app.schemas.ai import AIGameResponse
-from tests.conftest import MockAIClient, auth_headers
+from app.db.models import Game, GameItem, GameStatus, Lesson, User
+from sqlalchemy import select
+from conftest import auth_headers
 
 
-def test_templates_returns_treasure_hunt(client):
-    response = client.get("/api/templates")
-
-    assert response.status_code == 200
-    assert response.json()[0]["id"] == "treasure_hunt"
-    assert response.json()[0]["ai_template_id"] == "quiz"
+def seed_game(
+    client,
+    *,
+    email: str = "teacher@example.com",
+    title: str = "Math facts",
+    input_text: str = "Teach simple addition.",
+    status: GameStatus = GameStatus.draft,
+) -> tuple[Game, GameItem]:
+    SessionLocal = client.app.state.testing_session_local
+    db = SessionLocal()
+    try:
+        user = db.scalar(select(User).where(User.email == email))
+        assert user is not None
+        lesson = Lesson(
+            user_id=user.id,
+            title=title,
+            input_text=input_text,
+            subject="Toan",
+            grade=3,
+            difficulty="medium",
+            objective_id="OBJ-1",
+        )
+        db.add(lesson)
+        db.flush()
+        game = Game(
+            lesson_id=lesson.id,
+            product_template_id="treasure_hunt",
+            ai_template_id="quiz",
+            status=status,
+            settings_json={"numItems": 10, "playerCount": 2, "mapTheme": "treasure-hunt"},
+            ai_raw_response_json={"ok": True},
+        )
+        db.add(game)
+        db.flush()
+        item = GameItem(
+            game_id=game.id,
+            order_index=0,
+            question="What is 2 + 2?",
+            correct_answer="4",
+            options_json=["3", "4", "5"],
+            explanation="2 + 2 equals 4.",
+            hint="Add the two numbers.",
+            validation_status="valid",
+            validation_errors_json=[],
+        )
+        db.add(item)
+        db.commit()
+        db.refresh(game)
+        db.refresh(item)
+        return game, item
+    finally:
+        db.close()
 
 
 def test_signup_creates_user_and_returns_token(client):
@@ -191,92 +236,18 @@ def test_avatar_upload_rejects_non_image_files(client):
     assert response.json()["detail"] == "Avatar must be a PNG, JPEG, or WebP image"
 
 
-def test_generate_game_requires_authentication(client):
+def test_games_requires_authentication(client):
     assert client.get("/api/games").status_code == 401
-
-    response = client.post(
-        "/api/games/generate",
-        json={"title": "Math facts", "input": "Teach simple addition."},
-    )
-
-    assert response.status_code == 401
-
-
-def test_generate_game_creates_review_ready_payload_for_owner(client):
-    headers = auth_headers(client, email="owner@example.com")
-
-    response = client.post(
-        "/api/games/generate",
-        headers=headers,
-        json={
-            "title": "Math facts",
-            "input": "Teach simple addition.",
-            "product_template_id": "treasure_hunt",
-            "grade": 3,
-        },
-    )
-
-    assert response.status_code == 200
-    body = response.json()
-    assert body["lessonId"] == 1
-    assert body["gameId"] == 1
-    assert body["status"] == "draft"
-    assert body["aiTemplateId"] == "quiz"
-    assert body["productTemplateId"] == "treasure_hunt"
-    assert body["grade"] == 3
-    assert body["settings"] == {
-        "numItems": 10,
-        "playerCount": 2,
-        "mapTheme": "treasure-hunt",
-    }
-    assert body["items"][0]["correctAnswer"] == "4"
-    assert body["items"][0]["correctAnswer"] in body["items"][0]["options"]
-    assert body["items"][0]["options"][0] != body["items"][0]["correctAnswer"]
-
-
-def test_generate_game_uses_lesson_input_as_ai_prompt(client):
-    headers = auth_headers(client, email="owner@example.com")
-    mock_ai_client = MockAIClient()
-    app.dependency_overrides[get_ai_client] = lambda: mock_ai_client
-
-    response = client.post(
-        "/api/games/generate",
-        headers=headers,
-        json={
-            "title": "test",
-            "input": "Create 10 questions for practicing the 6 times table.",
-            "product_template_id": "treasure_hunt",
-            "grade": 3,
-        },
-    )
-
-    assert response.status_code == 200
-    assert response.json()["title"] == "test"
-    assert response.json()["input"] == "Create 10 questions for practicing the 6 times table."
-    assert mock_ai_client.last_request is not None
-    assert mock_ai_client.last_request.prompt == "Create 10 questions for practicing the 6 times table."
-    assert mock_ai_client.last_request.source_text == "Create 10 questions for practicing the 6 times table."
-    assert mock_ai_client.last_request.override_template == "quiz"
 
 
 def test_list_games_returns_current_user_games_newest_first(client):
     headers = auth_headers(client, email="owner@example.com")
 
-    first = client.post(
-        "/api/games/generate",
-        headers=headers,
-        json={"title": "First game", "input": "First input"},
-    )
-    second = client.post(
-        "/api/games/generate",
-        headers=headers,
-        json={"title": "Second game", "input": "Second input"},
-    )
+    seed_game(client, email="owner@example.com", title="First game", input_text="First input")
+    seed_game(client, email="owner@example.com", title="Second game", input_text="Second input")
 
     response = client.get("/api/games", headers=headers)
 
-    assert first.status_code == 200
-    assert second.status_code == 200
     assert response.status_code == 200
     body = response.json()
     assert len(body) == 2
@@ -291,11 +262,7 @@ def test_list_games_returns_current_user_games_newest_first(client):
 def test_list_games_hides_other_users_games(client):
     owner_headers = auth_headers(client, email="owner@example.com", name="Owner")
     other_headers = auth_headers(client, email="other@example.com", name="Other")
-    client.post(
-        "/api/games/generate",
-        headers=owner_headers,
-        json={"title": "Owner game", "input": "Teach simple addition."},
-    )
+    seed_game(client, email="owner@example.com", title="Owner game")
 
     response = client.get("/api/games", headers=other_headers)
 
@@ -305,13 +272,9 @@ def test_list_games_hides_other_users_games(client):
 
 def test_get_edit_recheck_approve_publish_flow(client):
     headers = auth_headers(client)
-    generated = client.post(
-        "/api/games/generate",
-        headers=headers,
-        json={"title": "Math facts", "input": "Teach simple addition."},
-    ).json()
-    game_id = generated["gameId"]
-    item_id = generated["items"][0]["id"]
+    game, item = seed_game(client)
+    game_id = game.id
+    item_id = item.id
 
     detail = client.get(f"/api/games/{game_id}", headers=headers)
     assert detail.status_code == 200
@@ -341,13 +304,9 @@ def test_get_edit_recheck_approve_publish_flow(client):
 def test_user_cannot_access_other_users_game(client):
     owner_headers = auth_headers(client, email="owner@example.com", name="Owner")
     other_headers = auth_headers(client, email="other@example.com", name="Other")
-    generated = client.post(
-        "/api/games/generate",
-        headers=owner_headers,
-        json={"title": "Math facts", "input": "Teach simple addition."},
-    ).json()
-    game_id = generated["gameId"]
-    item_id = generated["items"][0]["id"]
+    game, item = seed_game(client, email="owner@example.com")
+    game_id = game.id
+    item_id = item.id
 
     assert client.get(f"/api/games/{game_id}", headers=other_headers).status_code == 404
     assert client.patch(
@@ -361,42 +320,18 @@ def test_user_cannot_access_other_users_game(client):
 
 def test_publish_requires_approval(client):
     headers = auth_headers(client)
-    generated = client.post(
-        "/api/games/generate",
-        headers=headers,
-        json={"title": "Math facts", "input": "Teach simple addition."},
-    ).json()
+    game, _ = seed_game(client)
 
-    response = client.post(f"/api/games/{generated['gameId']}/publish", headers=headers)
+    response = client.post(f"/api/games/{game.id}/publish", headers=headers)
 
     assert response.status_code == 400
 
 
-def test_invalid_ai_response_returns_clear_error(client):
-    headers = auth_headers(client)
-    app.dependency_overrides[get_ai_client] = lambda: MockAIClient(
-        AIGameResponse(ok=True, template_id="quiz", content={"title": "Bad", "items": []})
-    )
-
-    response = client.post(
-        "/api/games/generate",
-        headers=headers,
-        json={"title": "Bad", "input": "Bad source"},
-    )
-
-    assert response.status_code == 502
-    assert "non-empty items list" in response.json()["detail"]
-
-
 def test_regenerate_not_implemented(client):
     headers = auth_headers(client)
-    generated = client.post(
-        "/api/games/generate",
-        headers=headers,
-        json={"title": "Math facts", "input": "Teach simple addition."},
-    ).json()
-    game_id = generated["gameId"]
-    item_id = generated["items"][0]["id"]
+    game, item = seed_game(client)
+    game_id = game.id
+    item_id = item.id
 
     response = client.post(f"/api/games/{game_id}/items/{item_id}/regenerate", headers=headers)
 

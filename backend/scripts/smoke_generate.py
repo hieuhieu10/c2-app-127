@@ -1,8 +1,8 @@
 """Live smoke test: run the full workflow against the real Claude API for one fixture objective.
 
 Usage:
-    cd backend && .venv/bin/python -m scripts.smoke_generate
-Requires a valid ANTHROPIC_API_KEY in the repo .env.
+    cd backend && uv run python -m scripts.smoke_generate
+Requires a valid LLM API key in the repo .env.
 """
 
 from __future__ import annotations

@@ -1,4 +1,4 @@
-# Agent Workflow Backend
+# BE_AI Agent Workflow Backend
 
 Backend này xử lý luồng tạo learning game:
 
@@ -6,23 +6,21 @@ Backend này xử lý luồng tạo learning game:
 retrieve GDPT objective -> recommend template -> generate content -> validate/repair
 ```
 
-MVP hiện tại tập trung vào **Toán tiểu học lớp 1-5 theo GDPT 2018**. Backend có
-LLM adapter cho Anthropic, OpenAI và DeepSeek.
+MVP hiện tập trung vào **Toán tiểu học lớp 1-5 theo GDPT 2018**. Backend có LLM adapter cho Anthropic, OpenAI và DeepSeek.
 
-## Setup
+## Cài Đặt
 
-```bash
+BE_AI dùng `uv` làm công cụ quản lý môi trường và dependency chính. File `requirements.txt` vẫn được giữ để fallback/export runtime; local development nên dùng `uv`.
+
+```powershell
 cd backend
-python -m venv .venv
-.venv\Scripts\python -m pip install -r requirements.txt
+uv sync --extra dev
 ```
 
-Hoặc dùng editable install:
+Nếu chưa có `uv`:
 
-```bash
-cd backend
-python -m venv .venv
-.venv\Scripts\python -m pip install -e ".[dev]"
+```powershell
+python -m pip install uv
 ```
 
 Tạo file `.env` ở repo root, ví dụ:
@@ -35,22 +33,25 @@ DEFAULT_MODEL=gpt-4.1-mini
 
 Provider hỗ trợ:
 
-| Provider | Required key | Default model |
-|----------|--------------|---------------|
+| Provider | Key bắt buộc | Default model |
+|---|---|---|
 | `openai` | `OPENAI_API_KEY` | `gpt-4.1-mini` |
 | `deepseek` | `DEEPSEEK_API_KEY` | `deepseek-chat` |
 | `anthropic` | `ANTHROPIC_API_KEY` | `claude-sonnet-4-6` |
 
-`LLM_PROVIDER=auto` ưu tiên OpenAI, sau đó DeepSeek, sau đó Anthropic. Nếu muốn
-ép provider, đặt `LLM_PROVIDER=openai`, `deepseek`, hoặc `anthropic`.
+`LLM_PROVIDER=auto` ưu tiên OpenAI, sau đó DeepSeek, sau đó Anthropic. Nếu muốn ép provider, đặt `LLM_PROVIDER=openai`, `deepseek` hoặc `anthropic`.
 
-Với DeepSeek, `DEEPSEEK_BASE_URL` mặc định là `https://api.deepseek.com`.
+Với DeepSeek, `DEEPSEEK_BASE_URL` mặc định là:
 
-## Run
+```text
+https://api.deepseek.com
+```
 
-```bash
+## Chạy Backend
+
+```powershell
 cd backend
-.venv\Scripts\uvicorn app.main:app --reload
+uv run uvicorn app.main:app --reload --port 8000
 ```
 
 API chạy tại:
@@ -65,37 +66,41 @@ Swagger UI:
 http://127.0.0.1:8000/docs
 ```
 
+## Test
+
 Chạy test không cần LLM key:
 
-```bash
+```powershell
 cd backend
-python -m pytest
+uv run pytest
 ```
 
 Chạy smoke test end-to-end có gọi LLM:
 
-```bash
+```powershell
 cd backend
-python -m scripts.smoke_generate
+uv run python -m scripts.smoke_generate
 ```
 
 ## API Usage
 
 ### Endpoints
 
-| Method | Path | Cần LLM key | Purpose |
-|--------|------|-------------|---------|
-| `GET` | `/health` | No | Kiểm tra server sống |
-| `GET` | `/templates` | No | List các game template đang active |
-| `POST` | `/recommend` | Yes | Chỉ chọn template phù hợp |
-| `POST` | `/generate` | Yes | Generate với `override_template` cụ thể |
-| `POST` | `/generate/full` | Yes | Luồng đầy đủ: retrieve -> recommend -> generate -> validate/repair |
+| Method | Path | Cần LLM key | Mục đích |
+|---|---|---:|---|
+| `GET` | `/health` | Không | Kiểm tra server sống |
+| `GET` | `/templates` | Không | Liệt kê content templates đang active |
+| `POST` | `/recommend/games` | Có | Đề xuất game library phù hợp cho FE |
+| `POST` | `/recommend` | Có | Chỉ chọn content template phù hợp |
+| `POST` | `/generate` | Có | Generate với `override_template` cụ thể |
+| `POST` | `/generate/full` | Có | Luồng đầy đủ: retrieve -> recommend -> generate -> validate/repair |
+| `POST` | `/generate/stream` | Có | Stream stage events và content cho giao diện tạo game |
 
-Frontend nên gọi `/generate/full` cho luồng hoàn chỉnh.
+FE hiện gọi `/recommend/games` trước. Sau khi giáo viên chọn game, FE gọi `/generate/stream`. Endpoint `/generate/full` vẫn hữu ích cho script, test hoặc manual API khi không cần stream.
 
 ### Request Body
 
-Payload chung cho `/recommend`, `/generate`, và `/generate/full`:
+Payload chung cho `/recommend`, `/generate`, `/generate/full` và `/generate/stream`:
 
 ```json
 {
@@ -112,30 +117,22 @@ Payload chung cho `/recommend`, `/generate`, và `/generate/full`:
 }
 ```
 
-Field meaning:
+Ý nghĩa field:
 
-| Field | Required | Notes |
-|-------|----------|-------|
-| `subject` | Yes | Hiện nên gửi `"Toán"` hoặc `"Toan"` |
-| `grade` | Yes | MVP focus `1-5`, schema backend vẫn cho `1-12` |
-| `difficulty` | No | `"easy"`, `"medium"`, `"hard"`; default `"medium"` |
-| `prompt` | Yes | Yêu cầu tự nhiên của giáo viên |
-| `objective_id` | No | Nếu biết objective thì gửi id; nếu không biết gửi `""` hoặc `null` để backend tự retrieval |
-| `source_text` | No | Text đã parse từ giáo án/slide upload; nếu không upload gửi `""` hoặc `null` |
-| `uploaded_file_id` | No | ID file upload do frontend/storage quản lý |
-| `upload_type` | No | `"none"`, `"lesson_plan"`, hoặc `"slide"` |
-| `num_items` | No | Số item/câu/pair muốn tạo, từ `1` đến `20` |
-| `override_template` | No | Dùng cho `/generate`; ví dụ `"quiz"`, `"matching"`; để `""`/`null` nếu muốn recommender chọn |
+| Field | Bắt buộc | Ghi chú |
+|---|---:|---|
+| `subject` | Có | Hiện nên gửi `"Toán"` hoặc `"Toan"`. |
+| `grade` | Có | MVP focus lớp `1-5`, schema vẫn cho `1-12`. |
+| `difficulty` | Không | `"easy"`, `"medium"`, `"hard"`; mặc định `"medium"`. |
+| `prompt` | Có | Yêu cầu tự nhiên của giáo viên. |
+| `objective_id` | Không | Nếu biết objective thì gửi id; nếu không gửi `""` hoặc `null` để backend tự retrieval. |
+| `source_text` | Không | Text đã parse từ giáo án/slide upload. |
+| `uploaded_file_id` | Không | ID file upload do frontend/storage quản lý. |
+| `upload_type` | Không | `"none"`, `"lesson_plan"` hoặc `"slide"`. |
+| `num_items` | Không | Số item/câu/pair muốn tạo, từ `1` đến `20`. |
+| `override_template` | Không | Dùng cho `/generate`; ví dụ `"quiz"`, `"matching"`. |
 
-### Example: Full Flow Without Upload
-
-```bash
-curl -X POST http://127.0.0.1:8000/generate/full ^
-  -H "Content-Type: application/json" ^
-  -d "{\"subject\":\"Toán\",\"grade\":5,\"difficulty\":\"medium\",\"prompt\":\"Tạo game luyện tỉ số phần trăm qua tình huống giảm giá khi mua đồ dùng học tập.\",\"objective_id\":\"\",\"source_text\":\"\",\"uploaded_file_id\":\"\",\"upload_type\":\"none\",\"num_items\":5,\"override_template\":\"\"}"
-```
-
-PowerShell version:
+### Ví Dụ Full Flow Không Có Upload
 
 ```powershell
 $body = @{
@@ -158,7 +155,7 @@ Invoke-RestMethod `
   -Body $body
 ```
 
-### Example: Full Flow With Lesson Plan Context
+### Ví Dụ Có Teacher Context
 
 ```json
 {
@@ -175,15 +172,29 @@ Invoke-RestMethod `
 }
 ```
 
-Trong case này, GDPT KB vẫn quyết định objective/scope/difficulty. `source_text`
-chỉ dùng để ưu tiên bối cảnh, ví dụ, thời lượng và ghi chú sư phạm.
+Trong case này, GDPT KB vẫn quyết định objective, scope và difficulty. `source_text` chỉ dùng để ưu tiên bối cảnh, ví dụ, thời lượng và ghi chú sư phạm.
 
-### Example: Recommend Only
+### Ví Dụ Recommend Only
 
-```bash
-curl -X POST http://127.0.0.1:8000/recommend ^
-  -H "Content-Type: application/json" ^
-  -d "{\"subject\":\"Toán\",\"grade\":3,\"difficulty\":\"medium\",\"prompt\":\"Tạo game chia đều 12 cái kẹo cho 3 bạn\",\"objective_id\":\"\",\"source_text\":\"\",\"uploaded_file_id\":\"\",\"upload_type\":\"none\",\"num_items\":5,\"override_template\":\"\"}"
+```powershell
+$body = @{
+  subject = "Toán"
+  grade = 3
+  difficulty = "medium"
+  prompt = "Tạo game chia đều 12 cái kẹo cho 3 bạn"
+  objective_id = ""
+  source_text = ""
+  uploaded_file_id = ""
+  upload_type = "none"
+  num_items = 5
+  override_template = ""
+} | ConvertTo-Json -Depth 10
+
+Invoke-RestMethod `
+  -Method Post `
+  -Uri "http://127.0.0.1:8000/recommend" `
+  -ContentType "application/json; charset=utf-8" `
+  -Body $body
 ```
 
 Response shape:
@@ -196,9 +207,9 @@ Response shape:
 }
 ```
 
-### Example: Generate With Explicit Template
+### Ví Dụ Generate Với Template Đã Chọn
 
-Use `/generate` when frontend or teacher has already selected a template.
+Dùng `/generate` khi frontend hoặc giáo viên đã chọn template.
 
 ```json
 {
@@ -232,8 +243,7 @@ Use `/generate` when frontend or teacher has already selected a template.
 }
 ```
 
-Nếu `ok=false`, frontend nên hiển thị `error` và có thể log
-`validation_errors` để debug.
+Nếu `ok=false`, frontend nên hiển thị `error` và có thể log `validation_errors` để debug.
 
 ## Knowledge Base Runtime
 
@@ -251,11 +261,12 @@ knowledge_base/gdpt_2018/
 
 Khi cập nhật canonical KB, mirror lại bằng:
 
-```bash
-python backend/scripts/repair_primary_math_kb.py
+```powershell
+cd backend
+uv run python scripts/repair_primary_math_kb.py
 ```
 
-## Layout
+## Cấu Trúc
 
 ```text
 app/
