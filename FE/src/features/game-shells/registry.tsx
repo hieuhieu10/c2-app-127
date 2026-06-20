@@ -17,6 +17,8 @@ import { BattleshipShell } from './battleship/BattleshipShell'
 export interface ShellProps {
   game: Game
   previewMode?: boolean
+  /** Review-harness only: jump straight to a named screen (e.g. 'battle'). Ignored in the app. */
+  scene?: string
 }
 
 export interface GameDefinition {
