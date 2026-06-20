@@ -26,6 +26,27 @@ class ReviewEventType(str, Enum):
     publish = "publish"
 
 
+class ChatRole(str, Enum):
+    user = "user"
+    assistant = "assistant"
+    system = "system"
+
+
+class ChatMessageType(str, Enum):
+    user_prompt = "user_prompt"
+    recommendations = "recommendations"
+    guardrail = "guardrail"
+    generation_result = "generation_result"
+    system = "system"
+
+
+class ChatMessageStatus(str, Enum):
+    pending = "pending"
+    running = "running"
+    done = "done"
+    error = "error"
+
+
 class TimestampMixin:
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
@@ -43,6 +64,7 @@ class User(TimestampMixin, Base):
     password_hash: Mapped[str | None] = mapped_column(String(255))
 
     lessons: Mapped[list["Lesson"]] = relationship(back_populates="user")
+    chat_sessions: Mapped[list["ChatSession"]] = relationship(back_populates="user", cascade="all, delete-orphan")
 
 
 class Lesson(TimestampMixin, Base):
@@ -59,6 +81,40 @@ class Lesson(TimestampMixin, Base):
 
     user: Mapped[User | None] = relationship(back_populates="lessons")
     games: Mapped[list["Game"]] = relationship(back_populates="lesson", cascade="all, delete-orphan")
+
+
+class ChatSession(TimestampMixin, Base):
+    __tablename__ = "chat_sessions"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    title: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    subject: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    grade: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    difficulty: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    num_items: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    source_text: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    user: Mapped[User] = relationship(back_populates="chat_sessions")
+    messages: Mapped[list["ChatMessage"]] = relationship(
+        back_populates="session",
+        cascade="all, delete-orphan",
+        order_by="ChatMessage.created_at",
+    )
+
+
+class ChatMessage(TimestampMixin, Base):
+    __tablename__ = "chat_messages"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    session_id: Mapped[int] = mapped_column(ForeignKey("chat_sessions.id"), index=True)
+    role: Mapped[ChatRole] = mapped_column(SAEnum(ChatRole), default=ChatRole.user)
+    message_type: Mapped[ChatMessageType] = mapped_column(SAEnum(ChatMessageType), default=ChatMessageType.user_prompt)
+    content: Mapped[str] = mapped_column(Text, default="")
+    payload_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    status: Mapped[ChatMessageStatus] = mapped_column(SAEnum(ChatMessageStatus), default=ChatMessageStatus.done)
+
+    session: Mapped[ChatSession] = relationship(back_populates="messages")
 
 
 class Game(TimestampMixin, Base):

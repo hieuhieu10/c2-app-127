@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/features/auth/auth-context'
 import { beWebApi, type BeWebGameSummary } from '@/features/game-library/services/be-web'
 import { listLocalGames, deleteLocalGame, type LocalGame } from '@/features/game-library/services/local-games'
@@ -29,13 +29,40 @@ function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('vi-VN', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
-export default function DashboardPage() {
+function normalizeText(value: string | number | null | undefined) {
+  return String(value ?? '').toLowerCase()
+}
+
+function matchBeGame(game: BeWebGameSummary, query: string) {
+  if (!query) return true
+  return [
+    game.title,
+    game.subject,
+    game.grade,
+    game.status,
+    game.input,
+  ].some((field) => normalizeText(field).includes(query))
+}
+
+function matchLocalGame(game: LocalGame, query: string) {
+  if (!query) return true
+  return [
+    game.templateName,
+    game.metadata.subject,
+    game.metadata.grade,
+  ].some((field) => normalizeText(field).includes(query))
+}
+
+function DashboardPageContent() {
   const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
   const { user, loading: authLoading } = useAuth()
   const [games, setGames] = useState<BeWebGameSummary[]>([])
   const [loadingGames, setLoadingGames] = useState(true)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [localGames, setLocalGames] = useState<LocalGame[]>([])
+  const [searchText, setSearchText] = useState(searchParams.get('q') ?? '')
 
   useEffect(() => {
     if (authLoading) return
@@ -52,6 +79,10 @@ export default function DashboardPage() {
       })
       .finally(() => setLoadingGames(false))
   }, [authLoading, router, user])
+
+  useEffect(() => {
+    setSearchText(searchParams.get('q') ?? '')
+  }, [searchParams])
 
   const openLocalGame = (g: LocalGame) => {
     sessionStorage.setItem('gamePreviewData', JSON.stringify({
@@ -70,8 +101,28 @@ export default function DashboardPage() {
     setLocalGames(listLocalGames())
   }
 
+  const query = searchText.trim().toLowerCase()
+  const filteredGames = useMemo(() => games.filter((game) => matchBeGame(game, query)), [games, query])
+  const filteredLocalGames = useMemo(() => localGames.filter((game) => matchLocalGame(game, query)), [localGames, query])
+  const hasSearch = query.length > 0
+  const hasAnyGames = localGames.length > 0 || games.length > 0
+  const hasSearchResults = filteredLocalGames.length > 0 || filteredGames.length > 0
+
   if (authLoading || !user) {
     return <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center' }}><Spinner /></div>
+  }
+
+  const updateQuery = (value: string) => {
+    setSearchText(value)
+    const params = new URLSearchParams(searchParams.toString())
+    const trimmedValue = value.trim()
+    if (trimmedValue) {
+      params.set('q', value)
+    } else {
+      params.delete('q')
+    }
+    const next = params.toString()
+    router.replace(next ? `${pathname}?${next}` : pathname)
   }
 
   const openGame = (g: BeWebGameSummary) => {
@@ -82,29 +133,84 @@ export default function DashboardPage() {
   }
 
   return (
-    <div style={{ height: '100vh', display: 'flex', fontFamily: "'Be Vietnam Pro', sans-serif", background: '#f4f5f8', color: '#1b2333', overflow: 'hidden' }}>
+    <div style={{ height: '100dvh', display: 'flex', fontFamily: "'Be Vietnam Pro', sans-serif", background: '#f4f5f8', color: '#1b2333', overflow: 'hidden' }}>
       <AppSidebar />
 
       <main style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
         {/* Top bar */}
-        <header style={{ height: 60, flexShrink: 0, borderBottom: '1px solid #e9ebf1', background: '#fff', display: 'flex', alignItems: 'center', padding: '0 26px' }}>
-          <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-.2px' }}>Trò chơi của tôi</span>
-          <Link href="/dashboard/game/new" style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 7, border: 'none', cursor: 'pointer', background: '#4f46e5', color: '#fff', fontFamily: 'inherit', fontWeight: 600, fontSize: 13.5, padding: '9px 16px', borderRadius: 10, textDecoration: 'none', boxShadow: '0 4px 10px rgba(79,70,229,.25)' }}>
-            <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M10 4v12M4 10h12"/></svg>
-            Tạo trò chơi mới
-          </Link>
+        <header style={{ minHeight: 60, flexShrink: 0, borderBottom: '1px solid #e9ebf1', background: '#fff', padding: '12px 26px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(180px, 1fr) minmax(300px, 520px) minmax(180px, 1fr)', alignItems: 'center', gap: 14 }}>
+            <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-.2px' }}>Trò chơi của tôi</span>
+            <div style={{ position: 'relative', width: '100%', justifySelf: 'center' }}>
+              <span style={{ position: 'absolute', left: 13, top: '50%', transform: 'translateY(-50%)', color: '#8b94a6', display: 'inline-flex', pointerEvents: 'none' }}>
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="9" cy="9" r="5.5" />
+                  <path d="M13.5 13.5L17 17" />
+                </svg>
+              </span>
+              <input
+                type="search"
+                value={searchText}
+                onChange={(event) => updateQuery(event.target.value)}
+                placeholder="Tìm kiếm trò chơi..."
+                aria-label="Tìm kiếm trò chơi"
+                style={{
+                  width: '100%',
+                  height: 42,
+                  borderRadius: 12,
+                  border: '1px solid #dbe1eb',
+                  background: '#f8faff',
+                  padding: '0 40px 0 38px',
+                  fontSize: 13.5,
+                  color: '#1b2333',
+                  outline: 'none',
+                  fontFamily: 'inherit',
+                  boxShadow: 'inset 0 1px 2px rgba(15, 23, 42, 0.04)',
+                }}
+              />
+              {searchText ? (
+                <button
+                  type="button"
+                  onClick={() => updateQuery('')}
+                  aria-label="Xóa tìm kiếm"
+                  style={{
+                    position: 'absolute',
+                    right: 8,
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    width: 24,
+                    height: 24,
+                    borderRadius: 999,
+                    border: 'none',
+                    background: '#e9edf5',
+                    color: '#667085',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    padding: 0,
+                  }}
+                >
+                  <svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                    <path d="M5 5l10 10M15 5L5 15" />
+                  </svg>
+                </button>
+              ) : null}
+            </div>
+            <div aria-hidden="true" />
+          </div>
         </header>
 
         {/* Content */}
         <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '30px 32px' }}>
-          {localGames.length > 0 && (
+          {filteredLocalGames.length > 0 && (
             <div style={{ marginBottom: 28 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
                 <span style={{ fontSize: 14.5, fontWeight: 700 }}>Đã lưu trên thiết bị này</span>
-                <span style={{ fontSize: 12, fontWeight: 500, color: '#5b6577', background: '#f1f3f7', borderRadius: 6, padding: '2px 8px' }}>{localGames.length}</span>
+                <span style={{ fontSize: 12, fontWeight: 500, color: '#5b6577', background: '#f1f3f7', borderRadius: 6, padding: '2px 8px' }}>{filteredLocalGames.length}</span>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {localGames.map(g => {
+                {filteredLocalGames.map(g => {
                   const icon = getTemplateByBackendId(g.templateId)?.icon ?? '🎮'
                   const count = Array.isArray((g.content as { questions?: unknown[] }).questions)
                     ? ((g.content as { questions: unknown[] }).questions).length : 0
@@ -135,6 +241,18 @@ export default function DashboardPage() {
               <div style={{ fontSize: 15, fontWeight: 600, color: '#1b2333', marginBottom: 6 }}>Không thể tải trò chơi</div>
               <div style={{ fontSize: 13.5, color: '#8b94a6' }}>{loadError}</div>
             </div>
+          ) : hasSearch && hasAnyGames && !hasSearchResults ? (
+            <div style={{ background: '#fff', border: '1px solid #e9ebf1', borderRadius: 16, padding: '42px 24px', textAlign: 'center', boxShadow: '0 1px 2px rgba(16,24,40,.04),0 6px 20px rgba(16,24,40,.04)' }}>
+              <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>Không tìm thấy trò chơi phù hợp</div>
+              <div style={{ fontSize: 14, color: '#8b94a6', marginBottom: 18 }}>Thử từ khóa khác hoặc xóa bộ lọc tìm kiếm hiện tại.</div>
+              <button
+                type="button"
+                onClick={() => updateQuery('')}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 8, border: '1px solid #d8def0', cursor: 'pointer', background: '#f8faff', color: '#4338ca', fontFamily: 'inherit', fontWeight: 600, fontSize: 13.5, padding: '10px 16px', borderRadius: 10 }}
+              >
+                Xóa tìm kiếm
+              </button>
+            </div>
           ) : games.length === 0 ? (
             localGames.length > 0 ? null : (
             <div style={{ background: '#fff', border: '1px solid #e9ebf1', borderRadius: 16, padding: '48px 24px', textAlign: 'center', boxShadow: '0 1px 2px rgba(16,24,40,.04),0 6px 20px rgba(16,24,40,.04)' }}>
@@ -149,9 +267,9 @@ export default function DashboardPage() {
               </Link>
             </div>
             )
-          ) : (
+          ) : filteredGames.length > 0 ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {games.map(g => (
+              {filteredGames.map(g => (
                 <button key={g.gameId} type="button" onClick={() => openGame(g)} style={{ textAlign: 'left', background: 'none', border: 'none', padding: 0, cursor: 'pointer', width: '100%' }}>
                   <div style={{ background: '#fff', border: '1px solid #e9ebf1', borderRadius: 14, padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 16, boxShadow: '0 1px 2px rgba(16,24,40,.03)', transition: 'box-shadow .15s' }}>
                     <div style={{ width: 40, height: 40, borderRadius: 11, background: '#eef0fe', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -167,9 +285,17 @@ export default function DashboardPage() {
                 </button>
               ))}
             </div>
-          )}
+          ) : null}
         </div>
       </main>
     </div>
+  )
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={null}>
+      <DashboardPageContent />
+    </Suspense>
   )
 }
