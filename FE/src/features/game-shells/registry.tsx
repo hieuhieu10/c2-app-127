@@ -17,6 +17,7 @@ import { BattleshipShell } from './battleship/BattleshipShell'
 export interface ShellProps {
   game: Game
   previewMode?: boolean
+  fullscreen?: boolean
 }
 
 export interface GameDefinition {

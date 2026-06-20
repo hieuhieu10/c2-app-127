@@ -88,13 +88,13 @@ export function TreasureHuntShell({ game, fullscreen = false }: TreasureHuntShel
     <div
       className={`overflow-hidden bg-sky-50 text-slate-900 shadow-xl ${
         fullscreen ? 'rounded-lg border border-white/20' : 'rounded-lg border border-emerald-200'
-      }`}
+      } ${fullscreen ? 'flex h-full min-h-0 flex-col' : 'flex flex-col'}`}
     >
-      <div className="bg-gradient-to-r from-cyan-400 via-sky-300 to-emerald-300 px-5 py-4">
+      <div className={`flex-shrink-0 bg-gradient-to-r from-cyan-400 via-sky-300 to-emerald-300 px-5 ${fullscreen ? 'py-3' : 'py-4'}`}>
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
             <div className="text-xs font-black uppercase tracking-[0.18em] text-emerald-950/75">Game Template</div>
-            <h3 className="text-2xl font-black text-emerald-950">Treasure Hunt</h3>
+            <h3 className={`${fullscreen ? 'text-xl' : 'text-2xl'} font-black text-emerald-950`}>Treasure Hunt</h3>
           </div>
           <div className="grid grid-cols-2 gap-2 text-center">
             <StatPill label="Round" value={`${currentIndex + 1}/${game.items.length}`} />
@@ -104,15 +104,15 @@ export function TreasureHuntShell({ game, fullscreen = false }: TreasureHuntShel
       </div>
 
       <div
-        className={`grid gap-4 bg-gradient-to-br from-sky-100 via-amber-50 to-lime-100 p-4 ${
+        className={`grid bg-gradient-to-br from-sky-100 via-amber-50 to-lime-100 ${
           fullscreen
-            ? 'min-h-[calc(100vh-126px)] lg:grid-cols-[minmax(0,1.55fr)_minmax(340px,0.45fr)]'
-            : 'lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)]'
+            ? 'min-h-0 flex-1 items-start gap-5 overflow-auto p-5 lg:grid-cols-[minmax(0,1fr)_360px] xl:grid-cols-[minmax(0,1fr)_380px]'
+            : 'flex-1 items-start gap-5 p-4 lg:grid-cols-[minmax(0,1fr)_360px]'
         }`}
       >
         <TreasureMap players={players} activePlayerId={activePlayer.id} fullscreen={fullscreen} />
 
-        <aside className="space-y-4">
+        <aside className={fullscreen ? 'min-h-0 max-h-[calc(100dvh-150px)] space-y-3 overflow-y-auto pr-1' : 'space-y-4 self-start'}>
           <div className="rounded-lg border border-white/70 bg-white/80 p-4 shadow-lg">
             <div className="flex items-center justify-between gap-3">
               <div>
@@ -135,6 +135,7 @@ export function TreasureHuntShell({ game, fullscreen = false }: TreasureHuntShel
             selectedAnswer={selectedAnswer}
             feedback={feedback}
             onAnswer={answerQuestion}
+            compact={fullscreen}
           />
 
           {feedback !== 'idle' && (
@@ -150,7 +151,7 @@ export function TreasureHuntShell({ game, fullscreen = false }: TreasureHuntShel
             </div>
           )}
 
-          <Leaderboard players={rankings} />
+          {!fullscreen && <Leaderboard players={rankings} />}
         </aside>
       </div>
     </div>
@@ -166,16 +167,28 @@ function TreasureMap({
   activePlayerId: string
   fullscreen?: boolean
 }) {
+  const mapStyle = fullscreen
+    ? {
+        aspectRatio: '19 / 9',
+        height: 'min(calc(100dvh - 162px), 100%)',
+        maxHeight: 'calc(100dvh - 162px)',
+      }
+    : {
+        aspectRatio: '18 / 10',
+        minHeight: '600px',
+      }
+
   return (
     <div
-      className={`relative overflow-hidden rounded-lg border-4 border-emerald-800/20 bg-[#77c95b] shadow-[inset_0_0_50px_rgba(20,83,45,0.28)] ${
-        fullscreen ? 'min-h-[520px] lg:min-h-[calc(100vh-170px)]' : 'min-h-[430px] md:min-h-[540px]'
+      className={`relative overflow-hidden rounded-lg border-4 border-emerald-800/20 bg-[#77c95b] bg-[radial-gradient(circle_at_24%_18%,rgba(255,255,255,0.28),transparent_28%),linear-gradient(135deg,#86d36f_0%,#4ea85d_48%,#2e8a58_100%)] shadow-[inset_0_0_50px_rgba(20,83,45,0.28)] ${
+        fullscreen ? 'h-auto w-full justify-self-stretch self-start ring-1 ring-white/60' : 'h-auto w-full justify-self-stretch self-start'
       }`}
+      style={mapStyle}
     >
       <AssetImage
         src={treasureHuntAssets.map.background}
         alt=""
-        className="absolute inset-0 h-full w-full object-cover"
+        className="absolute inset-0 h-full w-full object-cover object-center"
         fallback={null}
       />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_24%,rgba(255,255,255,0.18)_0,transparent_20%),radial-gradient(circle_at_82%_72%,rgba(22,101,52,0.24)_0,transparent_24%),linear-gradient(135deg,rgba(187,247,208,0.2)_0,transparent_34%,rgba(21,128,61,0.18)_100%)]" />
@@ -222,7 +235,7 @@ function TreasureMap({
       <AssetImage
         src={treasureHuntAssets.map.pathOverlay}
         alt=""
-        className="absolute inset-0 h-full w-full object-cover"
+        className="absolute inset-0 h-full w-full object-cover object-center"
         fallback={null}
       />
 
@@ -294,6 +307,7 @@ function QuestionCard({
   selectedAnswer,
   feedback,
   onAnswer,
+  compact = false,
 }: {
   question: string
   options: string[]
@@ -301,12 +315,13 @@ function QuestionCard({
   selectedAnswer: string
   feedback: FeedbackState
   onAnswer: (answer: string) => void
+  compact?: boolean
 }) {
   return (
-    <div className="rounded-lg border border-white/70 bg-white/90 p-4 shadow-lg">
+    <div className={`rounded-lg border border-white/70 bg-white/90 shadow-lg ${compact ? 'p-3' : 'p-4'}`}>
       <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-700">Question</div>
-      <h4 className="mt-2 text-xl font-black leading-snug text-slate-950">{question}</h4>
-      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+      <h4 className={`${compact ? 'mt-1 text-lg' : 'mt-2 text-xl'} font-black leading-snug text-slate-950`}>{question}</h4>
+      <div className={`${compact ? 'mt-3 gap-2' : 'mt-4 gap-3'} grid sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2`}>
         {options.map((option, index) => {
           const checked = feedback !== 'idle'
           const isSelected = selectedAnswer === option
@@ -320,7 +335,7 @@ function QuestionCard({
               type="button"
               disabled={checked}
               onClick={() => onAnswer(option)}
-              className={`min-h-16 rounded-lg border-2 px-3 py-3 text-base font-black text-slate-950 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-400 disabled:cursor-default ${
+              className={`${compact ? 'min-h-12 px-2 py-2 text-sm leading-snug' : 'min-h-16 px-3 py-3 text-base'} rounded-lg border-2 font-black text-slate-950 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-400 disabled:cursor-default ${
                 isSelectedCorrect
                   ? 'animate-pulse border-emerald-700 bg-emerald-300 shadow-emerald-500/40'
                   : isWrong
