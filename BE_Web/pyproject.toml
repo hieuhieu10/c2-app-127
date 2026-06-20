@@ -13,6 +13,7 @@ dependencies = [
     "email-validator>=2.2",
     "httpx>=0.27",
     "python-dotenv>=1.0",
+    "python-multipart>=0.0.9",
     "passlib[bcrypt]>=1.7",
     "python-jose[cryptography]>=3.3",
 ]

@@ -8,6 +8,7 @@ import { getGameByType } from './registry'
 interface GameShellProps {
   game: Game
   previewMode?: boolean
+  fullscreen?: boolean
 }
 
 export function GameShell({ game, previewMode = false }: GameShellProps) {

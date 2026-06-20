@@ -9,6 +9,7 @@ class UserResponse(BaseModel):
     id: int
     email: EmailStr
     name: str | None = None
+    avatarUrl: str | None = None
     createdAt: datetime
 
 

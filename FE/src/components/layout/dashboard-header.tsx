@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/features/auth/auth-context'
-import { getUserInitials } from '@/lib/utils'
+import { UserAvatar } from '@/components/ui/user-avatar'
 
 export function DashboardHeader() {
   const { user, signOut } = useAuth()
@@ -39,7 +39,6 @@ export function DashboardHeader() {
 
   const avatarLabel = user.name?.trim() || user.email || 'User'
   const avatarTitle = user.email ? `${avatarLabel} (${user.email})` : avatarLabel
-  const initials = getUserInitials(user.name, user.email)
 
   async function handleSignOut() {
     setIsUserMenuOpen(false)
@@ -61,14 +60,19 @@ export function DashboardHeader() {
         <div className="relative" ref={menuRef}>
           <button
             type="button"
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-secondary text-sm font-semibold text-secondary-foreground transition-colors hover:bg-secondary/80"
+            className="rounded-full transition-colors hover:bg-secondary/80"
             title={avatarTitle}
             aria-label="Open user menu"
             aria-expanded={isUserMenuOpen}
             aria-haspopup="menu"
             onClick={() => setIsUserMenuOpen((open) => !open)}
           >
-            {initials}
+            <UserAvatar
+              name={user.name}
+              email={user.email}
+              avatarUrl={user.avatarUrl}
+              title={avatarTitle}
+            />
           </button>
 
           {isUserMenuOpen ? (

@@ -24,6 +24,8 @@ class Settings(BaseSettings):
     jwt_secret_key: str = "change-me"
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 60 * 24 * 7
+    upload_dir: str = str(_ROOT / "uploads")
+    max_avatar_size_bytes: int = 2 * 1024 * 1024
 
 
 settings = Settings()

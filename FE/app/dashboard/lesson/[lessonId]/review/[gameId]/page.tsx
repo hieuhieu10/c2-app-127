@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
-import { CheckCircle2, Copy, ExternalLink, Rocket } from 'lucide-react'
+import { CheckCircle2, Copy, ExternalLink, Maximize2, Minimize2, Rocket } from 'lucide-react'
 import { useAuth } from '@/features/auth/auth-context'
 import { beWebApi, mapBeWebGame, mapBeWebLesson } from '@/features/game-library/services/be-web'
 import { GameShell } from '@/features/game-shells/GameShell'
@@ -23,6 +23,7 @@ export default function ReviewPage() {
   const [game, setGame] = useState<Game | null>(null)
   const [copied, setCopied] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [isFullscreen, setIsFullscreen] = useState(false)
 
   useEffect(() => {
     if (authLoading) return
@@ -136,9 +137,50 @@ export default function ReviewPage() {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-          <GameShell game={game} />
+          <div
+            className={
+              isFullscreen
+                ? 'fixed inset-0 z-50 overflow-y-auto bg-slate-950 p-3 text-slate-950 sm:p-4'
+                : 'min-w-0'
+            }
+          >
+            <div
+              className={
+                isFullscreen
+                  ? 'mx-auto flex max-w-[1800px] items-center justify-between gap-3 rounded-lg border border-white/15 bg-white/10 px-4 py-3 text-white shadow-lg backdrop-blur'
+                  : 'mb-3 flex justify-end'
+              }
+            >
+              {isFullscreen ? (
+                <div>
+                  <div className="text-sm font-black uppercase tracking-wide text-emerald-100">Treasure Hunt</div>
+                  <div className="text-xs text-white/70">{lesson.title}</div>
+                </div>
+              ) : null}
+              <Button
+                variant={isFullscreen ? 'secondary' : 'outline'}
+                onClick={() => setIsFullscreen((value) => !value)}
+              >
+                {isFullscreen ? (
+                  <>
+                    <Minimize2 className="mr-2 h-4 w-4" />
+                    Exit Fullscreen
+                  </>
+                ) : (
+                  <>
+                    <Maximize2 className="mr-2 h-4 w-4" />
+                    Fullscreen
+                  </>
+                )}
+              </Button>
+            </div>
 
-          <Card>
+            <div className={isFullscreen ? 'mx-auto mt-3 max-w-[1800px]' : ''}>
+              <GameShell game={game} fullscreen={isFullscreen} />
+            </div>
+          </div>
+
+          <Card className={isFullscreen ? 'hidden' : ''}>
             <CardHeader>
               <CardTitle className="text-lg">Validation Summary</CardTitle>
               <CardDescription>Teacher and system gates before launch.</CardDescription>
