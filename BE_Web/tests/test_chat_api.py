@@ -64,6 +64,42 @@ def test_recommend_persists_user_and_assistant_messages(client, monkeypatch):
     assert [message["role"] for message in detail.json()["messages"]] == ["user", "assistant"]
 
 
+def test_recommend_does_not_default_num_items_when_missing(client, monkeypatch):
+    headers = auth_headers(client)
+    session_id = create_session(client, headers)
+
+    async def fake_recommend(payload):
+        assert "num_items" not in payload
+        return {
+            "recommendations": [
+                {
+                    "template_id": "treasure_hunt",
+                    "name": "Treasure Hunt",
+                    "intro": "Để AI tự chọn số câu.",
+                    "recommended": True,
+                }
+            ]
+        }
+
+    monkeypatch.setattr(chat_api, "recommend_games", fake_recommend)
+
+    response = client.post(
+        f"/api/chat/sessions/{session_id}/recommend",
+        headers=headers,
+        json={
+            "subject": "Toán",
+            "grade": 3,
+            "difficulty": "medium",
+            "prompt": "Tạo game ôn phép cộng",
+        },
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["session"]["numItems"] is None
+    assert body["userMessage"]["payloadJson"]["numItems"] is None
+
+
 def test_recommend_guardrail_response_is_saved_in_history(client, monkeypatch):
     headers = auth_headers(client)
     session_id = create_session(client, headers)

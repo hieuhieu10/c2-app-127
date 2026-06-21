@@ -38,8 +38,17 @@ export function TreasureHuntShell({ game, fullscreen = false }: TreasureHuntShel
 
   const currentItem = game.items[currentIndex]
   const currentQuestion = currentItem ? normalizeTreasureQuestion(currentItem, currentIndex) : null
+  const hasAnyValidQuestion = game.items.some((item, index) => normalizeTreasureQuestion(item, index).isValid)
   const activePlayer = players[currentIndex % players.length]
   const movePercent = getMovePercent(game.items.length)
+
+  if (game.items.length > 0 && !hasAnyValidQuestion) {
+    return (
+      <div className="rounded-lg border border-destructive/40 bg-destructive/10 p-8 text-center text-destructive">
+        This game has no valid AI answer options. Please regenerate or edit the items before playing.
+      </div>
+    )
+  }
 
   if (!currentQuestion || !activePlayer) {
     return (
@@ -50,7 +59,7 @@ export function TreasureHuntShell({ game, fullscreen = false }: TreasureHuntShel
   }
 
   const answerQuestion = () => {
-    if (feedback !== 'idle' || !selectedAnswer) return
+    if (feedback !== 'idle' || !selectedAnswer || !currentQuestion.isValid) return
 
     const isCorrect = selectedAnswer === currentQuestion.correctAnswer
     setFeedback(isCorrect ? 'correct' : 'wrong')
@@ -136,7 +145,7 @@ export function TreasureHuntShell({ game, fullscreen = false }: TreasureHuntShel
           </div>
         </header>
 
-        <TreasureMap players={players} activePlayerId={activePlayer.id} />
+        <TreasureMap players={players} activePlayerId={activePlayer.id} feedback={feedback} />
 
         <section className="bottomPanel">
           <div className="panel sidePanel">
@@ -148,29 +157,45 @@ export function TreasureHuntShell({ game, fullscreen = false }: TreasureHuntShel
           </div>
 
           <div className="panel questionBox">
-            <div className={getQuestionTextClass(currentQuestion.prompt)}>{currentQuestion.prompt}</div>
-            <div className="answers">
-              {currentQuestion.options.map((option, index) => (
-                <button
-                  key={`${option}-${index}`}
-                  type="button"
-                  disabled={feedback !== 'idle'}
-                  onClick={() => setSelectedAnswer(option)}
-                  className={getAnswerButtonClass(option, selectedAnswer, currentQuestion.correctAnswer, feedback)}
-                >
-                  <span>{String.fromCharCode(65 + index)}.</span> {option}
-                </button>
-              ))}
-            </div>
+            <div className="questionText">{currentQuestion.prompt}</div>
+            {currentQuestion.isValid ? (
+              <div className="answers">
+                {currentQuestion.options.map((option, index) => (
+                  <button
+                    key={`${option}-${index}`}
+                    type="button"
+                    disabled={feedback !== 'idle'}
+                    onClick={() => setSelectedAnswer(option)}
+                    className={getAnswerButtonClass(option, selectedAnswer, currentQuestion.correctAnswer, feedback)}
+                  >
+                    <span>{String.fromCharCode(65 + index)}.</span> {option}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="invalidQuestion">
+                {currentQuestion.validationErrors.map((error) => (
+                  <p key={error}>{error}</p>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="panel turnPanel">
             <div className="turnTitle">LƯỢT CHƠI</div>
-            <div className="turnName">{activePlayer.name}</div>
+            <div className="turnCharacter">
+              <AssetImage
+                src={getCharacterAsset(activePlayer.assetId, activePlayer.mood)}
+                alt={activePlayer.name}
+                className="turnCharacterImg"
+                fallback={<span className="turnCharacterFallback">{activePlayer.avatar}</span>}
+              />
+              <div className="turnName">{activePlayer.name}</div>
+            </div>
             <button
               type="button"
               className="submitBtn"
-              disabled={feedback === 'idle' && !selectedAnswer}
+              disabled={!currentQuestion.isValid || (feedback === 'idle' && !selectedAnswer)}
               onClick={feedback === 'idle' ? answerQuestion : goNext}
             >
               {feedback === 'idle' ? '⚔ TRẢ LỜI' : hasWinner || currentIndex >= game.items.length - 1 ? '🏆 KẾT QUẢ' : '➡ CÂU TIẾP'}
@@ -228,14 +253,14 @@ function CharacterSelectModal({
         <div className="modalHint">Chọn 2 nhân vật khác nhau rồi bấm BẮT ĐẦU CHƠI.</div>
         <div className="chooseCols">
           <CharacterChoicePanel
-            title="Người chơi 1 - Hải tặc đỏ"
+            title="Người chơi 1"
             tone="red"
             playerIndex={0}
             selectedCharacterIds={selectedCharacterIds}
             onSelect={onSelect}
           />
           <CharacterChoicePanel
-            title="Người chơi 2 - Hải tặc xanh"
+            title="Người chơi 2"
             tone="blue"
             playerIndex={1}
             selectedCharacterIds={selectedCharacterIds}
@@ -302,7 +327,7 @@ function ScoreCard({ player, active, tone }: { player: TreasurePlayer; active: b
       <div className="miniChar">
         <AssetImage src={getCharacterAsset(player.assetId, player.mood)} alt="" className="miniImg" fallback={<span>{player.avatar}</span>} />
       </div>
-      <div className={`scoreTitle ${tone === 'blue' ? 'blueTitle' : ''}`}>{tone === 'red' ? 'HẢI TẶC ĐỎ' : 'HẢI TẶC XANH'}</div>
+      {/* <div className={`scoreTitle ${tone === 'blue' ? 'blueTitle' : ''}`}>{tone === 'red' ? 'HẢI TẶC ĐỎ' : 'HẢI TẶC XANH'}</div> */}
       <div className="scoreNum">{getDisplayProgress(player.position)}%</div>
       <div className="dots">
         <span className={`dot ${tone}`} />
@@ -313,7 +338,15 @@ function ScoreCard({ player, active, tone }: { player: TreasurePlayer; active: b
   )
 }
 
-function TreasureMap({ players, activePlayerId }: { players: TreasurePlayer[]; activePlayerId: string }) {
+function TreasureMap({
+  players,
+  activePlayerId,
+  feedback,
+}: {
+  players: TreasurePlayer[]
+  activePlayerId: string
+  feedback: FeedbackState
+}) {
   return (
     <div className="mapArea">
       <AssetImage
@@ -329,7 +362,6 @@ function TreasureMap({ players, activePlayerId }: { players: TreasurePlayer[]; a
 
         return (
           <div key={player.id} className={`avatar ${player.mood === 'run' ? 'running' : ''} ${isActive ? 'activeAvatar' : ''}`} style={point}>
-            <div className="nameTag">{player.name}</div>
             <div className="avatarRing">
               <AssetImage
                 src={getCharacterAsset(player.assetId, player.mood)}
@@ -338,6 +370,7 @@ function TreasureMap({ players, activePlayerId }: { players: TreasurePlayer[]; a
                 fallback={<span className="avatarFallback">{player.avatar}</span>}
               />
             </div>
+            <div className={getFootWaveClass(isActive, feedback)} aria-hidden="true" />
           </div>
         )
       })}
@@ -425,18 +458,21 @@ function getAnswerButtonClass(option: string, selectedAnswer: string, correctAns
   return classes.join(' ')
 }
 
-function getQuestionTextClass(question: string): string {
-  if (question.length > 150) return 'questionText questionTextDense'
-  if (question.length > 90) return 'questionText questionTextCompact'
-  return 'questionText'
-}
-
 function getDisplayProgress(position: number): number {
   return Math.min(100, Math.round((position / FINISH_POSITION) * 100))
 }
 
 function getVisualProgress(position: number): number {
   return Math.min(100, (position / FINISH_POSITION) * 100)
+}
+
+function getFootWaveClass(isActive: boolean, feedback: FeedbackState) {
+  const classes = ['footWave']
+
+  if (isActive && feedback === 'correct') classes.push('footWaveCorrect')
+  if (isActive && feedback === 'wrong') classes.push('footWaveWrong')
+
+  return classes.join(' ')
 }
 
 const treasureHuntStyles = `
@@ -463,13 +499,19 @@ const treasureHuntStyles = `
 .treasureStage {
   position: relative;
   width: 100%;
-  min-height: 860px;
-  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto auto auto;
+  gap: 16px;
+  min-height: 0;
+  overflow: visible;
   background: linear-gradient(#0686c2, #055d89);
+  padding: 14px;
 }
+
 .treasureV2Fullscreen .treasureStage {
   height: 100%;
-  min-height: 720px;
+  min-height: 0;
+  overflow: auto;
 }
 .selectModal {
   position: absolute;
@@ -587,16 +629,12 @@ const treasureHuntStyles = `
   padding: 16px 24px;
 }
 .treasureTopbar {
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  height: 16%;
-  padding: 1.2% 1.2% 0;
+  position: relative;
+  min-height: 74px;
   display: grid;
   grid-template-columns: minmax(180px, 250px) minmax(340px, 1fr) minmax(108px, 140px);
-  gap: 1%;
-  align-items: start;
+  gap: 14px;
+  align-items: center;
   z-index: 5;
 }
 .scoreWrap {
@@ -605,32 +643,32 @@ const treasureHuntStyles = `
 }
 .scoreCard {
   position: relative;
-  width: min(115px, 8.8vw);
-  min-width: 86px;
-  height: 102px;
+  width: min(82px, 7.2vw);
+  min-width: 76px;
+  height: 58px;
   overflow: hidden;
-  border: 4px solid var(--brown);
-  border-radius: 14px;
+  border: 3px solid var(--brown);
+  border-radius: 12px;
   background: #ffe7b6;
-  box-shadow: 0 5px 0 var(--dark-brown);
-  padding: 6px 8px;
+  box-shadow: 0 4px 0 var(--dark-brown);
+  padding: 5px 7px;
 }
 .scoreCard.active {
-  outline: 4px solid #ffd84f;
+  outline: 3px solid #ffd84f;
 }
 .miniChar {
   position: absolute;
   left: 2px;
-  top: 5px;
+  top: -8px;
   display: flex;
-  width: 42px;
-  height: 64px;
+  width: 34px;
+  height: 50px;
   align-items: flex-end;
   justify-content: center;
 }
 .miniImg {
-  max-width: 42px;
-  max-height: 64px;
+  max-width: 32px;
+  max-height: 42px;
   object-fit: contain;
 }
 .scoreTitle {
@@ -638,9 +676,9 @@ const treasureHuntStyles = `
   z-index: 2;
   color: #a12e16;
   text-align: right;
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 900;
-  line-height: 1.1;
+  line-height: 1.05;
 }
 .blueTitle {
   color: #175fa8;
@@ -648,9 +686,9 @@ const treasureHuntStyles = `
 .scoreNum {
   position: relative;
   z-index: 2;
-  margin-top: 20px;
+  margin-top: 24px;
   text-align: center;
-  font-size: 24px;
+  font-size: 19px;
   font-weight: 900;
 }
 .dots {
@@ -658,12 +696,12 @@ const treasureHuntStyles = `
   z-index: 2;
   display: flex;
   justify-content: center;
-  gap: 6px;
-  margin-top: 6px;
+  gap: 4px;
+  margin-top: 4px;
 }
 .dot {
-  width: 15px;
-  height: 15px;
+  width: 12px;
+  height: 12px;
   border: 2px solid #72350d;
   border-radius: 50%;
   background: #fff;
@@ -680,7 +718,7 @@ const treasureHuntStyles = `
 }
 .titleRibbon {
   min-width: min(460px, 100%);
-  margin-top: 8px;
+  margin-top: -1px;
   border: 4px solid #651208;
   border-radius: 16px;
   background: linear-gradient(#b72b14, #8d180c);
@@ -717,26 +755,24 @@ const treasureHuntStyles = `
   font-weight: 900;
 }
 .mapArea {
-  position: absolute;
-  left: 1%;
-  top: 13.5%;
-  width: 98%;
-  height: 61%;
+  --map-border: 6px;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1672 / 941;
+  min-height: 360px;
   overflow: hidden;
-  border: 6px solid var(--brown);
+  border: var(--map-border) solid var(--brown);
   border-radius: 26px;
   background: #10a0d4;
   box-shadow: 0 7px 0 var(--dark-brown);
 }
 .mapBackground {
   position: absolute;
-  left: 0;
-  right: 0;
-  top: -16%;
+  inset: 0;
   width: 100%;
-  height: 116%;
+  height: 100%;
   object-fit: cover;
-  object-position: center bottom;
+  object-position: center center;
   user-select: none;
 }
 .mapFallback {
@@ -753,7 +789,8 @@ const treasureHuntStyles = `
   position: absolute;
   z-index: 18;
   width: 84px;
-  transform: translate(-50%, -80%);
+  height: 94px;
+  transform: translate(-50%, -92%);
   transition: left .85s ease, top .85s ease, transform .2s ease;
   filter: drop-shadow(0 4px 3px rgba(0,0,0,.38));
 }
@@ -761,35 +798,20 @@ const treasureHuntStyles = `
   animation: treasureHop .22s infinite;
 }
 .activeAvatar .avatarRing {
-  border-color: #ff4c3b;
-  box-shadow: 0 0 0 5px rgba(255, 235, 156, .8), 0 10px 20px rgba(0,0,0,.25);
-}
-.nameTag {
-  display: inline-flex;
-  max-width: 100px;
-  min-width: 62px;
-  justify-content: center;
-  margin: 0 auto 2px;
-  border: 2px solid rgba(106, 51, 14, .28);
-  border-radius: 999px;
-  background: #fff2c9;
-  box-shadow: 0 2px 0 rgba(53, 22, 7, .2);
-  color: #2e1705;
-  font-size: 13px;
-  font-weight: 900;
-  line-height: 1.1;
-  padding: 3px 8px;
+  filter: drop-shadow(0 0 10px rgba(255, 235, 156, .95)) drop-shadow(0 6px 10px rgba(0,0,0,.28));
 }
 .avatarRing {
+  position: absolute;
+  left: 50%;
+  bottom: 6px;
   display: flex;
   width: 74px;
-  height: 74px;
+  height: 82px;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
-  border: 5px solid #fff0bb;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 25%, #fff, #ffd98a 65%, #e08b23);
+  overflow: visible;
+  background: transparent;
+  transform: translateX(-50%);
 }
 .avatarImg {
   width: 78px;
@@ -800,18 +822,60 @@ const treasureHuntStyles = `
 .avatarFallback {
   font-size: 38px;
 }
-.bottomPanel {
+.footWave {
   position: absolute;
-  left: 1.3%;
-  right: 1.3%;
-  top: 76%;
+  left: 50%;
+  bottom: -3px;
+  z-index: -1;
+  width: 80px;
+  height: 34px;
+  border-radius: 999px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+.footWave::before,
+.footWave::after {
+  position: absolute;
+  inset: 4px 8px;
+  border-radius: 999px;
+  content: '';
+  opacity: 0;
+  transform: scale(.12);
+}
+.footWave::after {
+  animation-delay: .28s;
+}
+.footWaveCorrect {
+  opacity: 1;
+}
+.footWaveCorrect::before,
+.footWaveCorrect::after {
+  border: 2px solid rgba(34, 197, 94, .86);
+  box-shadow: 0 0 6px rgba(34, 197, 94, .34);
+  animation: footWaveGreen 1.05s ease-out infinite;
+}
+.footWaveWrong {
+  opacity: 1;
+}
+.footWaveWrong::before,
+.footWaveWrong::after {
+  border: 2px solid rgba(239, 68, 68, .88);
+  box-shadow: 0 0 6px rgba(239, 68, 68, .34);
+  animation: footWaveRed .86s ease-out infinite;
+}
+.bottomPanel {
+  position: relative;
   z-index: 20;
   display: grid;
-  height: 20.5%;
+  min-height: 190px;
+  height: auto;
   grid-template-columns: minmax(94px, 110px) minmax(0, 1fr) minmax(175px, 220px) minmax(154px, 184px);
+  align-items: stretch;
   gap: 12px;
 }
 .panel {
+  min-height: 0;
   border: 5px solid var(--brown);
   border-radius: 18px;
   background: #f7dfb0;
@@ -848,31 +912,36 @@ const treasureHuntStyles = `
   z-index: 30;
   display: flex;
   flex-direction: column;
-  overflow: visible;
+  overflow: hidden;
 }
 .questionText {
-  min-height: 40px;
+  min-height: 0;
   margin-bottom: 7px;
   padding: 0 8px;
   color: #4a2606;
   text-align: center;
-  font-size: clamp(18px, 1.85vw, 26px);
+  overflow-wrap: anywhere;
+  font-size: clamp(16px, 1.7vw, 24px);
   font-weight: 900;
-  line-height: 1.15;
-}
-.questionTextCompact {
-  font-size: clamp(15px, 1.45vw, 21px);
   line-height: 1.18;
-}
-.questionTextDense {
-  font-size: clamp(13px, 1.16vw, 17px);
-  line-height: 1.2;
-  text-align: left;
 }
 .answers {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 10px;
+}
+.invalidQuestion {
+  border: 3px solid #b91c1c;
+  border-radius: 14px;
+  background: #fee2e2;
+  color: #7f1d1d;
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1.35;
+  padding: 14px;
+}
+.invalidQuestion p + p {
+  margin-top: 8px;
 }
 .answerBtn {
   position: relative;
@@ -885,9 +954,10 @@ const treasureHuntStyles = `
   border-radius: 14px;
   background: #ffe6b0;
   color: #5a2b05;
-  font-size: clamp(14px, 1.22vw, 19px);
+  overflow-wrap: anywhere;
+  font-size: clamp(13px, 1.08vw, 18px);
   font-weight: 900;
-  line-height: 1.15;
+  line-height: 1.18;
   padding: 9px 5px;
   pointer-events: auto;
   touch-action: manipulation;
@@ -919,12 +989,36 @@ const treasureHuntStyles = `
   font-size: 18px;
   font-weight: 900;
 }
+.turnCharacter {
+  display: flex;
+  min-height: 118px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 4px;
+  margin: 8px 0 10px;
+}
+.turnCharacterImg {
+  width: 92px;
+  height: 92px;
+  object-fit: contain;
+  object-position: center bottom;
+  filter: drop-shadow(0 5px 4px rgba(64, 29, 5, .28));
+}
+.turnCharacterFallback {
+  display: flex;
+  width: 82px;
+  height: 82px;
+  align-items: center;
+  justify-content: center;
+  font-size: 44px;
+}
 .turnName {
-  margin: 18px 0 16px;
   color: #b12517;
   text-align: center;
-  font-size: 22px;
+  font-size: 16px;
   font-weight: 900;
+  line-height: 1.1;
 }
 .submitBtn {
   width: 100%;
@@ -961,105 +1055,6 @@ const treasureHuntStyles = `
 }
 .eventItem b {
   font-size: 17px;
-}
-.treasureV2Fullscreen .treasureTopbar {
-  height: 12%;
-  padding: .8% 1% 0;
-  grid-template-columns: minmax(180px, 260px) minmax(360px, 1fr) minmax(112px, 148px);
-}
-.treasureV2Fullscreen .scoreCard {
-  width: 96px;
-  min-width: 96px;
-  height: 86px;
-  border-width: 3px;
-  box-shadow: 0 4px 0 var(--dark-brown);
-}
-.treasureV2Fullscreen .miniChar {
-  width: 34px;
-  height: 50px;
-}
-.treasureV2Fullscreen .miniImg {
-  max-width: 34px;
-  max-height: 50px;
-}
-.treasureV2Fullscreen .scoreTitle {
-  font-size: 10px;
-}
-.treasureV2Fullscreen .scoreNum {
-  margin-top: 15px;
-  font-size: 22px;
-}
-.treasureV2Fullscreen .dots {
-  margin-top: 2px;
-}
-.treasureV2Fullscreen .dot {
-  width: 12px;
-  height: 12px;
-}
-.treasureV2Fullscreen .titleRibbon {
-  min-width: min(520px, 100%);
-  margin-top: 6px;
-  font-size: clamp(20px, 2.3vw, 30px);
-  padding: 8px 22px;
-}
-.treasureV2Fullscreen .roundBtn {
-  width: 48px;
-  height: 48px;
-  font-size: 21px;
-}
-.treasureV2Fullscreen .mapArea {
-  top: 13%;
-  height: 50%;
-  border-width: 5px;
-  border-radius: 22px;
-}
-.treasureV2Fullscreen .mapBackground {
-  top: 0;
-  height: 100%;
-}
-.treasureV2Fullscreen .bottomPanel {
-  top: 66%;
-  height: 31%;
-  grid-template-columns: minmax(108px, 128px) minmax(0, 1fr) minmax(210px, 250px) minmax(190px, 230px);
-  gap: 10px;
-}
-.treasureV2Fullscreen .panel {
-  border-width: 4px;
-  border-radius: 16px;
-  box-shadow: 0 5px 0 var(--dark-brown);
-  padding: 10px;
-}
-.treasureV2Fullscreen .questionText {
-  min-height: 34px;
-  margin-bottom: 7px;
-  font-size: clamp(18px, 1.8vw, 26px);
-  line-height: 1.12;
-}
-.treasureV2Fullscreen .questionTextCompact {
-  font-size: clamp(15px, 1.35vw, 20px);
-}
-.treasureV2Fullscreen .questionTextDense {
-  font-size: clamp(13px, 1.05vw, 16px);
-}
-.treasureV2Fullscreen .answerBtn {
-  min-height: 48px;
-  font-size: clamp(14px, 1.08vw, 18px);
-  padding: 8px 5px;
-}
-.treasureV2Fullscreen .turnName {
-  margin: 14px 0 14px;
-  font-size: 22px;
-}
-.treasureV2Fullscreen .submitBtn {
-  font-size: 19px;
-  padding: 12px 8px;
-}
-.treasureV2Fullscreen .eventTitle {
-  font-size: 19px;
-}
-.treasureV2Fullscreen .eventItem {
-  font-size: 14px;
-  padding: 8px 3px;
 }
 .log {
   position: absolute;
@@ -1162,8 +1157,18 @@ const treasureHuntStyles = `
   padding: 6px 10px;
 }
 @keyframes treasureHop {
-  0%, 100% { transform: translate(-50%, -80%) rotate(-2deg); }
-  50% { transform: translate(-50%, -88%) rotate(2deg); }
+  0%, 100% { transform: translate(-50%, -92%) rotate(-2deg); }
+  50% { transform: translate(-50%, -100%) rotate(2deg); }
+}
+@keyframes footWaveGreen {
+  0% { opacity: .85; transform: scale(.12); }
+  55% { opacity: .45; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.75); }
+}
+@keyframes footWaveRed {
+  0% { opacity: .88; transform: scale(.12); }
+  50% { opacity: .48; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.78); }
 }
 @keyframes answerGreen {
   0%, 100% { background: #86efac; }
@@ -1205,10 +1210,11 @@ const treasureHuntStyles = `
     height: 96px;
   }
   .treasureStage {
-    min-height: 820px;
+    gap: 12px;
+    padding: 10px;
   }
   .treasureTopbar {
-    height: 20%;
+    min-height: 132px;
     grid-template-columns: 1fr auto;
   }
   .titleWrap {
@@ -1226,14 +1232,11 @@ const treasureHuntStyles = `
     min-width: 92px;
   }
   .mapArea {
-    top: 21%;
-    height: 43%;
+    min-height: 300px;
   }
   .bottomPanel {
-    top: 66%;
-    height: 32%;
     grid-template-columns: 1fr;
-    overflow-y: auto;
+    min-height: 0;
   }
   .sidePanel,
   .turnPanel {
@@ -1241,12 +1244,6 @@ const treasureHuntStyles = `
   }
   .questionText {
     font-size: 18px;
-  }
-  .questionTextCompact {
-    font-size: 15px;
-  }
-  .questionTextDense {
-    font-size: 13px;
   }
 }
 `

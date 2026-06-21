@@ -6,10 +6,13 @@ export interface TreasureQuestion {
   options: string[]
   correctAnswer: string
   explanation: string
+  isValid: boolean
+  validationErrors: string[]
 }
 
 export function normalizeTreasureQuestion(item: GameItem, index: number): TreasureQuestion {
-  const options = item.options?.length ? item.options : buildFallbackOptions(item.correctAnswer)
+  const options = item.options ?? []
+  const validationErrors = validateTreasureQuestionOptions(options, item.correctAnswer)
 
   return {
     id: item.id,
@@ -17,15 +20,26 @@ export function normalizeTreasureQuestion(item: GameItem, index: number): Treasu
     options,
     correctAnswer: item.correctAnswer,
     explanation: item.explanation || `The correct answer is ${item.correctAnswer}.`,
+    isValid: validationErrors.length === 0,
+    validationErrors,
   }
 }
 
-function buildFallbackOptions(correctAnswer: string): string[] {
-  const options = new Set([correctAnswer])
-  for (const fallback of ['Answer A', 'Answer B', 'Answer C']) {
-    if (options.size >= 4) break
-    options.add(fallback)
+function validateTreasureQuestionOptions(options: string[], correctAnswer: string): string[] {
+  const errors: string[] = []
+  const cleanedOptions = options.map((option) => option.trim()).filter(Boolean)
+
+  if (cleanedOptions.length < 2) {
+    errors.push('This question is missing valid AI answer options. Please regenerate or edit this item.')
   }
 
-  return [...options]
+  if (cleanedOptions.length !== options.length) {
+    errors.push('Answer options cannot be empty.')
+  }
+
+  if (correctAnswer.trim() && !cleanedOptions.includes(correctAnswer)) {
+    errors.push('Correct answer must match one of the AI answer options.')
+  }
+
+  return errors
 }

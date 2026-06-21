@@ -114,7 +114,6 @@ export interface RecommendChatInput {
   grade: number
   difficulty: 'easy' | 'medium' | 'hard'
   prompt: string
-  numItems: number
   sourceText?: string | null
   attachedFileName?: string | null
 }

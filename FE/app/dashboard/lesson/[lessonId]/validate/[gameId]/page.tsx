@@ -5,11 +5,12 @@ import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/features/auth/auth-context'
 import { beWebApi, mapBeWebGame, mapBeWebItem, mapBeWebLesson } from '@/features/game-library/services/be-web'
-import { GamePreviewPanel } from '@/features/game-preview/components/GamePreviewPanel'
 import { ItemReviewPanel } from '@/features/game-preview/components/ItemReviewPanel'
 import { TeacherEditForm } from '@/features/game-preview/components/TeacherEditForm'
+import { ValidationBadge } from '@/features/game-preview/components/ValidationBadge'
 import { validateGameItem, validateGameItems } from '@/features/game-preview/services/validation'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Spinner } from '@/components/ui/spinner'
 import type { Game, GameItem, Lesson } from '@/types/app'
 
@@ -123,6 +124,7 @@ export default function ValidationPage() {
 
   const selectedItem = game.items[selectedIndex]
   const allItemsValid = game.items.every((item) => item.validationStatus === 'valid' && item.safetyStatus !== 'blocked')
+  const queueItems = game.items.slice(selectedIndex, selectedIndex + 3)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/5">
@@ -151,14 +153,40 @@ export default function ValidationPage() {
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-[320px_1fr]">
           <ItemReviewPanel items={game.items} selectedIndex={selectedIndex} onSelect={setSelectedIndex} />
 
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
             <TeacherEditForm
               item={selectedItem}
               itemNumber={selectedIndex + 1}
               onChange={updateSelectedItem}
               onValidate={validateSelectedItem}
             />
-            <GamePreviewPanel game={game} />
+            <Card className="h-fit">
+              <CardHeader>
+                <CardTitle className="text-lg">Review Queue</CardTitle>
+                <CardDescription>Next items to inspect.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {queueItems.map((item) => {
+                  const index = game.items.findIndex((candidate) => candidate.id === item.id)
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setSelectedIndex(index)}
+                      className={`w-full rounded-md border p-3 text-left transition ${
+                        selectedIndex === index ? 'border-primary bg-primary/10' : 'border-border hover:bg-secondary/30'
+                      }`}
+                    >
+                      <div className="mb-2 flex items-center justify-between gap-2">
+                        <span className="text-sm font-semibold">Item {index + 1}</span>
+                        <ValidationBadge status={item.validationStatus} />
+                      </div>
+                      <p className="line-clamp-3 text-sm text-muted-foreground">{item.question}</p>
+                    </button>
+                  )
+                })}
+              </CardContent>
+            </Card>
           </div>
         </div>
       </main>
