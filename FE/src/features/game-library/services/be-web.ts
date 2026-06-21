@@ -301,6 +301,7 @@ export function mapBeWebItem(item: BeWebGameItem, templateType?: GameTemplateTyp
 function productTemplateToGameTemplate(productTemplateId: string): GameTemplateType {
   if (productTemplateId === 'treasure_hunt') return 'press-the-button'
   if (productTemplateId === 'battleship') return 'battleship'
+  if (productTemplateId === 'feed_the_cats') return 'feed-the-cats'
   return 'multiple-choice'
 }
 

@@ -95,6 +95,29 @@ def valid_content(template_id: str) -> dict:
             "objective_id": OBJ,
             "questions": [q] * 4,
         }
+    if template_id == "feed_the_cats":
+        def treat(question: str, answer: str) -> dict:
+            return {
+                "question": question,
+                "correct_answer": answer,
+                "hint": "Tính tổng rồi tìm chú mèo có số đó.",
+                "explanation": f"{question} = {answer}.",
+                "objective_id": OBJ,
+            }
+
+        return {
+            "title": "Cho mèo ăn — Phép cộng",
+            "objective_id": OBJ,
+            "instructions": "Kéo mỗi miếng cá đến chú mèo có số khớp với đáp án.",
+            "items": [
+                treat("3 + 4", "7"),
+                treat("5 + 2", "7"),
+                treat("6 + 4", "10"),
+                treat("8 + 2", "10"),
+                treat("4 + 5", "9"),
+                treat("7 + 2", "9"),
+            ],
+        }
     raise ValueError(template_id)
 
 
@@ -113,6 +136,8 @@ def invalid_content(template_id: str) -> dict:
         c["questions"] = c["questions"][:1]          # below min_length=4
         for q in c["questions"]:
             q["distractors"] = q["distractors"][:2]  # below min_length=3
+    elif template_id == "feed_the_cats":
+        c["items"] = c["items"][:1]                  # below min_length=4
     return c
 
 

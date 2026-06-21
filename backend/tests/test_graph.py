@@ -75,7 +75,7 @@ def test_http_endpoints(monkeypatch):
     assert client.get("/health").json() == {"status": "ok"}
 
     templates = client.get("/templates").json()
-    assert {t["id"] for t in templates} == {"quiz", "matching", "fill_in_blank", "treasure_hunt", "battleship"}
+    assert {t["id"] for t in templates} == {"quiz", "matching", "fill_in_blank", "treasure_hunt", "battleship", "feed_the_cats"}
 
     payload = {
         "subject": "Lịch sử", "grade": 8, "difficulty": "medium",

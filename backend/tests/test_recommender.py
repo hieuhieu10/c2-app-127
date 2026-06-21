@@ -72,7 +72,8 @@ async def test_recommend_games_offers_all_regardless_of_grade(monkeypatch):
 
     monkeypatch.setattr(rec, "call_tool", fake)
     out = await recommend_games(subject="Toán", grade=3, difficulty="easy", prompt="cộng trừ")
-    assert {g["template_id"] for g in out} == {"treasure_hunt", "battleship"}
+    # feed_the_cats was omitted by the model but is still appended so every game shows.
+    assert {g["template_id"] for g in out} == {"treasure_hunt", "battleship", "feed_the_cats"}
 
 
 async def test_recommend_games_ranks_and_introduces(monkeypatch):
@@ -86,7 +87,8 @@ async def test_recommend_games_ranks_and_introduces(monkeypatch):
 
     monkeypatch.setattr(rec, "call_tool", fake)
     out = await recommend_games(subject="Lịch sử", grade=8, difficulty="medium", prompt="Cần Vương")
-    assert [g["template_id"] for g in out] == ["battleship", "treasure_hunt"]
+    # Model ranked two; the omitted feed_the_cats is appended last (by sort_order).
+    assert [g["template_id"] for g in out] == ["battleship", "treasure_hunt", "feed_the_cats"]
     assert out[0]["recommended"] is True          # top pick flagged
     assert all(not g["recommended"] for g in out[1:])
     assert all(g["intro"] and g["name"] for g in out)
@@ -99,4 +101,4 @@ async def test_recommend_games_appends_omitted(monkeypatch):
     monkeypatch.setattr(rec, "call_tool", fake)
     out = await recommend_games(subject="Lịch sử", grade=8, difficulty="medium", prompt="p")
     ids = [g["template_id"] for g in out]
-    assert set(ids) == {"treasure_hunt", "battleship"}   # omitted game still offered
+    assert set(ids) == {"treasure_hunt", "battleship", "feed_the_cats"}   # omitted games still offered

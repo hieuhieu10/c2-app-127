@@ -13,6 +13,7 @@ import type { ComponentType } from 'react'
 import type { Game, GameTemplateType } from '@/types/app'
 import { TreasureHuntShell } from './treasure-hunt/TreasureHuntShell'
 import { BattleshipShell } from './battleship/BattleshipShell'
+import { FeedTheCatsShell } from './feed-the-cats/FeedTheCatsShell'
 
 export interface ShellProps {
   game: Game
@@ -66,6 +67,18 @@ export const GAMES: GameDefinition[] = [
     bestFor: 'Grades 6-12, competitive review, factual recall, vocabulary, cause & effect',
     example: 'Answer a history question correctly to bomb your opponent\'s fleet. Hit = free turn.',
     Shell: BattleshipShell,
+  },
+  {
+    backendId: 'feed_the_cats',
+    type: 'feed-the-cats',
+    title: 'Feed the Hungry Cats',
+    description: 'Drag each fish-treat to the cat whose label matches the treat\'s answer — a playful sorting game',
+    icon: '🐱',
+    itemCount: 9,
+    interactionType: 'Drag-and-drop sorting',
+    bestFor: 'Grades 1-5, math facts, classifying examples into categories, matching',
+    example: 'Drag the "3 + 4" treat to the cat that wants 7. Match every treat to feed all the cats.',
+    Shell: FeedTheCatsShell,
   },
 ]
 

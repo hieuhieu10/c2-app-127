@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useReducer, useMemo, useRef } from 'react'
+import { useEffect, useReducer, useMemo, useRef, useState } from 'react'
 import type { Game, GameItem } from '@/types/app'
+import { createBattleshipAudio, type Sfx } from './audio'
 
 /**
  * Trivia Battleship — fully inline, native-React game shell.
@@ -261,6 +262,30 @@ export function BattleshipShell({ game, scene }: { game: Game; previewMode?: boo
   }
   useEffect(() => () => { timeouts.current.forEach((id) => clearTimeout(id)) }, [])
 
+  // ── Audio: synthesized 8-bit SFX + looping background music ──
+  // The engine builds its AudioContext lazily on first use; browsers block
+  // autoplay, so music only kicks in after a real user gesture (ensureAudio).
+  const audioRef = useRef<ReturnType<typeof createBattleshipAudio> | null>(null)
+  if (audioRef.current === null && typeof window !== 'undefined') audioRef.current = createBattleshipAudio('/games/battleship/battleship.mp3')
+  const audio = audioRef.current
+  const musicStarted = useRef(false)
+  const [muted, setMuted] = useState(false)
+  useEffect(() => () => { audioRef.current?.dispose() }, [])
+
+  const sfx = (name: Sfx) => audio?.play(name)
+  // Resume the context and start the loop on the player's first interaction.
+  const ensureAudio = () => {
+    if (!audio) return
+    audio.unlock()
+    if (!musicStarted.current && !audio.muted) { audio.startMusic(); musicStarted.current = true }
+  }
+  const toggleMute = () => {
+    if (!audio) return
+    const m = audio.toggleMuted()
+    setMuted(m)
+    if (!m) { audio.unlock(); if (!musicStarted.current) { audio.startMusic(); musicStarted.current = true } }
+  }
+
   const oppI = () => (S.cur === 0 ? 1 : 0) as 0 | 1
 
   // ── Mutations (mirror of the original imperative game) ──
@@ -314,10 +339,16 @@ export function BattleshipShell({ game, scene }: { game: Game; previewMode?: boo
     S.sunkShips = sunkIds.length ? { pi: opI, ids: sunkIds } : null
     const animDur = sunkIds.length ? 750 : 500
 
+    // Torpedo whistle now; the impact lands a beat later, in sync with the bomb
+    // animation (explosion on a hit/sink, a soft splash on a clean miss).
+    sfx('fire')
+    const impact: Sfx = sunkIds.length ? 'sunk' : newHits > 0 ? 'hit' : 'miss'
+    after(200, () => sfx(impact))
+
     if (checkWin(S, S.cur)) {
       S.winner = S.cur
       render()
-      after(animDur, () => { S.anim = null; S.sunkShips = null; S.phase = 'game_over'; render() })
+      after(animDur, () => { S.anim = null; S.sunkShips = null; S.phase = 'game_over'; sfx('win'); render() })
     } else if (newHits > 0) {
       drawQ()
       if (sunkIds.length) S.sunkNote = S.players[opI].ships.find((s) => s.id === sunkIds[sunkIds.length - 1])!.name
@@ -358,22 +389,27 @@ export function BattleshipShell({ game, scene }: { game: Game; previewMode?: boo
     ship.cells.forEach(([r, c]) => { me.grid[r][c].hit = false })
     S.skillUsed[S.cur] = true
     S.battleSub = 'targeting'
+    sfx('skill')
     render()
   }
 
   // ── Event handlers ──
-  const selAvatar = (pi: number, ai: number) => { S.players[pi].av = AVATARS[ai]; render() }
+  const selAvatar = (pi: number, ai: number) => { ensureAudio(); S.players[pi].av = AVATARS[ai]; sfx('select'); render() }
   const startPlacement = () => {
     if (!S.players[0].av || !S.players[1].av) return
-    S.selShip = 0; S.orient = 'H'; S.hvr = []; S.phase = 'placement_p1'; render()
+    ensureAudio()
+    S.selShip = 0; S.orient = 'H'; S.hvr = []; S.phase = 'placement_p1'; sfx('click'); render()
   }
   const selShip = (pi: number, si: number) => {
-    if (!S.players[pi].ships.find((s) => s.id === SHIP_DEFS[si].id)) { S.selShip = si; render() }
+    if (!S.players[pi].ships.find((s) => s.id === SHIP_DEFS[si].id)) { S.selShip = si; sfx('click'); render() }
   }
-  const setOrient = (or: 'H' | 'V') => { S.orient = or; S.hvr = []; render() }
+  const setOrient = (or: 'H' | 'V') => { S.orient = or; S.hvr = []; sfx('click'); render() }
   const onPlace = (pi: number, r: number, c: number) => {
     if (S.players[pi].ships.find((s) => s.id === SHIP_DEFS[S.selShip]?.id)) return
-    placeShip(pi, r, c); render()
+    const before = S.players[pi].ships.length
+    placeShip(pi, r, c)
+    if (S.players[pi].ships.length > before) sfx('place')
+    render()
   }
   const onHover = (pi: number, r: number, c: number) => {
     const def = SHIP_DEFS[S.selShip]
@@ -388,6 +424,7 @@ export function BattleshipShell({ game, scene }: { game: Game; previewMode?: boo
   const clearHover = () => { if (S.hvr.length) { S.hvr = []; render() } }
   const donePlacement = (pi: number) => {
     if (S.players[pi].ships.length < SHIP_DEFS.length) return
+    sfx('click')
     if (pi === 0) {
       S.sw = { msg: 'PASS TO P2!', sub: 'Player 1 — look away from the screen!', next: 'placement_p2', btn: "PLAYER 2 — I'M READY" }
       S.selShip = 0; S.orient = 'H'; S.hvr = []; S.phase = 'pl_switch'
@@ -396,18 +433,20 @@ export function BattleshipShell({ game, scene }: { game: Game; previewMode?: boo
     }
     render()
   }
-  const switchOk = (next: Phase) => { S.phase = next; S.hvr = []; render() }
-  const begin = () => { S.cur = 0; S.phase = 'battle'; S.battleSub = 'trivia'; drawQ(); render() }
+  const switchOk = (next: Phase) => { sfx('click'); S.phase = next; S.hvr = []; render() }
+  const begin = () => { ensureAudio(); S.cur = 0; S.phase = 'battle'; S.battleSub = 'trivia'; drawQ(); sfx('click'); render() }
   const answer = (opt: string) => {
     S.result = opt === S.q!.correct_answer ? 'correct' : 'wrong'
+    sfx(S.result === 'correct' ? 'correct' : 'wrong')
     S.battleSub = 'result'; render()
   }
-  const bomb = () => { S.skillActive = null; S.skHvr = []; S.battleSub = 'targeting'; render() }
+  const bomb = () => { sfx('click'); S.skillActive = null; S.skHvr = []; S.battleSub = 'targeting'; render() }
   // Activate the current player's signature skill from the correct-answer card.
   // Attack skills enter aim mode on the enemy grid; the revive skill opens a list.
   const useSkill = () => {
     const sk = skillFor(cur().av)
     if (!sk || S.skillUsed[S.cur]) return
+    sfx('skill')
     if (sk.kind === 'revive') {
       S.battleSub = 'revive'
     } else {
@@ -415,8 +454,8 @@ export function BattleshipShell({ game, scene }: { game: Game; previewMode?: boo
     }
     render()
   }
-  const cancelSkill = () => { S.skillActive = null; S.skHvr = []; S.battleSub = 'result'; render() }
-  const setSkOrient = (or: 'H' | 'V') => { S.skOrient = or; S.skHvr = []; render() }
+  const cancelSkill = () => { sfx('click'); S.skillActive = null; S.skHvr = []; S.battleSub = 'result'; render() }
+  const setSkOrient = (or: 'H' | 'V') => { sfx('click'); S.skOrient = or; S.skHvr = []; render() }
   const onSkillHover = (r: number, c: number) => {
     if (!S.skillActive) return
     const cells = skillCells(S.skillActive, r, c, S.skOrient)
@@ -429,8 +468,8 @@ export function BattleshipShell({ game, scene }: { game: Game; previewMode?: boo
   // Turn switches immediately — no pass-device splash. Flip the current player and
   // draw their question so the next turn's trivia is shown straight away.
   const nextTurn = () => { S.sunkNote = null; S.cur = oppI(); drawQ(); S.phase = 'battle'; S.battleSub = 'trivia'; render() }
-  const endTurn = () => { nextTurn() }
-  const resetGame = () => { st.current = initState(questions); render() }
+  const endTurn = () => { sfx('click'); nextTurn() }
+  const resetGame = () => { sfx('click'); st.current = initState(questions); render() }
 
   if (questions.length === 0) {
     return (
@@ -772,6 +811,14 @@ export function BattleshipShell({ game, scene }: { game: Game; previewMode?: boo
   return (
     <div className="bsw">
       <style>{CSS}</style>
+      <button
+        className="mute-btn"
+        onClick={toggleMute}
+        aria-label={muted ? 'Unmute sound' : 'Mute sound'}
+        title={muted ? 'Unmute' : 'Mute'}
+      >
+        {muted ? '🔇' : '🔊'}
+      </button>
       <div className="bsw-app">{screen()}</div>
     </div>
   )
@@ -796,6 +843,11 @@ const CSS = `
 .bsw *, .bsw *::before, .bsw *::after { box-sizing:border-box; margin:0; padding:0; }
 .bsw::after { content:''; position:absolute; inset:0; background:repeating-linear-gradient(0deg,transparent 0,transparent 3px,rgba(57,48,74,.06) 3px,rgba(57,48,74,.06) 4px); pointer-events:none; z-index:50; }
 .bsw-app { width:100%; max-width:860px; position:relative; z-index:1; }
+
+/* Sound on/off toggle — pinned to the top-right above the scanline overlay. */
+.bsw .mute-btn { position:absolute; top:.6rem; right:.6rem; z-index:60; width:40px; height:40px; display:flex; align-items:center; justify-content:center; font-size:1.05rem; line-height:1; background:var(--sf1); border:3px solid var(--ink); box-shadow:2px 2px 0 var(--ink); cursor:pointer; user-select:none; }
+.bsw .mute-btn:hover { background:var(--sf2); }
+.bsw .mute-btn:active { transform:translate(2px,2px); box-shadow:none; }
 
 @keyframes bs-blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
 @keyframes bs-appear { from{opacity:0} to{opacity:1} }
@@ -914,7 +966,7 @@ const CSS = `
 .bsw .grid.targeting .cell:hover:not(.nc) { background:#bcd6ea; box-shadow:inset 0 0 0 2px var(--accent); }
 
 /* ════════════════ IN-BATTLE BACKGROUND ════════════════
-   The ocean photo (char/back.jpg) is applied globally on ".bsw"
+   The ocean photo (source: assets/img/back.jpg) is applied globally on ".bsw"
    (background:url('/games/battleship/back.jpg')). ".battle-bg" is now just a
    soft scrim over that photo on the battle / game-over screens so the
    transparent character sprites and title stay legible. To change the photo,
