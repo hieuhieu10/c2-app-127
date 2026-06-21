@@ -6,6 +6,7 @@ export interface TreasurePlayer {
   id: string
   name: string
   avatar: string
+  assetId: string
   color: string
   position: number
   correctAnswers: number
@@ -21,35 +22,44 @@ interface PathPoint {
 }
 
 const PLAYER_PRESETS = [
-  { id: 'player-1', name: 'Alex', avatar: '🧒', color: '#f97316' },
-  { id: 'player-2', name: 'Bella', avatar: '👧', color: '#0ea5e9' },
+  { id: 'player-1', name: 'Hải tặc đỏ', avatar: '🧒', assetId: 'choice-01', color: '#e84233' },
+  { id: 'player-2', name: 'Hải tặc xanh', avatar: '👧', assetId: 'choice-02', color: '#2b7fda' },
 ]
 
 const PLAYER_1_PATH: PathPoint[] = [
-  { x: 8, y: 79 },
-  { x: 17, y: 63 },
-  { x: 30, y: 57 },
-  { x: 42, y: 45 },
-  { x: 55, y: 33 },
-  { x: 70, y: 36 },
-  { x: 88, y: 34 },
+  { x: 1.35, y: 36.32 },
+  { x: 7.17, y: 39.32 },
+  { x: 17.19, y: 41.45 },
+  { x: 27.28, y: 38.68 },
+  { x: 37.97, y: 20.94 },
+  { x: 48.58, y: 20.51 },
+  { x: 57.17, y: 33.33 },
+  { x: 67.26, y: 36.32 },
+  { x: 75.86, y: 27.78 },
+  { x: 84.16, y: 33.76 },
+  { x: 90.43, y: 50.43 },
 ]
 
 const PLAYER_2_PATH: PathPoint[] = [
-  { x: 8, y: 79 },
-  { x: 17, y: 63 },
-  { x: 30, y: 57 },
-  { x: 42, y: 65 },
-  { x: 56, y: 72 },
-  { x: 72, y: 69 },
-  { x: 88, y: 71 },
+  { x: 1.35, y: 69.66 },
+  { x: 8.97, y: 73.08 },
+  { x: 18.31, y: 76.71 },
+  { x: 29.9, y: 79.91 },
+  { x: 39.61, y: 75.43 },
+  { x: 46.34, y: 60.9 },
+  { x: 52.32, y: 55.13 },
+  { x: 61.29, y: 58.76 },
+  { x: 70.25, y: 64.53 },
+  { x: 74.74, y: 64.96 },
+  { x: 87.29, y: 56.41 },
 ]
 
-export function createTreasurePlayers(settings?: GameSettings): TreasurePlayer[] {
+export function createTreasurePlayers(settings?: GameSettings, selectedAssetIds: string[] = []): TreasurePlayer[] {
   const count = 2
 
-  return PLAYER_PRESETS.slice(0, count).map((player) => ({
+  return PLAYER_PRESETS.slice(0, count).map((player, index) => ({
     ...player,
+    assetId: selectedAssetIds[index] ?? player.assetId,
     position: 0,
     correctAnswers: 0,
     score: 0,
@@ -105,13 +115,10 @@ export function getPathPoint(progress: number, laneIndex: number, laneCount: num
   const clampedProgress = Math.min(Math.max(progress, 0), 100)
   const path = laneIndex % 2 === 0 ? PLAYER_1_PATH : PLAYER_2_PATH
   const point = interpolatePath(path, clampedProgress)
-  const startOffsetStrength = Math.max(0, 1 - clampedProgress / 22)
-  const startOffset = laneIndex % 2 === 0 ? -2.2 : 2.2
-  const y = point.y + startOffset * startOffsetStrength
 
   return {
     left: `${point.x}%`,
-    top: `${Math.min(Math.max(y, 12), 84)}%`,
+    top: `${Math.min(Math.max(point.y, 8), 88)}%`,
   }
 }
 

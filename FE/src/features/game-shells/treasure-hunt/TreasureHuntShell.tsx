@@ -1,8 +1,8 @@
 'use client'
 
-import { useMemo, useState } from 'react'
-import type { Game } from '@/types/app'
+import { useState } from 'react'
 import type { ReactNode } from 'react'
+import type { Game } from '@/types/app'
 import { Button } from '@/components/ui/button'
 import {
   FINISH_POSITION,
@@ -14,9 +14,9 @@ import {
   rankPlayers,
   type TreasurePlayer,
 } from './engine'
-import { getFeedbackClass, getFeedbackCopy, getPlayerAnimationClass, type FeedbackState } from './animations'
+import { getFeedbackCopy, type FeedbackState } from './animations'
 import { normalizeTreasureQuestion } from './question-system'
-import { getCharacterAsset, treasureHuntAssets } from './assets'
+import { getCharacterAsset, treasureCharacterChoices, treasureHuntAssets } from './assets'
 
 interface TreasureHuntShellProps {
   game: Game
@@ -24,19 +24,22 @@ interface TreasureHuntShellProps {
   fullscreen?: boolean
 }
 
+const DEFAULT_CHARACTER_IDS = ['choice-01', 'choice-02']
+
 export function TreasureHuntShell({ game, fullscreen = false }: TreasureHuntShellProps) {
-  const [players, setPlayers] = useState<TreasurePlayer[]>(() => createTreasurePlayers(game.settings))
+  const [selectedCharacterIds, setSelectedCharacterIds] = useState<string[]>(DEFAULT_CHARACTER_IDS)
+  const [showCharacterSelect, setShowCharacterSelect] = useState(true)
+  const [players, setPlayers] = useState<TreasurePlayer[]>(() => createTreasurePlayers(game.settings, DEFAULT_CHARACTER_IDS))
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState('')
   const [feedback, setFeedback] = useState<FeedbackState>('idle')
   const [finished, setFinished] = useState(false)
+  const [soundOn, setSoundOn] = useState(true)
 
   const currentItem = game.items[currentIndex]
   const currentQuestion = currentItem ? normalizeTreasureQuestion(currentItem, currentIndex) : null
   const activePlayer = players[currentIndex % players.length]
-  const rankings = useMemo(() => rankPlayers(players), [players])
   const movePercent = getMovePercent(game.items.length)
-  const activePlayerProgress = getDisplayProgress(activePlayer.position)
 
   if (!currentQuestion || !activePlayer) {
     return (
@@ -46,11 +49,10 @@ export function TreasureHuntShell({ game, fullscreen = false }: TreasureHuntShel
     )
   }
 
-  const answerQuestion = (answer: string) => {
-    if (feedback !== 'idle') return
+  const answerQuestion = () => {
+    if (feedback !== 'idle' || !selectedAnswer) return
 
-    const isCorrect = answer === currentQuestion.correctAnswer
-    setSelectedAnswer(answer)
+    const isCorrect = selectedAnswer === currentQuestion.correctAnswer
     setFeedback(isCorrect ? 'correct' : 'wrong')
     setPlayers((currentPlayers) => movePlayerAfterAnswer(currentPlayers, activePlayer.id, isCorrect, game.items.length))
   }
@@ -71,7 +73,27 @@ export function TreasureHuntShell({ game, fullscreen = false }: TreasureHuntShel
   }
 
   const resetGame = () => {
-    setPlayers(createTreasurePlayers(game.settings))
+    setPlayers(createTreasurePlayers(game.settings, selectedCharacterIds))
+    setCurrentIndex(0)
+    setSelectedAnswer('')
+    setFeedback('idle')
+    setFinished(false)
+  }
+
+  const selectCharacter = (playerIndex: number, characterId: string) => {
+    setSelectedCharacterIds((currentIds) => {
+      const otherIndex = playerIndex === 0 ? 1 : 0
+      if (currentIds[otherIndex] === characterId) return currentIds
+
+      const nextIds = [...currentIds]
+      nextIds[playerIndex] = characterId
+      return nextIds
+    })
+  }
+
+  const startGameWithCharacters = () => {
+    setShowCharacterSelect(false)
+    setPlayers(createTreasurePlayers(game.settings, selectedCharacterIds))
     setCurrentIndex(0)
     setSelectedAnswer('')
     setFeedback('idle')
@@ -83,269 +105,189 @@ export function TreasureHuntShell({ game, fullscreen = false }: TreasureHuntShel
   }
 
   const feedbackCopy = getFeedbackCopy(feedback, currentQuestion.correctAnswer)
+  const hasWinner = players.some((player) => player.position >= FINISH_POSITION)
 
   return (
-    <div
-      className={`overflow-hidden bg-sky-50 text-slate-900 shadow-xl ${
-        fullscreen ? 'rounded-lg border border-white/20' : 'rounded-lg border border-emerald-200'
-      } ${fullscreen ? 'flex h-full min-h-0 flex-col' : 'flex flex-col'}`}
-    >
-      <div className={`flex-shrink-0 bg-gradient-to-r from-cyan-400 via-sky-300 to-emerald-300 px-5 ${fullscreen ? 'py-3' : 'py-4'}`}>
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div>
-            <div className="text-xs font-black uppercase tracking-[0.18em] text-emerald-950/75">Game Template</div>
-            <h3 className={`${fullscreen ? 'text-xl' : 'text-2xl'} font-black text-emerald-950`}>Treasure Hunt</h3>
+    <div className={`treasureV2 ${fullscreen ? 'treasureV2Fullscreen' : ''}`}>
+      <div className="treasureStage">
+        <header className="treasureTopbar">
+          <div className="scoreWrap">
+            {players.map((player, index) => (
+              <ScoreCard
+                key={player.id}
+                player={player}
+                active={player.id === activePlayer.id}
+                tone={index === 0 ? 'red' : 'blue'}
+              />
+            ))}
           </div>
-          <div className="grid grid-cols-2 gap-2 text-center">
-            <StatPill label="Round" value={`${currentIndex + 1}/${game.items.length}`} />
-            <StatPill label="Move" value={`+${Math.round(movePercent)}%`} />
+
+          <div className="titleWrap">
+            <div className="titleRibbon">TRUY TÌM KHO BÁU</div>
           </div>
-        </div>
-      </div>
 
-      <div
-        className={`grid bg-gradient-to-br from-sky-100 via-amber-50 to-lime-100 ${
-          fullscreen
-            ? 'min-h-0 flex-1 items-start gap-5 overflow-auto p-5 lg:grid-cols-[minmax(0,1fr)_360px] xl:grid-cols-[minmax(0,1fr)_380px]'
-            : 'flex-1 items-start gap-5 p-4 lg:grid-cols-[minmax(0,1fr)_360px]'
-        }`}
-      >
-        <TreasureMap players={players} activePlayerId={activePlayer.id} fullscreen={fullscreen} />
+          <div className="actions">
+            <button type="button" className="roundBtn" onClick={() => setSoundOn((value) => !value)} aria-label="Toggle sound">
+              {soundOn ? '🔊' : '🔇'}
+            </button>
+            <button type="button" className="roundBtn" onClick={() => setShowCharacterSelect(true)} aria-label="Choose characters">
+              🏠
+            </button>
+          </div>
+        </header>
 
-        <aside className={fullscreen ? 'min-h-0 max-h-[calc(100dvh-150px)] space-y-3 overflow-y-auto pr-1' : 'space-y-4 self-start'}>
-          <div className="rounded-lg border border-white/70 bg-white/80 p-4 shadow-lg">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <div className="text-xs font-black uppercase tracking-[0.16em] text-sky-700">Current Turn</div>
-                <div className="mt-1 flex items-center gap-2 text-xl font-black">
-                  <span>{activePlayer.avatar}</span>
-                  <span>{activePlayer.name}</span>
-                </div>
-              </div>
-              <div className="rounded-full bg-amber-200 px-3 py-1 text-sm font-black text-amber-950">
-                {activePlayerProgress}%
-              </div>
+        <TreasureMap players={players} activePlayerId={activePlayer.id} />
+
+        <section className="bottomPanel">
+          <div className="panel sidePanel">
+            <div className="sideTitle">CÂU HỎI</div>
+            <div className="questionCount">
+              {currentIndex + 1} / {game.items.length}
+            </div>
+            <div className="moveBadge">+{Math.round(movePercent)}%</div>
+          </div>
+
+          <div className="panel questionBox">
+            <div className={getQuestionTextClass(currentQuestion.prompt)}>{currentQuestion.prompt}</div>
+            <div className="answers">
+              {currentQuestion.options.map((option, index) => (
+                <button
+                  key={`${option}-${index}`}
+                  type="button"
+                  disabled={feedback !== 'idle'}
+                  onClick={() => setSelectedAnswer(option)}
+                  className={getAnswerButtonClass(option, selectedAnswer, currentQuestion.correctAnswer, feedback)}
+                >
+                  <span>{String.fromCharCode(65 + index)}.</span> {option}
+                </button>
+              ))}
             </div>
           </div>
 
-          <QuestionCard
-            question={currentQuestion.prompt}
-            options={currentQuestion.options}
-            correctAnswer={currentQuestion.correctAnswer}
-            selectedAnswer={selectedAnswer}
-            feedback={feedback}
-            onAnswer={answerQuestion}
-            compact={fullscreen}
+          <div className="panel turnPanel">
+            <div className="turnTitle">LƯỢT CHƠI</div>
+            <div className="turnName">{activePlayer.name}</div>
+            <button
+              type="button"
+              className="submitBtn"
+              disabled={feedback === 'idle' && !selectedAnswer}
+              onClick={feedback === 'idle' ? answerQuestion : goNext}
+            >
+              {feedback === 'idle' ? '⚔ TRẢ LỜI' : hasWinner || currentIndex >= game.items.length - 1 ? '🏆 KẾT QUẢ' : '➡ CÂU TIẾP'}
+            </button>
+          </div>
+
+          <div className="panel eventPanel">
+            <div className="eventTitle">SỰ KIỆN</div>
+            <div className="eventItem">
+              ⭐ <b>ĐÚNG</b>
+              <br />
+              Nhân vật tiến gần kho báu.
+            </div>
+            <div className="eventItem">
+              ☠ <b>SAI</b>
+              <br />
+              Hiện đáp án đúng và đứng yên.
+            </div>
+          </div>
+        </section>
+
+        {/* <div className={`log ${feedback === 'correct' ? 'logCorrect' : feedback === 'wrong' ? 'logWrong' : ''}`}>
+          {feedback === 'idle'
+            ? '✨ Hai nhân vật xuất phát từ bên trái, mỗi người đi một đường tới kho báu! ✨'
+            : `${feedbackCopy.title} ${feedbackCopy.message}${currentQuestion.explanation ? ` ${currentQuestion.explanation}` : ''}`}
+        </div> */}
+      </div>
+
+      {showCharacterSelect && (
+        <CharacterSelectModal
+          selectedCharacterIds={selectedCharacterIds}
+          onSelect={selectCharacter}
+          onStart={startGameWithCharacters}
+        />
+      )}
+
+      <style>{treasureHuntStyles}</style>
+    </div>
+  )
+}
+
+function CharacterSelectModal({
+  selectedCharacterIds,
+  onSelect,
+  onStart,
+}: {
+  selectedCharacterIds: string[]
+  onSelect: (playerIndex: number, characterId: string) => void
+  onStart: () => void
+}) {
+  return (
+    <div className="selectModal">
+      <div className="modalBox">
+        <div className="modalTitle">CHỌN 12 NHÂN VẬT CHIBI</div>
+        <div className="modalHint">Chọn 2 nhân vật khác nhau rồi bấm BẮT ĐẦU CHƠI.</div>
+        <div className="chooseCols">
+          <CharacterChoicePanel
+            title="Người chơi 1 - Hải tặc đỏ"
+            tone="red"
+            playerIndex={0}
+            selectedCharacterIds={selectedCharacterIds}
+            onSelect={onSelect}
           />
-
-          {feedback !== 'idle' && (
-            <div className={`rounded-lg border p-4 text-sm shadow-sm ${getFeedbackClass(feedback)}`}>
-              <div className="text-lg font-black">{feedbackCopy.title}</div>
-              <p className="mt-1 font-medium">{feedbackCopy.message}</p>
-              {currentQuestion.explanation && <p className="mt-2 text-sm opacity-85">{currentQuestion.explanation}</p>}
-              <Button onClick={goNext} className="mt-4 h-11 w-full bg-emerald-600 font-black hover:bg-emerald-700">
-                {players.some((player) => player.position >= FINISH_POSITION) || currentIndex >= game.items.length - 1
-                  ? 'View Results'
-                  : 'Next Question'}
-              </Button>
-            </div>
-          )}
-
-          {!fullscreen && <Leaderboard players={rankings} />}
-        </aside>
+          <CharacterChoicePanel
+            title="Người chơi 2 - Hải tặc xanh"
+            tone="blue"
+            playerIndex={1}
+            selectedCharacterIds={selectedCharacterIds}
+            onSelect={onSelect}
+          />
+        </div>
+        <button type="button" className="startGame" onClick={onStart}>
+          BẮT ĐẦU CHƠI
+        </button>
       </div>
     </div>
   )
 }
 
-function TreasureMap({
-  players,
-  activePlayerId,
-  fullscreen = false,
+function CharacterChoicePanel({
+  title,
+  tone,
+  playerIndex,
+  selectedCharacterIds,
+  onSelect,
 }: {
-  players: TreasurePlayer[]
-  activePlayerId: string
-  fullscreen?: boolean
+  title: string
+  tone: 'red' | 'blue'
+  playerIndex: number
+  selectedCharacterIds: string[]
+  onSelect: (playerIndex: number, characterId: string) => void
 }) {
-  const mapStyle = fullscreen
-    ? {
-        aspectRatio: '19 / 9',
-        height: 'min(calc(100dvh - 162px), 100%)',
-        maxHeight: 'calc(100dvh - 162px)',
-      }
-    : {
-        aspectRatio: '18 / 10',
-        minHeight: '600px',
-      }
+  const otherPlayerIndex = playerIndex === 0 ? 1 : 0
 
   return (
-    <div
-      className={`relative overflow-hidden rounded-lg border-4 border-emerald-800/20 bg-[#77c95b] bg-[radial-gradient(circle_at_24%_18%,rgba(255,255,255,0.28),transparent_28%),linear-gradient(135deg,#86d36f_0%,#4ea85d_48%,#2e8a58_100%)] shadow-[inset_0_0_50px_rgba(20,83,45,0.28)] ${
-        fullscreen ? 'h-auto w-full justify-self-stretch self-start ring-1 ring-white/60' : 'h-auto w-full justify-self-stretch self-start'
-      }`}
-      style={mapStyle}
-    >
-      <AssetImage
-        src={treasureHuntAssets.map.background}
-        alt=""
-        className="absolute inset-0 h-full w-full object-cover object-center"
-        fallback={null}
-      />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_24%,rgba(255,255,255,0.18)_0,transparent_20%),radial-gradient(circle_at_82%_72%,rgba(22,101,52,0.24)_0,transparent_24%),linear-gradient(135deg,rgba(187,247,208,0.2)_0,transparent_34%,rgba(21,128,61,0.18)_100%)]" />
-      <div className="absolute left-[5%] top-[8%] h-14 w-24 rounded-lg border-4 border-amber-900/25 bg-amber-200 shadow-md" />
-      <div className="absolute left-[8%] top-[11%] h-3 w-14 rounded-full bg-amber-900/35" />
-      <div className="absolute bottom-[7%] left-[14%] h-8 w-24 rounded-full bg-emerald-900/20" />
-      <div className="absolute right-[15%] top-[11%] h-10 w-16 rounded-full bg-emerald-900/20" />
-      <div className="absolute bottom-[12%] right-[23%] h-10 w-24 rounded-full bg-emerald-900/20" />
-      <div className="absolute left-[22%] top-[18%] text-4xl drop-shadow">🌳</div>
-      <div className="absolute left-[16%] top-[56%] text-3xl drop-shadow">🪨</div>
-      <div className="absolute right-[30%] top-[47%] text-4xl drop-shadow">🌳</div>
-      <div className="absolute right-[10%] bottom-[18%] text-3xl drop-shadow">🪨</div>
-
-      <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-        <path
-          d="M 7 79 C 16 65, 20 56, 30 57 C 45 46, 52 28, 66 34 C 76 38, 82 31, 91 35"
-          fill="none"
-          stroke="#a16207"
-          strokeLinecap="round"
-          strokeWidth="7.5"
-        />
-        <path
-          d="M 7 79 C 16 65, 20 56, 30 57 C 43 65, 52 75, 66 70 C 78 66, 82 72, 91 72"
-          fill="none"
-          stroke="#a16207"
-          strokeLinecap="round"
-          strokeWidth="7.5"
-        />
-        <path
-          d="M 7 79 C 16 65, 20 56, 30 57 C 45 46, 52 28, 66 34 C 76 38, 82 31, 91 35"
-          fill="none"
-          stroke="#f4b86a"
-          strokeLinecap="round"
-          strokeWidth="5.2"
-        />
-        <path
-          d="M 7 79 C 16 65, 20 56, 30 57 C 43 65, 52 75, 66 70 C 78 66, 82 72, 91 72"
-          fill="none"
-          stroke="#f4b86a"
-          strokeLinecap="round"
-          strokeWidth="5.2"
-        />
-      </svg>
-      <AssetImage
-        src={treasureHuntAssets.map.pathOverlay}
-        alt=""
-        className="absolute inset-0 h-full w-full object-cover object-center"
-        fallback={null}
-      />
-
-      <div className="absolute left-[7%] top-[77%] rounded-full border border-amber-950/25 bg-[#fff7d6]/95 px-3 py-1 text-xs font-black text-amber-950 shadow">
-        Start
-      </div>
-      <TreasureCave className="right-[2%] top-[26%]" label="Treasure Cave 1" />
-      <TreasureCave className="right-[2%] top-[63%]" label="Treasure Cave 2" />
-
-      {players.map((player, index) => {
-        const point = getPathPoint(getVisualProgress(player.position), index, players.length)
-        const isActive = player.id === activePlayerId
-
-        return (
-          <div
-            key={player.id}
-            className={`absolute z-10 -translate-x-1/2 -translate-y-1/2 transition-all duration-700 ease-out ${getPlayerAnimationClass(player.mood)}`}
-            style={point}
-          >
-            <div className="mb-1 rounded-full border border-amber-950/20 bg-[#fff3cf] px-2 py-0.5 text-center text-xs font-black shadow">{player.name}</div>
-            <PlayerAvatar player={player} active={isActive} />
-          </div>
-        )
-      })}
-    </div>
-  )
-}
-
-function TreasureCave({ className, label }: { className: string; label: string }) {
-  return (
-    <div className={`absolute z-10 text-center ${className}`}>
-      <div className="relative mx-auto h-20 w-24">
-        <div className="absolute inset-x-3 bottom-1 h-14 rounded-t-full bg-stone-800 shadow-[0_0_24px_rgba(250,204,21,0.7)]" />
-        <div className="absolute inset-x-5 bottom-2 h-10 rounded-t-full bg-yellow-300/80 blur-sm" />
-        <AssetImage
-          src={treasureHuntAssets.objects.caveClosed}
-          alt={label}
-          className="absolute inset-0 h-full w-full object-contain"
-          fallback={<div className="absolute inset-0 flex items-end justify-center pb-2 text-4xl">⛰️</div>}
-        />
-      </div>
-      <div className="rounded-full border border-amber-950/25 bg-[#fff7d6]/95 px-3 py-1 text-xs font-black text-amber-950 shadow">
-        {label}
-      </div>
-    </div>
-  )
-}
-
-function PlayerAvatar({ player, active }: { player: TreasurePlayer; active: boolean }) {
-  return (
-    <div
-      className={`flex h-16 w-16 items-center justify-center rounded-full border-4 bg-white text-3xl shadow-xl ${active ? 'border-red-500 ring-4 ring-red-200/70' : 'border-[#fff3cf]'}`}
-      style={{ background: `linear-gradient(145deg, ${player.color}, #ffffff)` }}
-    >
-      <AssetImage
-        src={getCharacterAsset(player.id, player.mood)}
-        alt={player.name}
-        className="h-16 w-16 object-contain"
-        fallback={<span>{player.avatar}</span>}
-      />
-    </div>
-  )
-}
-
-function QuestionCard({
-  question,
-  options,
-  correctAnswer,
-  selectedAnswer,
-  feedback,
-  onAnswer,
-  compact = false,
-}: {
-  question: string
-  options: string[]
-  correctAnswer: string
-  selectedAnswer: string
-  feedback: FeedbackState
-  onAnswer: (answer: string) => void
-  compact?: boolean
-}) {
-  return (
-    <div className={`rounded-lg border border-white/70 bg-white/90 shadow-lg ${compact ? 'p-3' : 'p-4'}`}>
-      <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-700">Question</div>
-      <h4 className={`${compact ? 'mt-1 text-lg' : 'mt-2 text-xl'} font-black leading-snug text-slate-950`}>{question}</h4>
-      <div className={`${compact ? 'mt-3 gap-2' : 'mt-4 gap-3'} grid sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2`}>
-        {options.map((option, index) => {
-          const checked = feedback !== 'idle'
-          const isSelected = selectedAnswer === option
-          const isSelectedCorrect = checked && isSelected && option === correctAnswer
-          const isCorrectReveal = checked && !isSelected && option === correctAnswer
-          const isWrong = checked && isSelected && option !== correctAnswer
+    <div className="choosePanel">
+      <div className={`chooseHead ${tone === 'blue' ? 'chooseHeadBlue' : ''}`}>{title}</div>
+      <div className="charGrid">
+        {treasureCharacterChoices.map((character) => {
+          const selected = selectedCharacterIds[playerIndex] === character.id
+          const disabled = selectedCharacterIds[otherPlayerIndex] === character.id
 
           return (
             <button
-              key={`${option}-${index}`}
+              key={`${tone}-${character.id}`}
               type="button"
-              disabled={checked}
-              onClick={() => onAnswer(option)}
-              className={`${compact ? 'min-h-12 px-2 py-2 text-sm leading-snug' : 'min-h-16 px-3 py-3 text-base'} rounded-lg border-2 font-black text-slate-950 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-400 disabled:cursor-default ${
-                isSelectedCorrect
-                  ? 'animate-pulse border-emerald-700 bg-emerald-300 shadow-emerald-500/40'
-                  : isWrong
-                    ? 'animate-pulse border-red-700 bg-red-300 shadow-red-500/40'
-                    : isCorrectReveal
-                      ? 'border-emerald-500 bg-white'
-                      : 'border-slate-200 bg-white'
-              }`}
+              disabled={disabled}
+              className={`charCard ${selected ? (tone === 'red' ? 'redSel' : 'blueSel') : ''}`}
+              onClick={() => onSelect(playerIndex, character.id)}
             >
-              {option}
+              <AssetImage
+                src={character.image}
+                alt={character.name}
+                className="charSprite"
+                fallback={<span className="avatarFallback">🧒</span>}
+              />
+              <span className="charName">{character.name}</span>
             </button>
           )
         })}
@@ -354,28 +296,51 @@ function QuestionCard({
   )
 }
 
-function Leaderboard({ players }: { players: TreasurePlayer[] }) {
+function ScoreCard({ player, active, tone }: { player: TreasurePlayer; active: boolean; tone: 'red' | 'blue' }) {
   return (
-    <div className="rounded-lg border border-white/70 bg-white/80 p-4 shadow-lg">
-      <div className="text-sm font-black text-slate-950">Leaderboard</div>
-      <div className="mt-3 space-y-3">
-        {players.map((player, index) => (
-          <div key={player.id}>
-            <div className="mb-1 flex items-center justify-between text-xs font-bold">
-              <span>
-                #{index + 1} {player.name}
-              </span>
-              <span>{getDisplayProgress(player.position)}%</span>
-            </div>
-            <div className="h-3 overflow-hidden rounded-full bg-slate-200">
-              <div
-                className="h-full rounded-full transition-all duration-700"
-                style={{ width: `${getDisplayProgress(player.position)}%`, backgroundColor: player.color }}
+    <div className={`scoreCard ${active ? 'active' : ''}`}>
+      <div className="miniChar">
+        <AssetImage src={getCharacterAsset(player.assetId, player.mood)} alt="" className="miniImg" fallback={<span>{player.avatar}</span>} />
+      </div>
+      <div className={`scoreTitle ${tone === 'blue' ? 'blueTitle' : ''}`}>{tone === 'red' ? 'HẢI TẶC ĐỎ' : 'HẢI TẶC XANH'}</div>
+      <div className="scoreNum">{getDisplayProgress(player.position)}%</div>
+      <div className="dots">
+        <span className={`dot ${tone}`} />
+        <span className="dot" />
+        <span className="dot" />
+      </div>
+    </div>
+  )
+}
+
+function TreasureMap({ players, activePlayerId }: { players: TreasurePlayer[]; activePlayerId: string }) {
+  return (
+    <div className="mapArea">
+      <AssetImage
+        src={treasureHuntAssets.map.background}
+        alt="Treasure hunt island map"
+        className="mapBackground"
+        fallback={<div className="mapFallback">Treasure Map</div>}
+      />
+
+      {players.map((player, index) => {
+        const point = getPathPoint(getVisualProgress(player.position), index, players.length)
+        const isActive = player.id === activePlayerId
+
+        return (
+          <div key={player.id} className={`avatar ${player.mood === 'run' ? 'running' : ''} ${isActive ? 'activeAvatar' : ''}`} style={point}>
+            <div className="nameTag">{player.name}</div>
+            <div className="avatarRing">
+              <AssetImage
+                src={getCharacterAsset(player.assetId, player.mood)}
+                alt={player.name}
+                className="avatarImg"
+                fallback={<span className="avatarFallback">{player.avatar}</span>}
               />
             </div>
           </div>
-        ))}
-      </div>
+        )
+      })}
     </div>
   )
 }
@@ -393,56 +358,37 @@ function TreasureEndScreen({
   const rankings = rankPlayers(players)
 
   return (
-    <div className="overflow-hidden rounded-lg border border-amber-300 bg-gradient-to-br from-stone-200 via-amber-100 to-yellow-200 text-slate-950 shadow-xl">
-      <div className="p-6 text-center">
-        <div className="relative mx-auto h-32 w-40">
-          <div className="absolute inset-x-4 bottom-0 h-24 rounded-t-full bg-stone-800 shadow-[0_0_55px_rgba(234,179,8,0.8)]" />
-          <div className="absolute inset-x-8 bottom-2 h-16 rounded-t-full bg-yellow-300/80 blur-md" />
-          <AssetImage
-            src={treasureHuntAssets.objects.caveOpen}
-            alt="Open treasure cave"
-            className="absolute inset-0 h-full w-full object-contain"
-            fallback={<div className="absolute inset-0 flex items-end justify-center pb-5 text-6xl">⛰️</div>}
-          />
-          <AssetImage
-            src={treasureHuntAssets.objects.treasureChest}
-            alt="Treasure chest"
-            className="absolute bottom-0 left-1/2 h-20 w-20 -translate-x-1/2 object-contain"
-            fallback={<div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-5xl">💰</div>}
-          />
-        </div>
-        <div className="mt-4 text-xs font-black uppercase tracking-[0.2em] text-amber-800">Treasure Cave Opened</div>
-        <h3 className="mt-2 text-4xl font-black">{winner.name} wins!</h3>
-        <p className="mt-2 text-sm font-semibold text-slate-700">
-          The player found gold and jewels after {totalQuestions} questions.
-        </p>
-      </div>
+    <div className="treasureEnd">
+      <div className="treasureEndBox">
+        <div className="endCrown">🏆</div>
+        <div className="endEyebrow">Treasure Cave Opened</div>
+        <h3>{winner.name} wins!</h3>
+        <p>The player found the treasure after {totalQuestions} questions.</p>
 
-      <div className="grid gap-3 p-5 md:grid-cols-3">
-        {rankings.map((player, index) => (
-          <div key={player.id} className="rounded-lg border border-white/70 bg-white/80 p-4 text-center shadow">
-            <div className="text-sm font-black text-amber-700">Rank {index + 1}</div>
-            <div className="mt-2 text-4xl">{player.avatar}</div>
-            <div className="mt-1 text-xl font-black">{player.name}</div>
-            <div className="mt-3 grid grid-cols-2 gap-2 text-sm font-bold">
-              <div className="rounded bg-emerald-100 p-2">
-                <div>{player.correctAnswers}</div>
-                <div className="text-xs text-emerald-800">Correct</div>
-              </div>
-              <div className="rounded bg-sky-100 p-2">
-                <div>{player.score}</div>
-                <div className="text-xs text-sky-800">Score</div>
+        <div className="endRanks">
+          {rankings.map((player, index) => (
+            <div key={player.id} className="endRankCard">
+              <div className="endRank">Rank {index + 1}</div>
+              <AssetImage
+                src={getCharacterAsset(player.assetId, 'celebrate')}
+                alt={player.name}
+                className="endAvatar"
+                fallback={<div className="endEmoji">{player.avatar}</div>}
+              />
+              <div className="endName">{player.name}</div>
+              <div className="endStats">
+                <span>{player.correctAnswers} correct</span>
+                <span>{player.score} pts</span>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      <div className="border-t border-white/70 p-5">
-        <Button onClick={onRestart} className="h-12 w-full bg-emerald-600 text-base font-black hover:bg-emerald-700">
+        <Button onClick={onRestart} className="mt-5 h-12 w-full bg-amber-500 text-base font-black text-amber-950 hover:bg-amber-400">
           Play Again
         </Button>
       </div>
+      <style>{treasureHuntStyles}</style>
     </div>
   )
 }
@@ -467,13 +413,22 @@ function AssetImage({
   return <img src={src} alt={alt} className={className} draggable={false} onError={() => setFailed(true)} />
 }
 
-function StatPill({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-lg bg-white/80 px-3 py-2 text-emerald-950 shadow">
-      <div className="text-[10px] font-black uppercase tracking-wide opacity-75">{label}</div>
-      <div className="text-sm font-black">{value}</div>
-    </div>
-  )
+function getAnswerButtonClass(option: string, selectedAnswer: string, correctAnswer: string, feedback: FeedbackState) {
+  const classes = ['answerBtn']
+  const isSelected = selectedAnswer === option
+
+  if (feedback === 'idle' && isSelected) classes.push('selected')
+  if (feedback === 'correct' && isSelected) classes.push('correct')
+  if (feedback === 'wrong' && isSelected) classes.push('wrong')
+  if (feedback !== 'idle' && option === correctAnswer) classes.push('reveal')
+
+  return classes.join(' ')
+}
+
+function getQuestionTextClass(question: string): string {
+  if (question.length > 150) return 'questionText questionTextDense'
+  if (question.length > 90) return 'questionText questionTextCompact'
+  return 'questionText'
 }
 
 function getDisplayProgress(position: number): number {
@@ -483,3 +438,815 @@ function getDisplayProgress(position: number): number {
 function getVisualProgress(position: number): number {
   return Math.min(100, (position / FINISH_POSITION) * 100)
 }
+
+const treasureHuntStyles = `
+.treasureV2 {
+  --brown: #6a330e;
+  --dark-brown: #351607;
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 18px;
+  background: linear-gradient(#0686c2, #055d89);
+  color: #4a2606;
+  font-family: Arial, Helvetica, sans-serif;
+  box-shadow: 0 18px 50px rgba(15, 23, 42, .18);
+}
+.treasureV2,
+.treasureV2 * {
+  box-sizing: border-box;
+}
+.treasureV2Fullscreen {
+  height: 100%;
+  border-radius: 10px;
+}
+.treasureStage {
+  position: relative;
+  width: 100%;
+  min-height: 860px;
+  overflow: hidden;
+  background: linear-gradient(#0686c2, #055d89);
+}
+.treasureV2Fullscreen .treasureStage {
+  height: 100%;
+  min-height: 720px;
+}
+.selectModal {
+  position: absolute;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(3, 36, 58, .88);
+  padding: 18px;
+}
+.modalBox {
+  width: min(1220px, 96%);
+  max-height: 92%;
+  overflow: auto;
+  border: 6px solid var(--brown);
+  border-radius: 24px;
+  background: #ffe6b4;
+  box-shadow: 0 10px 0 var(--dark-brown);
+  padding: 20px;
+}
+.modalTitle {
+  margin-bottom: 6px;
+  color: #b82a13;
+  text-align: center;
+  text-shadow: 2px 2px #ffd76b;
+  font-size: clamp(26px, 3.4vw, 38px);
+  font-weight: 900;
+}
+.modalHint {
+  margin-bottom: 16px;
+  color: #5a2505;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 700;
+}
+.chooseCols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.choosePanel {
+  border: 4px solid #a15f21;
+  border-radius: 18px;
+  background: #fff1cc;
+  padding: 14px;
+}
+.chooseHead {
+  margin-bottom: 12px;
+  color: #bf2419;
+  text-align: center;
+  font-size: 23px;
+  font-weight: 900;
+}
+.chooseHeadBlue {
+  color: #1866bd;
+}
+.charGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.charCard {
+  display: flex;
+  height: 155px;
+  cursor: pointer;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  overflow: hidden;
+  border: 3px solid #af6d24;
+  border-bottom-width: 6px;
+  border-bottom-color: #7f4510;
+  border-radius: 14px;
+  background: #ffe0a4;
+  padding: 8px;
+  text-align: center;
+}
+.charCard:disabled {
+  cursor: not-allowed;
+  opacity: .35;
+}
+.charCard.redSel {
+  outline: 4px solid #e74134;
+}
+.charCard.blueSel {
+  outline: 4px solid #2b7fda;
+}
+.charSprite {
+  width: 100%;
+  height: 112px;
+  object-fit: contain;
+  object-position: center bottom;
+}
+.charName {
+  margin-top: 5px;
+  color: #4a2606;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.1;
+}
+.startGame {
+  display: block;
+  min-width: 280px;
+  cursor: pointer;
+  margin: 18px auto 0;
+  border: 4px solid #925109;
+  border-bottom-width: 8px;
+  border-bottom-color: #5d2c08;
+  border-radius: 16px;
+  background: linear-gradient(#ffd04e, #ef9818);
+  color: #5a2505;
+  font-size: 28px;
+  font-weight: 900;
+  padding: 16px 24px;
+}
+.treasureTopbar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  height: 16%;
+  padding: 1.2% 1.2% 0;
+  display: grid;
+  grid-template-columns: minmax(180px, 250px) minmax(340px, 1fr) minmax(108px, 140px);
+  gap: 1%;
+  align-items: start;
+  z-index: 5;
+}
+.scoreWrap {
+  display: flex;
+  gap: 10px;
+}
+.scoreCard {
+  position: relative;
+  width: min(115px, 8.8vw);
+  min-width: 86px;
+  height: 102px;
+  overflow: hidden;
+  border: 4px solid var(--brown);
+  border-radius: 14px;
+  background: #ffe7b6;
+  box-shadow: 0 5px 0 var(--dark-brown);
+  padding: 6px 8px;
+}
+.scoreCard.active {
+  outline: 4px solid #ffd84f;
+}
+.miniChar {
+  position: absolute;
+  left: 2px;
+  top: 5px;
+  display: flex;
+  width: 42px;
+  height: 64px;
+  align-items: flex-end;
+  justify-content: center;
+}
+.miniImg {
+  max-width: 42px;
+  max-height: 64px;
+  object-fit: contain;
+}
+.scoreTitle {
+  position: relative;
+  z-index: 2;
+  color: #a12e16;
+  text-align: right;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.1;
+}
+.blueTitle {
+  color: #175fa8;
+}
+.scoreNum {
+  position: relative;
+  z-index: 2;
+  margin-top: 20px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 900;
+}
+.dots {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 6px;
+}
+.dot {
+  width: 15px;
+  height: 15px;
+  border: 2px solid #72350d;
+  border-radius: 50%;
+  background: #fff;
+}
+.dot.red {
+  background: #e84233;
+}
+.dot.blue {
+  background: #2b7fda;
+}
+.titleWrap {
+  display: flex;
+  justify-content: center;
+}
+.titleRibbon {
+  min-width: min(460px, 100%);
+  margin-top: 8px;
+  border: 4px solid #651208;
+  border-radius: 16px;
+  background: linear-gradient(#b72b14, #8d180c);
+  box-shadow: 0 5px 0 #4a0f06;
+  color: #ffd85b;
+  text-align: center;
+  text-shadow: 2px 2px #561105;
+  font-size: clamp(19px, 2.35vw, 28px);
+  font-weight: 900;
+  line-height: 1.05;
+  padding: 10px 24px;
+}
+.titleRibbon:before,
+.titleRibbon:after {
+  content: "☠";
+  color: #ffe8ac;
+  font-size: .85em;
+  margin: 0 10px;
+}
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.roundBtn {
+  width: 54px;
+  height: 54px;
+  cursor: pointer;
+  border: 4px solid #9a580a;
+  border-radius: 50%;
+  background: linear-gradient(#ffcf52, #ef9c1d);
+  box-shadow: 0 4px 0 #613008;
+  font-size: 24px;
+  font-weight: 900;
+}
+.mapArea {
+  position: absolute;
+  left: 1%;
+  top: 13.5%;
+  width: 98%;
+  height: 61%;
+  overflow: hidden;
+  border: 6px solid var(--brown);
+  border-radius: 26px;
+  background: #10a0d4;
+  box-shadow: 0 7px 0 var(--dark-brown);
+}
+.mapBackground {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -16%;
+  width: 100%;
+  height: 116%;
+  object-fit: cover;
+  object-position: center bottom;
+  user-select: none;
+}
+.mapFallback {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #22c7e8, #6ddc65);
+  color: #064e3b;
+  font-size: 34px;
+  font-weight: 900;
+}
+.avatar {
+  position: absolute;
+  z-index: 18;
+  width: 84px;
+  transform: translate(-50%, -80%);
+  transition: left .85s ease, top .85s ease, transform .2s ease;
+  filter: drop-shadow(0 4px 3px rgba(0,0,0,.38));
+}
+.avatar.running {
+  animation: treasureHop .22s infinite;
+}
+.activeAvatar .avatarRing {
+  border-color: #ff4c3b;
+  box-shadow: 0 0 0 5px rgba(255, 235, 156, .8), 0 10px 20px rgba(0,0,0,.25);
+}
+.nameTag {
+  display: inline-flex;
+  max-width: 100px;
+  min-width: 62px;
+  justify-content: center;
+  margin: 0 auto 2px;
+  border: 2px solid rgba(106, 51, 14, .28);
+  border-radius: 999px;
+  background: #fff2c9;
+  box-shadow: 0 2px 0 rgba(53, 22, 7, .2);
+  color: #2e1705;
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.1;
+  padding: 3px 8px;
+}
+.avatarRing {
+  display: flex;
+  width: 74px;
+  height: 74px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 5px solid #fff0bb;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 25%, #fff, #ffd98a 65%, #e08b23);
+}
+.avatarImg {
+  width: 78px;
+  height: 88px;
+  object-fit: contain;
+  object-position: center bottom;
+}
+.avatarFallback {
+  font-size: 38px;
+}
+.bottomPanel {
+  position: absolute;
+  left: 1.3%;
+  right: 1.3%;
+  top: 76%;
+  z-index: 20;
+  display: grid;
+  height: 20.5%;
+  grid-template-columns: minmax(94px, 110px) minmax(0, 1fr) minmax(175px, 220px) minmax(154px, 184px);
+  gap: 12px;
+}
+.panel {
+  border: 5px solid var(--brown);
+  border-radius: 18px;
+  background: #f7dfb0;
+  box-shadow: 0 6px 0 var(--dark-brown);
+  padding: 12px;
+}
+.sideTitle {
+  border-radius: 10px;
+  background: #7a3a0b;
+  color: #fff0bd;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 900;
+  padding: 8px;
+}
+.questionCount {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 900;
+}
+.moveBadge {
+  width: fit-content;
+  margin: 12px auto 0;
+  border-radius: 999px;
+  background: #fff0bd;
+  color: #6a330e;
+  font-size: 15px;
+  font-weight: 900;
+  padding: 6px 10px;
+}
+.questionBox {
+  position: relative;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+}
+.questionText {
+  min-height: 40px;
+  margin-bottom: 7px;
+  padding: 0 8px;
+  color: #4a2606;
+  text-align: center;
+  font-size: clamp(18px, 1.85vw, 26px);
+  font-weight: 900;
+  line-height: 1.15;
+}
+.questionTextCompact {
+  font-size: clamp(15px, 1.45vw, 21px);
+  line-height: 1.18;
+}
+.questionTextDense {
+  font-size: clamp(13px, 1.16vw, 17px);
+  line-height: 1.2;
+  text-align: left;
+}
+.answers {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.answerBtn {
+  position: relative;
+  z-index: 41;
+  min-height: 52px;
+  cursor: pointer;
+  border: 3px solid #b97d2b;
+  border-bottom-width: 6px;
+  border-bottom-color: #88531a;
+  border-radius: 14px;
+  background: #ffe6b0;
+  color: #5a2b05;
+  font-size: clamp(14px, 1.22vw, 19px);
+  font-weight: 900;
+  line-height: 1.15;
+  padding: 9px 5px;
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+.answerBtn span {
+  color: #9a3117;
+}
+.answerBtn:hover:not(:disabled),
+.answerBtn.selected {
+  background: #ffba3d;
+  box-shadow: 0 0 0 4px #fff0ab inset;
+}
+.answerBtn.correct,
+.answerBtn.reveal {
+  animation: answerGreen .55s ease-in-out 2;
+  border-color: #047857;
+  border-bottom-color: #065f46;
+  background: #86efac;
+}
+.answerBtn.wrong {
+  animation: answerRed .55s ease-in-out 2;
+  border-color: #b91c1c;
+  border-bottom-color: #7f1d1d;
+  background: #fca5a5;
+}
+.turnTitle {
+  color: #73400f;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 900;
+}
+.turnName {
+  margin: 18px 0 16px;
+  color: #b12517;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 900;
+}
+.submitBtn {
+  width: 100%;
+  cursor: pointer;
+  border: 3px solid #7e140d;
+  border-bottom-width: 7px;
+  border-radius: 14px;
+  background: linear-gradient(#f04c22, #bc1d11);
+  color: #fff;
+  font-size: 20px;
+  font-weight: 900;
+  padding: 14px 9px;
+}
+.submitBtn:disabled {
+  cursor: not-allowed;
+  filter: grayscale(.35);
+  opacity: .55;
+}
+.eventPanel {
+  border-color: #3e1806;
+  background: #6f360f;
+  color: #ffefc1;
+}
+.eventTitle {
+  margin-bottom: 8px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 900;
+}
+.eventItem {
+  border-top: 1px solid rgba(255,255,255,.25);
+  font-size: 15px;
+  padding: 10px 3px;
+}
+.eventItem b {
+  font-size: 17px;
+}
+.treasureV2Fullscreen .treasureTopbar {
+  height: 12%;
+  padding: .8% 1% 0;
+  grid-template-columns: minmax(180px, 260px) minmax(360px, 1fr) minmax(112px, 148px);
+}
+.treasureV2Fullscreen .scoreCard {
+  width: 96px;
+  min-width: 96px;
+  height: 86px;
+  border-width: 3px;
+  box-shadow: 0 4px 0 var(--dark-brown);
+}
+.treasureV2Fullscreen .miniChar {
+  width: 34px;
+  height: 50px;
+}
+.treasureV2Fullscreen .miniImg {
+  max-width: 34px;
+  max-height: 50px;
+}
+.treasureV2Fullscreen .scoreTitle {
+  font-size: 10px;
+}
+.treasureV2Fullscreen .scoreNum {
+  margin-top: 15px;
+  font-size: 22px;
+}
+.treasureV2Fullscreen .dots {
+  margin-top: 2px;
+}
+.treasureV2Fullscreen .dot {
+  width: 12px;
+  height: 12px;
+}
+.treasureV2Fullscreen .titleRibbon {
+  min-width: min(520px, 100%);
+  margin-top: 6px;
+  font-size: clamp(20px, 2.3vw, 30px);
+  padding: 8px 22px;
+}
+.treasureV2Fullscreen .roundBtn {
+  width: 48px;
+  height: 48px;
+  font-size: 21px;
+}
+.treasureV2Fullscreen .mapArea {
+  top: 13%;
+  height: 50%;
+  border-width: 5px;
+  border-radius: 22px;
+}
+.treasureV2Fullscreen .mapBackground {
+  top: 0;
+  height: 100%;
+}
+.treasureV2Fullscreen .bottomPanel {
+  top: 66%;
+  height: 31%;
+  grid-template-columns: minmax(108px, 128px) minmax(0, 1fr) minmax(210px, 250px) minmax(190px, 230px);
+  gap: 10px;
+}
+.treasureV2Fullscreen .panel {
+  border-width: 4px;
+  border-radius: 16px;
+  box-shadow: 0 5px 0 var(--dark-brown);
+  padding: 10px;
+}
+.treasureV2Fullscreen .questionText {
+  min-height: 34px;
+  margin-bottom: 7px;
+  font-size: clamp(18px, 1.8vw, 26px);
+  line-height: 1.12;
+}
+.treasureV2Fullscreen .questionTextCompact {
+  font-size: clamp(15px, 1.35vw, 20px);
+}
+.treasureV2Fullscreen .questionTextDense {
+  font-size: clamp(13px, 1.05vw, 16px);
+}
+.treasureV2Fullscreen .answerBtn {
+  min-height: 48px;
+  font-size: clamp(14px, 1.08vw, 18px);
+  padding: 8px 5px;
+}
+.treasureV2Fullscreen .turnName {
+  margin: 14px 0 14px;
+  font-size: 22px;
+}
+.treasureV2Fullscreen .submitBtn {
+  font-size: 19px;
+  padding: 12px 8px;
+}
+.treasureV2Fullscreen .eventTitle {
+  font-size: 19px;
+}
+.treasureV2Fullscreen .eventItem {
+  font-size: 14px;
+  padding: 8px 3px;
+}
+.log {
+  position: absolute;
+  left: 3%;
+  right: 3%;
+  bottom: 2px;
+  z-index: 8;
+  pointer-events: none;
+  color: #ffe9a4;
+  text-align: center;
+  text-shadow: 0 2px #054662;
+  font-size: 17px;
+  font-weight: 900;
+}
+.logCorrect {
+  color: #d1fae5;
+}
+.logWrong {
+  color: #fee2e2;
+}
+.treasureEnd {
+  display: flex;
+  min-height: 620px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px;
+  background: linear-gradient(#0686c2, #055d89);
+  padding: 24px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+.treasureEndBox {
+  width: min(900px, 100%);
+  border: 6px solid #6a330e;
+  border-radius: 24px;
+  background: #ffe6b4;
+  box-shadow: 0 10px 0 #351607;
+  color: #4a2606;
+  padding: 24px;
+  text-align: center;
+}
+.endCrown {
+  font-size: 68px;
+}
+.endEyebrow {
+  color: #b82a13;
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.treasureEnd h3 {
+  margin: 8px 0 0;
+  color: #5a2505;
+  font-size: 40px;
+  font-weight: 900;
+}
+.treasureEnd p {
+  margin: 8px 0 0;
+  font-weight: 700;
+}
+.endRanks {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 20px;
+}
+.endRankCard {
+  border: 4px solid #a15f21;
+  border-radius: 18px;
+  background: #fff1cc;
+  padding: 14px;
+}
+.endRank {
+  color: #b82a13;
+  font-weight: 900;
+}
+.endAvatar {
+  width: 110px;
+  height: 120px;
+  object-fit: contain;
+}
+.endEmoji {
+  font-size: 58px;
+}
+.endName {
+  font-size: 20px;
+  font-weight: 900;
+}
+.endStats {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 900;
+}
+.endStats span {
+  border-radius: 999px;
+  background: #ffe0a4;
+  padding: 6px 10px;
+}
+@keyframes treasureHop {
+  0%, 100% { transform: translate(-50%, -80%) rotate(-2deg); }
+  50% { transform: translate(-50%, -88%) rotate(2deg); }
+}
+@keyframes answerGreen {
+  0%, 100% { background: #86efac; }
+  50% { background: #22c55e; color: #fff; }
+}
+@keyframes answerRed {
+  0%, 100% { background: #fca5a5; }
+  50% { background: #ef4444; color: #fff; }
+}
+@media (max-width: 1100px) {
+  .treasureTopbar {
+    grid-template-columns: 210px 1fr 120px;
+  }
+  .titleRibbon:before,
+  .titleRibbon:after {
+    display: none;
+  }
+  .bottomPanel {
+    grid-template-columns: 96px minmax(0, 1fr) 174px;
+  }
+  .eventPanel {
+    display: none;
+  }
+  .answers {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 760px) {
+  .chooseCols {
+    grid-template-columns: 1fr;
+  }
+  .charGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .charCard {
+    height: 138px;
+  }
+  .charSprite {
+    height: 96px;
+  }
+  .treasureStage {
+    min-height: 820px;
+  }
+  .treasureTopbar {
+    height: 20%;
+    grid-template-columns: 1fr auto;
+  }
+  .titleWrap {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+  .scoreWrap {
+    grid-row: 2;
+  }
+  .actions {
+    grid-row: 2;
+  }
+  .scoreCard {
+    width: 92px;
+    min-width: 92px;
+  }
+  .mapArea {
+    top: 21%;
+    height: 43%;
+  }
+  .bottomPanel {
+    top: 66%;
+    height: 32%;
+    grid-template-columns: 1fr;
+    overflow-y: auto;
+  }
+  .sidePanel,
+  .turnPanel {
+    display: none;
+  }
+  .questionText {
+    font-size: 18px;
+  }
+  .questionTextCompact {
+    font-size: 15px;
+  }
+  .questionTextDense {
+    font-size: 13px;
+  }
+}
+`
