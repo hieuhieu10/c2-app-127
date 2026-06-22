@@ -125,10 +125,13 @@ def _keyword_safety(prompt: str, source_text: str | None) -> GuardrailReport | N
     return None
 
 
-_SCREEN_SYSTEM = """You are a safety-and-scope guardrail for a Vietnamese learning-game \
-generator for school children (chương trình GDPT 2018). You DO NOT create content; you only \
-judge whether a teacher's request should proceed. Given the subject, grade, and request, return \
-exactly one verdict via the tool:
+_SCREEN_SYSTEM = """You are a safety-and-scope guardrail for a learning-game generator \
+for school children following Vietnam's GDPT 2018 curriculum. The UI/output language is \
+Vietnamese, but that does NOT mean the subject is Vietnamese Language. The subject authority \
+is ONLY the explicit `Môn` field in the user message. For example, if `Môn: Toán`, evaluate \
+the request as Mathematics even though the request and your explanation are written in Vietnamese. \
+You DO NOT create content; you only judge whether a teacher's request should proceed. Given the \
+subject, grade, and request, return exactly one verdict via the tool:
 - "ok": the request is on-topic for the subject, within the grade's scope, and child-appropriate.
 - "irrelevant": the request asks for content that does not belong to the stated subject.
 - "above_grade": the request belongs to the subject but clearly exceeds the stated grade's level.

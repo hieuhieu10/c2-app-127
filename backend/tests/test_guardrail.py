@@ -39,6 +39,12 @@ async def test_supported_subject_grade_passes_scope(monkeypatch):
     assert report.code == "ok"
 
 
+def test_llm_screen_prompt_disambiguates_vietnamese_language_from_subject():
+    assert "does NOT mean the subject is Vietnamese Language" in guardrail._SCREEN_SYSTEM
+    assert "subject authority" in guardrail._SCREEN_SYSTEM
+    assert "Môn: Toán" in guardrail._SCREEN_SYSTEM
+
+
 # ── Case 2: irrelevant / above grade (LLM screen) ────────────────────────────
 
 
