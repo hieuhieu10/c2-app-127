@@ -157,6 +157,190 @@ def _clamp_difficulty(requested: str, allowed: list[str]) -> Difficulty:
     return max(allowed, key=_difficulty_rank)  # type: ignore[return-value]
 
 
+_DOMAIN_HINTS: dict[str, tuple[str, ...]] = {
+    "numbers": (
+        "so tu nhien",
+        "dem so",
+        "so sanh so",
+        "hang tram",
+        "hang chuc",
+        "hang don vi",
+        "lam tron",
+        "so den",
+        "cau tao so",
+    ),
+    "operations": (
+        "phep cong",
+        "phep tru",
+        "phep nhan",
+        "phep chia",
+        "nhan chia",
+        "cong tru",
+        "bieu thuc",
+        "tim thanh phan",
+        "bai toan co loi van",
+    ),
+    "fractions": (
+        "phan so",
+        "tu so",
+        "mau so",
+        "so sanh phan so",
+        "cong phan so",
+        "tru phan so",
+    ),
+    "decimals": (
+        "so thap phan",
+        "thap phan",
+    ),
+    "percent": (
+        "ti so phan tram",
+        "ty so phan tram",
+        "phan tram",
+        "giam gia",
+        "%",
+    ),
+    "geometry": (
+        "hinh hoc",
+        "hinh vuong",
+        "hinh chu nhat",
+        "hinh tron",
+        "hinh tam giac",
+        "goc",
+        "duong thang",
+        "chu vi",
+        "dien tich",
+        "the tich",
+        "dien tich hinh",
+        "the tich hinh",
+    ),
+    "measurement": (
+        "do luong",
+        "don vi do",
+        "so do",
+        "do dai",
+        "khoi luong",
+        "dung tich",
+        "don vi dien tich",
+        "don vi the tich",
+        "so do dien tich",
+        "so do the tich",
+        "thoi gian",
+        "nhiet do",
+        "tien viet nam",
+        "xang ti met",
+        "ki lo gam",
+        "lit",
+        "van toc",
+    ),
+    "data": (
+        "thong ke",
+        "so lieu",
+        "du lieu",
+        "bang so lieu",
+        "bieu do",
+        "bieu do tranh",
+        "bieu do cot",
+        "bieu do hinh quat",
+        "thu thap du lieu",
+        "phan loai du lieu",
+    ),
+    "probability": (
+        "xac suat",
+        "kha nang xay ra",
+        "co the xay ra",
+        "chac chan",
+        "khong the xay ra",
+    ),
+}
+_DOMAIN_OBJECTIVE_MARKERS: dict[str, tuple[str, ...]] = {
+    "numbers": ("numbers", "natural_numbers", "count", "rounding", "place_value", "so tu nhien", "so den"),
+    "operations": ("operations", "add", "subtract", "multiplication", "division", "expressions", "phep tinh"),
+    "fractions": ("fraction", "fractions", "phan so"),
+    "decimals": ("decimal", "decimals", "so thap phan"),
+    "percent": ("percent", "ratio", "phan tram", "ti so"),
+    "geometry": ("geometry", "shapes", "perimeter", "hinh hoc", "hinh", "goc", "chu vi"),
+    "measurement": ("measurement", "measurements", "speed", "do luong", "don vi do", "so do", "dai luong"),
+    "data": ("statistics", "data", "charts", "chart", "thong ke", "bieu do", "so lieu"),
+    "probability": ("probability", "xac suat", "kha nang xay ra"),
+}
+_NEGATION_PREFIXES = ("khong", "khong dung", "khong ve", "khong lien quan den", "tranh", "loai bo")
+_EXCLUSIVE_HINTS = ("chi ", "chi tao", "chi can", "duy nhat", "only")
+_MEASUREMENT_UNIT_PATTERN = re.compile(
+    r"\b\d+\s*(cm|mm|m|km|g|kg|l|ml|cm2|dm2|m2|km2|ha|cm3|dm3|m3|gio|phut)\b",
+    re.IGNORECASE,
+)
+
+
+def _objective_domains(objective: dict[str, Any]) -> set[str]:
+    text = _norm(
+        " ".join(
+            str(part)
+            for part in [
+                objective.get("objective_id", ""),
+                objective.get("topic", ""),
+                objective.get("objective_text", ""),
+                *objective.get("search_aliases", []),
+                *objective.get("required_skills", []),
+            ]
+        )
+    )
+    domains = {
+        domain
+        for domain, markers in _DOMAIN_OBJECTIVE_MARKERS.items()
+        if any(marker in text for marker in markers)
+    }
+    return domains
+
+
+def _query_domain_constraints(prompt: str, source_text: str | None) -> tuple[set[str], set[str], bool]:
+    text = _norm(f"{prompt} {source_text or ''}")
+    requested: set[str] = set()
+    excluded: set[str] = set()
+
+    for domain, terms in _DOMAIN_HINTS.items():
+        for term in terms:
+            if term not in text:
+                continue
+            if _is_negated_term(text, term):
+                excluded.add(domain)
+            else:
+                requested.add(domain)
+
+    if _MEASUREMENT_UNIT_PATTERN.search(text):
+        requested.add("measurement")
+
+    requested -= excluded
+    exclusive = bool(requested and any(hint in text for hint in _EXCLUSIVE_HINTS))
+    return requested, excluded, exclusive
+
+
+def _is_negated_term(text: str, term: str) -> bool:
+    return any(f"{prefix} {term}" in text for prefix in _NEGATION_PREFIXES)
+
+
+def _domain_score_adjustment(objective: dict[str, Any], prompt: str, source_text: str | None) -> int:
+    requested, excluded, exclusive = _query_domain_constraints(prompt, source_text)
+    domains = _objective_domains(objective)
+    adjustment = 0
+
+    if domains & excluded:
+        adjustment -= 24
+    if requested and domains & requested:
+        adjustment += 12
+    elif requested and domains:
+        adjustment -= 8
+    if exclusive and requested and domains and not (domains & requested):
+        adjustment -= 18
+
+    if not requested and not excluded:
+        return adjustment
+    return adjustment
+
+
+def _domain_confidence_adjustment(objective: dict[str, Any], prompt: str, source_text: str | None) -> float:
+    return _domain_score_adjustment(objective, prompt, source_text) * 0.035
+
+
 class GDPT2018RetrievalProvider:
     """File-backed GDPT 2018 provider for the primary-math MVP."""
 
@@ -325,7 +509,12 @@ class GDPT2018RetrievalProvider:
                 for term in [obj.get("topic", ""), *obj.get("search_aliases", [])]
                 if (term_tokens := _tokens(str(term))) and len(term_tokens) >= 2 and term_tokens <= haystack_tokens
             )
-            score = exact_score + overlap_score + alias_subset_score
+            score = (
+                exact_score
+                + overlap_score
+                + alias_subset_score
+                + _domain_score_adjustment(obj, prompt, source_text)
+            )
             confidence = min(0.95, 0.35 + score * 0.06) if score else 0.0
             if score > best[2] or (score == best[2] and confidence > best[1]):
                 best = (obj, confidence, score)
@@ -510,4 +699,17 @@ class GDPT2018RetrievalProvider:
         )
 
 
-default_provider: RetrievalProvider = GDPT2018RetrievalProvider()
+def _make_default_provider() -> RetrievalProvider:
+    from app.config import settings
+
+    provider = settings.retrieval_provider.strip().lower()
+    if provider == "file":
+        return GDPT2018RetrievalProvider()
+    if provider in {"hybrid", "weaviate"}:
+        from app.retrieval.rag_provider import HybridRAGRetrievalProvider
+
+        return HybridRAGRetrievalProvider(require_weaviate=provider == "weaviate")
+    raise RuntimeError("RETRIEVAL_PROVIDER must be one of: file, hybrid, weaviate.")
+
+
+default_provider: RetrievalProvider = _make_default_provider()
