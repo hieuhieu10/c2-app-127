@@ -7,6 +7,8 @@ import { beWebApi, type BeWebChatSessionSummary } from '@/features/game-library/
 import { UserAvatar } from '@/components/ui/user-avatar'
 import { useEffect, useRef, useState } from 'react'
 
+const HIDDEN_RECENT_SESSION_IDS_KEY = 'hidden_recent_session_ids'
+
 const s = {
   sidebar: {
     width: 256, flexShrink: 0, background: '#fff',
@@ -48,6 +50,29 @@ const s = {
   recentInactive: {
     display: 'block', padding: '8px 11px', borderRadius: 8, textDecoration: 'none',
     color: '#5b6577', fontSize: 13.5,
+  },
+  recentRow: {
+    display: 'flex',
+    alignItems: 'stretch',
+    gap: 6,
+    minWidth: 0,
+  },
+  recentLink: {
+    flex: 1,
+    minWidth: 0,
+  },
+  recentDeleteBtn: {
+    width: 30,
+    flexShrink: 0,
+    border: 'none',
+    background: 'transparent',
+    borderRadius: 8,
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: '#a0a8b8',
+    cursor: 'pointer',
+    transition: 'opacity .15s ease, background .15s ease, color .15s ease',
   },
   recentSection: {
     marginTop: 22,
@@ -102,9 +127,24 @@ export function AppSidebar() {
   const router = useRouter()
   const { user, signOut } = useAuth()
   const [recentSessions, setRecentSessions] = useState<BeWebChatSessionSummary[]>([])
+  const [hiddenSessionIds, setHiddenSessionIds] = useState<number[]>([])
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement | null>(null)
   const currentSessionId = searchParams.get('session')
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    try {
+      const raw = window.localStorage.getItem(HIDDEN_RECENT_SESSION_IDS_KEY)
+      if (!raw) return
+      const parsed = JSON.parse(raw)
+      if (Array.isArray(parsed)) {
+        setHiddenSessionIds(parsed.filter((value): value is number => Number.isInteger(value)))
+      }
+    } catch {
+      setHiddenSessionIds([])
+    }
+  }, [])
 
   useEffect(() => {
     beWebApi.listChatSessions().then(setRecentSessions).catch(() => {})
@@ -151,6 +191,19 @@ export function AppSidebar() {
     return session.title || session.lastMessagePreview || 'Untitled chat'
   }
 
+  function persistHiddenSessionIds(nextIds: number[]) {
+    setHiddenSessionIds(nextIds)
+    if (typeof window === 'undefined') return
+    window.localStorage.setItem(HIDDEN_RECENT_SESSION_IDS_KEY, JSON.stringify(nextIds))
+  }
+
+  function hideRecentSession(sessionId: number) {
+    if (hiddenSessionIds.includes(sessionId)) return
+    persistHiddenSessionIds([...hiddenSessionIds, sessionId])
+  }
+
+  const visibleRecentSessions = recentSessions.filter((session) => !hiddenSessionIds.includes(session.id))
+
   return (
     <aside style={s.sidebar}>
       <style>{`
@@ -167,6 +220,11 @@ export function AppSidebar() {
         }
         .sidebar-recent-list::-webkit-scrollbar-thumb:hover {
           background: #aeb8cd;
+        }
+        .sidebar-recent-row:hover .sidebar-recent-delete,
+        .sidebar-recent-row:focus-within .sidebar-recent-delete,
+        .sidebar-recent-delete[data-visible="true"] {
+          opacity: 1;
         }
       `}</style>
       <div style={s.logo}>
@@ -208,33 +266,70 @@ export function AppSidebar() {
       <div style={s.recentSection}>
         <div style={s.recentLabel}>Gần đây</div>
         <div className="sidebar-recent-list" style={s.recentList}>
-          {recentSessions.length > 0 ? recentSessions.map((session) => {
+          {visibleRecentSessions.length > 0 ? visibleRecentSessions.map((session) => {
             const active = isSessionActive(session.id)
             const label = getSessionLabel(session)
             return (
-            <Link
-              key={session.id}
-              href={`/dashboard/game/new?session=${session.id}`}
-              style={{
-                ...(active ? s.recentActive : s.recentInactive),
-                minWidth: 0,
-              }}
-              title={label}
-              onMouseEnter={(event) => {
-                if (!active) {
-                  event.currentTarget.style.background = '#f4f3ff'
-                  event.currentTarget.style.color = '#4338ca'
-                }
-              }}
-              onMouseLeave={(event) => {
-                if (!active) {
+            <div key={session.id} className="sidebar-recent-row" style={s.recentRow}>
+              <Link
+                href={`/dashboard/game/new?session=${session.id}`}
+                style={{
+                  ...(active ? s.recentActive : s.recentInactive),
+                  ...s.recentLink,
+                }}
+                title={label}
+                onMouseEnter={(event) => {
+                  if (!active) {
+                    event.currentTarget.style.background = '#f4f3ff'
+                    event.currentTarget.style.color = '#4338ca'
+                  }
+                }}
+                onMouseLeave={(event) => {
+                  if (!active) {
+                    event.currentTarget.style.background = 'transparent'
+                    event.currentTarget.style.color = '#5b6577'
+                  }
+                }}
+              >
+                <span style={s.recentItemTitle}>{label}</span>
+              </Link>
+              <button
+                type="button"
+                className="sidebar-recent-delete"
+                data-visible="false"
+                aria-label={`Ẩn đoạn chat ${label}`}
+                title="Ẩn đoạn chat"
+                style={s.recentDeleteBtn}
+                onClick={(event) => {
+                  event.preventDefault()
+                  event.stopPropagation()
+                  hideRecentSession(session.id)
+                }}
+                onMouseEnter={(event) => {
+                  event.currentTarget.style.background = '#fff1f2'
+                  event.currentTarget.style.color = '#e11d48'
+                }}
+                onMouseLeave={(event) => {
                   event.currentTarget.style.background = 'transparent'
-                  event.currentTarget.style.color = '#5b6577'
-                }
-              }}
-            >
-              <span style={s.recentItemTitle}>{label}</span>
-            </Link>
+                  event.currentTarget.style.color = '#a0a8b8'
+                }}
+                onFocus={(event) => {
+                  event.currentTarget.style.background = '#fff1f2'
+                  event.currentTarget.style.color = '#e11d48'
+                }}
+                onBlur={(event) => {
+                  event.currentTarget.style.background = 'transparent'
+                  event.currentTarget.style.color = '#a0a8b8'
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4.5 6.5h11" />
+                  <path d="M8 6.5v-1a1 1 0 011-1h2a1 1 0 011 1v1" />
+                  <path d="M6.5 6.5l.7 8.2a1 1 0 001 .9h2.6a1 1 0 001-.9l.7-8.2" />
+                  <path d="M8.75 9.25v4.5M11.25 9.25v4.5" />
+                </svg>
+              </button>
+            </div>
             )
           }) : (
             <span style={{ ...s.recentInactive, display: 'block', fontStyle: 'italic' }}>Chưa có đoạn chat nào</span>

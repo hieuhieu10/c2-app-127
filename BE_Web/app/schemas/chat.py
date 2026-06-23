@@ -44,7 +44,7 @@ class ChatRecommendRequest(BaseModel):
     grade: int = Field(..., ge=1, le=12)
     difficulty: Literal["easy", "medium", "hard"] = "medium"
     prompt: str = Field(..., min_length=1)
-    numItems: int = Field(8, ge=1, le=20)
+    numItems: int | None = Field(None, ge=1, le=20)
     sourceText: str | None = None
     attachedFileName: str | None = None
 

@@ -37,7 +37,7 @@ interface SentForm {
   grade: number
   difficulty: string
   prompt: string
-  numItems: number
+  numItems: number | null
   sourceText: string | null
   attachedFileName?: string | null
 }
@@ -171,13 +171,32 @@ function getDifficultyLabel(value: string) {
   return DIFFICULTIES.find((item) => item.value === value)?.label ?? 'Trung bình'
 }
 
+function extractNumItemsFromPrompt(promptText: string): number | null {
+  const normalized = promptText.toLowerCase()
+  const patterns = [
+    /(?:gồm|co|có|tao|tạo|sinh|generate)?\s*(\d{1,2})\s*(?:cau hoi|câu hỏi|cau|câu)\b/u,
+    /(?:cau hoi|câu hỏi|cau|câu)\s*(?:so|số)?\s*(\d{1,2})\b/u,
+  ]
+
+  for (const pattern of patterns) {
+    const match = normalized.match(pattern)
+    if (!match) continue
+    const parsed = Number(match[1])
+    if (Number.isInteger(parsed) && parsed >= 1 && parsed <= 20) {
+      return parsed
+    }
+  }
+
+  return null
+}
+
 function buildSentForm(promptText: string, payload: Record<string, unknown>): SentForm {
   return {
     subject: typeof payload.subject === 'string' ? payload.subject : 'Toán',
     grade: typeof payload.grade === 'number' ? payload.grade : 4,
     difficulty: typeof payload.difficulty === 'string' ? payload.difficulty : 'medium',
     prompt: promptText,
-    numItems: typeof payload.numItems === 'number' ? payload.numItems : 8,
+    numItems: typeof payload.numItems === 'number' ? payload.numItems : null,
     sourceText: typeof payload.sourceText === 'string' ? payload.sourceText : null,
     attachedFileName: typeof payload.attachedFileName === 'string' ? payload.attachedFileName : null,
   }
@@ -334,7 +353,7 @@ function NewGamePageContent() {
   const [grade, setGrade] = useState(4)
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium')
   const [prompt, setPrompt] = useState('')
-  const [numItems, setNumItems] = useState(8)
+  const [numItems, setNumItems] = useState<number | null>(null)
   const [sourceText, setSourceText] = useState<string | null>(null)
   const [attachedFileName, setAttachedFileName] = useState<string | null>(null)
   const [attachError, setAttachError] = useState<string | null>(null)
@@ -408,7 +427,7 @@ function NewGamePageContent() {
         setSubject(session.subject ?? 'Toán')
         setGrade(session.grade ?? 4)
         setDifficulty((session.difficulty ?? 'medium') as 'easy' | 'medium' | 'hard')
-        setNumItems(session.numItems ?? 8)
+        setNumItems(session.numItems)
         setSourceText(session.sourceText ?? null)
       })
       .catch(() => {
@@ -475,9 +494,18 @@ function NewGamePageContent() {
     const promptText = prompt.trim()
     if (!promptText) return
 
-    const form: SentForm = { subject, grade, difficulty, prompt: promptText, numItems, sourceText, attachedFileName }
+    const resolvedNumItems = numItems ?? extractNumItemsFromPrompt(promptText)
+    const form: SentForm = { subject, grade, difficulty, prompt: promptText, numItems: resolvedNumItems, sourceText, attachedFileName }
     const tempUserId = makeTempId('user')
     const tempAssistantId = makeTempId('recommend')
+    const recommendPayload = {
+      subject,
+      grade,
+      difficulty,
+      prompt: promptText,
+      sourceText,
+      attachedFileName,
+    }
 
     setPrompt('')
     setLoadingRecs(true)
@@ -490,15 +518,7 @@ function NewGamePageContent() {
 
     try {
       const currentSessionId = await ensureSession()
-      const response = await beWebApi.recommendChat(currentSessionId, {
-        subject,
-        grade,
-        difficulty,
-        prompt: promptText,
-        numItems,
-        sourceText,
-        attachedFileName,
-      })
+      const response = await beWebApi.recommendChat(currentSessionId, recommendPayload)
 
       setSessionTitle((prev) => prev || response.session.title || promptText)
       setChatMessages((prev) => prev.map((message) => {
@@ -643,7 +663,7 @@ function NewGamePageContent() {
     if (!result) return
 
     if (result.lessonId && result.gameId) {
-      router.push(`/dashboard/lesson/${result.lessonId}/review/${result.gameId}`)
+      router.push(`/dashboard/lesson/${result.lessonId}/validate/${result.gameId}`)
       return
     }
 

@@ -110,16 +110,17 @@ async def recommend_for_session(
     db.flush()
 
     try:
-        ai_response = await recommend_games(
-            {
-                "subject": request.subject,
-                "grade": request.grade,
-                "difficulty": request.difficulty,
-                "prompt": prompt_text,
-                "num_items": request.numItems,
-                "source_text": request.sourceText,
-            }
-        )
+        recommend_payload = {
+            "subject": request.subject,
+            "grade": request.grade,
+            "difficulty": request.difficulty,
+            "prompt": prompt_text,
+            "source_text": request.sourceText,
+        }
+        if request.numItems is not None:
+            recommend_payload["num_items"] = request.numItems
+
+        ai_response = await recommend_games(recommend_payload)
     except BeAiGatewayError as exc:
         raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=str(exc)) from exc
 
@@ -194,10 +195,11 @@ async def generate_for_session(
         "grade": session.grade,
         "difficulty": session.difficulty,
         "prompt": prompt_message.content,
-        "num_items": session.num_items,
         "source_text": session.source_text,
         "override_template": request.templateId,
     }
+    if session.num_items is not None:
+        payload["num_items"] = session.num_items
 
     if not payload["subject"] or not payload["grade"] or not payload["difficulty"]:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Session is missing lesson context")
