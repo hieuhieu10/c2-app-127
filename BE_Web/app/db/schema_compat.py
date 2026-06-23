@@ -5,6 +5,13 @@ from sqlalchemy.engine import Engine
 
 
 def ensure_schema_compatibility(engine: Engine) -> None:
+    # Local SQLite/dev convenience: create tables added by newer branches before
+    # the developer has run Alembic. Existing tables are left untouched.
+    from app.db import models  # noqa: F401
+    from app.db.session import Base
+
+    Base.metadata.create_all(bind=engine)
+
     inspector = inspect(engine)
     if "users" not in inspector.get_table_names():
         return

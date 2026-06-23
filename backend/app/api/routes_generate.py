@@ -125,6 +125,8 @@ async def generate(req: LessonRequest) -> GameResponse:
     state = dict(req)
     state["template_id"] = req.override_template
     state.update(retrieve_node(state))  # type: ignore[arg-type]
+    if state.get("error") or not state.get("objective_id"):
+        return _to_response(state)
     state.update(await generate_node(state))  # type: ignore[arg-type]
     state.update(validate_node(state))  # type: ignore[arg-type]
     attempts = 0
@@ -172,6 +174,8 @@ async def generate_battleship_game(req: LessonRequest) -> HTMLResponse:
     state["num_items"] = max(state.get("num_items") or 5, 20)
 
     state.update(retrieve_node(state))  # type: ignore[arg-type]
+    if state.get("error") or not state.get("objective_id"):
+        raise HTTPException(status_code=422, detail=state.get("error") or "No matching curriculum objective found.")
     state.update(await generate_node(state))  # type: ignore[arg-type]
     state.update(validate_node(state))  # type: ignore[arg-type]
     attempts = 0
@@ -245,6 +249,14 @@ async def _stream_pipeline(req: LessonRequest) -> AsyncGenerator[str, None]:
                    "subtitle": f"Trích xuất {num_passages} đoạn nội dung liên quan",
                    "tag": "PyMuPDF · OCR", "status": "done", "elapsed_ms": ms()})
         await asyncio.sleep(0)
+
+        if state.get("error") or not state.get("objective_id"):
+            yield _ev({"type": "stage", "id": "rag", "label": "Tra cứu khung chương trình GDPT 2018",
+                       "subtitle": state.get("error") or "Không tìm thấy objective GDPT phù hợp",
+                       "tag": "RAG", "status": "error", "elapsed_ms": ms()})
+            await asyncio.sleep(0)
+            yield _ev({"type": "error", "message": state.get("error", "Không tìm thấy objective GDPT phù hợp")})
+            return
 
         yield _ev({"type": "stage", "id": "rag", "label": "Tra cứu khung chương trình GDPT 2018",
                    "subtitle": f"Tìm thấy yêu cầu cần đạt · {req.subject} lớp {req.grade}",

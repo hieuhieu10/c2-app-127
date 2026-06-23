@@ -19,6 +19,7 @@ from functools import lru_cache
 from langgraph.graph import END, StateGraph
 
 from app.agents.generator import (
+    after_retrieve,
     after_validate,
     generate_node,
     repair_node,
@@ -58,7 +59,9 @@ def build_graph():
     g.add_conditional_edges(
         "guardrail", after_guardrail, {"ok": "retrieve", "blocked": END}
     )
-    g.add_edge("retrieve", "recommend")
+    g.add_conditional_edges(
+        "retrieve", after_retrieve, {"ok": "recommend", "error": END}
+    )
     g.add_conditional_edges(
         "recommend", _route_after_recommend, {"ok": "generate", "error": END}
     )

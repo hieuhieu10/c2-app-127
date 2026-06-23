@@ -8,7 +8,7 @@ MVP hiện tập trung vào:
 - Knowledge base môn Toán cấp tiểu học, lớp 1-5.
 - Quy trình giáo viên review trước khi sử dụng.
 - Game shell Treasure Hunt và Trivia Battleship.
-- Luồng tạo game hiện tại gọi BE_AI để đề xuất game và stream quá trình sinh nội dung.
+- Luồng tạo game hiện tại đi qua BE_Web để lưu chat history, sau đó BE_Web gọi BE_AI để đề xuất game và stream quá trình sinh nội dung.
 
 ## Kiến Trúc
 
@@ -16,12 +16,12 @@ Tài liệu chi tiết nằm ở [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ```text
 FE Next.js
+  -> BE_Web FastAPI + DB cho auth, chat history, saved games, review APIs
   -> BE_AI FastAPI agent workflow cho recommend/generate stream
-  -> BE_Web FastAPI + DB cho auth, saved games, review APIs
   -> GDPT 2018 JSON KB + LLM provider tùy chọn
 ```
 
-BE_AI phụ trách curriculum retrieval, game recommendation, content generation, schema validation, repair và streaming pipeline events. BE_Web phụ trách authentication, persistence, saved-game APIs và teacher review workflow.
+BE_Web phụ trách authentication, chat session/history, persistence, saved-game APIs và teacher review workflow. BE_AI phụ trách curriculum retrieval, game recommendation, content generation, schema validation, repair và streaming pipeline events.
 
 ## Cấu Trúc Repository
 
@@ -42,6 +42,7 @@ scripts/                    AI logging / course utility scripts
 - Node.js 20+
 - `npm`
 - PostgreSQL là tùy chọn. Local development của BE_Web mặc định dùng SQLite.
+- Docker là tùy chọn nếu muốn chạy Weaviate cho hybrid RAG.
 - Một LLM API key nếu muốn chạy generation thật: OpenAI, DeepSeek hoặc Anthropic.
 
 Các unit test cho retrieval, schema, validation và BE_Web API có thể chạy không cần LLM key.
@@ -88,12 +89,24 @@ BE_Web đọc `BE_Web/.env` nếu có, nếu không sẽ dùng `BE_Web/.env.exam
 | `JWT_SECRET_KEY` | Nên có | `change-me` |
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | Không | `10080` |
 
+SQLite local tự tạo file `BE_Web/be_web.db` khi chạy app. Nếu schema local bị lệch sau khi pull code mới, có thể tạo DB mới bằng cách backup file cũ rồi tạo schema lại:
+
+```powershell
+cd BE_Web
+Move-Item .\be_web.db .\be_web.db.bak
+$env:PYTHONPATH='.'
+uv run python -c "from app.db import models; from app.db.session import Base, engine; Base.metadata.create_all(bind=engine)"
+```
+
+DB mới sẽ trắng, nên cần đăng ký/đăng nhập lại user. Nếu cần giữ dữ liệu thật, dùng Alembic/PostgreSQL thay vì xóa SQLite local.
+
 ### FE
 
 | Biến | Bắt buộc | Mặc định |
 |---|---:|---|
 | `NEXT_PUBLIC_BE_WEB_URL` | Không | `http://localhost:8001` |
-| `NEXT_PUBLIC_AI_URL` | Không | `http://localhost:8000` |
+| `NEXT_PUBLIC_AI_URL` | Không | `http://localhost:8000`; chủ yếu dùng cho các client/debug cũ, luồng chat mới đi qua BE_Web. |
+| `NEXT_PUBLIC_API_DEBUG` | Không | `false` |
 
 ## Cài Đặt
 
@@ -116,6 +129,7 @@ uv sync --extra dev
 
 ```powershell
 cd BE_Web
+Copy-Item .env.example .env
 uv sync --extra dev
 ```
 
@@ -130,6 +144,14 @@ DATABASE_URL=postgresql+psycopg://user:password@localhost:5432/be_web
 ```powershell
 cd FE
 npm install
+```
+
+Nếu cần cấu hình URL khác mặc định, tạo `FE/.env.local`:
+
+```env
+NEXT_PUBLIC_BE_WEB_URL=http://localhost:8001
+NEXT_PUBLIC_AI_URL=http://localhost:8000
+NEXT_PUBLIC_API_DEBUG=false
 ```
 
 ## Chạy Local
@@ -223,7 +245,22 @@ Dùng `/generate` khi caller đã chọn content template.
 
 ### Luồng FE hiện tại
 
-Trang `/dashboard/game/new` gọi `/recommend/games` trước. Sau khi giáo viên chọn game, FE gọi `/generate/stream`.
+Trang `/dashboard/game/new` gọi BE_Web chat API trước để lưu history. BE_Web sẽ gọi BE_AI ở phía sau.
+
+Luồng chính:
+
+```text
+FE /dashboard/game/new
+-> BE_Web POST /api/chat/sessions
+-> BE_Web POST /api/chat/sessions/{session_id}/recommend
+-> BE_AI POST /recommend/games
+-> FE chọn game
+-> BE_Web POST /api/chat/sessions/{session_id}/generate
+-> BE_AI POST /generate/stream
+-> BE_Web lưu assistant message + Lesson/Game khi complete
+```
+
+Nếu muốn gọi BE_AI trực tiếp để debug, có thể dùng `/recommend/games`:
 
 ```powershell
 $recommendBody = @{
@@ -262,7 +299,7 @@ Invoke-RestMethod `
   -Headers @{ Authorization = "Bearer $token" }
 ```
 
-BE_Web hiện phụ trách auth, saved-game listing, review/edit, approve/publish, avatar upload và battleship play serving. Game creation hiện đi qua BE_AI endpoints do FE gọi.
+BE_Web hiện phụ trách auth, chat history, saved-game listing, review/edit, approve/publish, avatar upload và battleship play serving. Game creation trên FE đi qua BE_Web chat endpoints, còn BE_Web gọi BE_AI.
 
 ## Test
 
@@ -273,6 +310,7 @@ uv run pytest
 
 ```powershell
 cd BE_Web
+$env:PYTHONPATH='.'
 uv run pytest
 ```
 

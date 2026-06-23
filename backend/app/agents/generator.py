@@ -35,8 +35,34 @@ def retrieve_node(state: GenerationState) -> GenerationState:
         upload_type=state.get("upload_type", "none"),
         teacher_requested_difficulty=state.get("difficulty", "medium"),
     )
+    if not ctx.objective_id:
+        message = (
+            f"Không tìm thấy yêu cầu cần đạt GDPT 2018 phù hợp cho "
+            f"{state['subject']} lớp {state['grade']}."
+        )
+        suggestion = (
+            "Hãy nêu rõ nội dung bài học theo đúng môn/lớp đã chọn, hoặc đổi lớp nếu nội dung "
+            "thuộc phạm vi chương trình của lớp khác."
+        )
+        if ctx.alignment_result and ctx.alignment_result.recommended_adjustments:
+            suggestion = " ".join(ctx.alignment_result.recommended_adjustments)
+        return {
+            "context": ctx,
+            "objective_id": requested_objective_id,
+            "ok": False,
+            "error": f"{message} {suggestion}",
+            "validation_errors": [message],
+            "content": None,
+        }
     # Adopt the resolved objective id so downstream items reference a real objective.
     return {"context": ctx, "objective_id": ctx.objective_id or requested_objective_id}
+
+
+def after_retrieve(state: GenerationState) -> str:
+    """Stop early when retrieval cannot resolve a curriculum objective."""
+    if state.get("error") or not state.get("objective_id"):
+        return "error"
+    return "ok"
 
 
 async def _generate(state: GenerationState, repair_errors: list[str] | None) -> dict:

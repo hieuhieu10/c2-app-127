@@ -69,6 +69,21 @@ _DECIMAL_SCOPE_TERMS = (
     "phan nguyen",
     "dau phay",
 )
+_FRACTION_NUMBER_RE = re.compile(r"(?<!\d)\d+/\d+(?!\d)")
+_FRACTION_SCOPE_TERMS = (
+    "phan so",
+    "tu so",
+    "mau so",
+    "rut gon phan so",
+    "so sanh phan so",
+    "cong phan so",
+    "tru phan so",
+)
+_PERCENT_SCOPE_TERMS = (
+    "phan tram",
+    "ti so phan tram",
+    "ty so phan tram",
+)
 _SUBJECT_ALIASES = {
     "toan hoc": "toan",
 }
@@ -144,6 +159,33 @@ def _keyword_curriculum_scope(subject: str, grade: int, prompt: str, source_text
 
     haystack_raw = f"{prompt} {source_text or ''}"
     haystack = _norm(haystack_raw)
+
+    if grade < 4:
+        has_fraction_concept = any(term in haystack for term in _FRACTION_SCOPE_TERMS)
+        has_fraction_notation = bool(_FRACTION_NUMBER_RE.search(haystack_raw))
+        if has_fraction_concept or has_fraction_notation:
+            return GuardrailReport(
+                allowed=False,
+                code="above_grade",
+                message=(
+                    "Yêu cầu có nội dung về phân số như tử số, mẫu số, so sánh hoặc phép tính phân số. "
+                    "Nội dung này thuộc phạm vi Toán lớp 4 trở lên, chưa phù hợp với Toán lớp 3."
+                ),
+                suggestion=(
+                    "Hãy đổi lớp sang 4 nếu muốn tạo trò chơi về phân số, hoặc giữ lớp 3 và chọn nội dung "
+                    "như phép nhân/chia trong phạm vi 100, chu vi/diện tích cơ bản, đo lường hoặc bảng số liệu đơn giản."
+                ),
+            )
+
+    has_percent_concept = "%" in haystack_raw or any(term in haystack for term in _PERCENT_SCOPE_TERMS)
+    if has_percent_concept:
+        return GuardrailReport(
+            allowed=False,
+            code="above_grade",
+            message="Yêu cầu có nội dung về tỉ số phần trăm, thuộc phạm vi Toán lớp 5.",
+            suggestion="Hãy chọn lớp 5 nếu muốn tạo trò chơi về phần trăm, hoặc đổi nội dung về phạm vi lớp hiện tại.",
+        )
+
     has_decimal_concept = any(term in haystack for term in _DECIMAL_SCOPE_TERMS)
     has_decimal_notation = bool(_DECIMAL_NUMBER_RE.search(haystack_raw))
     if not (has_decimal_concept or has_decimal_notation):

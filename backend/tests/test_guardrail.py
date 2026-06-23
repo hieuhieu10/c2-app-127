@@ -76,6 +76,22 @@ async def test_decimal_place_value_wording_for_grade_3_is_allowed(monkeypatch):
     assert report.allowed
 
 
+async def test_fraction_request_below_grade_4_blocked(monkeypatch):
+    _patch_llm(monkeypatch, verdict="ok")
+    report = await run_guardrails(subject="Toán", grade=3, prompt="Tạo quiz về phân số 3/5, tử số và mẫu số")
+    assert not report.allowed
+    assert report.code == "above_grade"
+    assert "lớp 4" in report.message
+
+
+async def test_percent_request_below_grade_5_blocked(monkeypatch):
+    _patch_llm(monkeypatch, verdict="ok")
+    report = await run_guardrails(subject="Toán", grade=4, prompt="Tạo câu hỏi về tỉ số phần trăm và 25%")
+    assert not report.allowed
+    assert report.code == "above_grade"
+    assert "lớp 5" in report.message
+
+
 # ── Case 3: not child-friendly ───────────────────────────────────────────────
 
 
