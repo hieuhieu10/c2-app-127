@@ -2,6 +2,7 @@ import type { GameItem } from '@/types/app'
 
 export function validateGameItem(item: GameItem): GameItem {
   const errors: string[] = []
+  const requiresAnswerOptions = item.type === 'multiple-choice' || item.type === 'press-the-button'
 
   if (!item.question?.trim()) {
     errors.push('Question cannot be empty')
@@ -11,16 +12,16 @@ export function validateGameItem(item: GameItem): GameItem {
     errors.push('Correct answer cannot be empty')
   }
 
-  if (item.type === 'multiple-choice' && (!item.options || item.options.length < 2)) {
-    errors.push('Multiple-choice items need at least two options')
+  if (requiresAnswerOptions && (!item.options || item.options.length < 2)) {
+    errors.push('This item needs AI answer options')
   }
 
   if (item.options?.some((option) => !option.trim())) {
     errors.push('Options cannot be empty')
   }
 
-  const hasAnswerInOptions = !item.options || item.options.includes(item.correctAnswer)
-  if (!hasAnswerInOptions) {
+  const hasAnswerInOptions = Boolean(item.options?.includes(item.correctAnswer))
+  if ((requiresAnswerOptions || item.options) && !hasAnswerInOptions) {
     errors.push('Correct answer must match one of the answer options')
   }
 
@@ -33,7 +34,7 @@ export function validateGameItem(item: GameItem): GameItem {
     validationErrors: errors,
     faithfulnessScore: score,
     entailmentStatus: score >= 0.8 ? 'entailed' : score >= 0.65 ? 'ambiguous' : 'not-entailed',
-    distractorStatus: item.options ? (hasAnswerInOptions ? 'verified-wrong' : 'needs-review') : 'not-applicable',
+    distractorStatus: requiresAnswerOptions || item.options ? (hasAnswerInOptions ? 'verified-wrong' : 'needs-review') : 'not-applicable',
     safetyStatus: item.question.length > 220 ? 'needs-review' : 'safe',
   }
 }

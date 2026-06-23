@@ -91,7 +91,7 @@ export default function ReviewPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/5">
       <header className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur-sm">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex w-full max-w-[1720px] items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
           <Link href="/dashboard" className="text-2xl font-bold text-primary hover:opacity-80">
             LearnGame
           </Link>
@@ -99,10 +99,10 @@ export default function ReviewPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="mb-8 grid gap-4 lg:grid-cols-[1fr_360px]">
-          <div>
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-green-200 bg-green-50 px-3 py-1 text-sm font-semibold text-green-800">
+      <main className="mx-auto w-full max-w-[1720px] px-4 py-5 sm:px-6 lg:px-8">
+        <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
+          <div className="min-w-0">
+            <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-green-200 bg-green-50 px-3 py-1 text-sm font-semibold text-green-800">
               <CheckCircle2 className="h-4 w-4" />
               {game.status === 'published' ? 'Published' : 'Approved'}
             </div>
@@ -110,96 +110,88 @@ export default function ReviewPage() {
             <p className="mt-2 text-muted-foreground">
               Final playable game preview with teacher-approved content and validation checks.
             </p>
-          </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Launch Controls</CardTitle>
-              <CardDescription>Publish or share this classroom activity.</CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-2">
-              <Button onClick={publishGame}>
-                <Rocket className="mr-2 h-4 w-4" />
-                {game.status === 'published' ? 'Published' : 'Publish Game'}
-              </Button>
-              <Button variant="outline" onClick={copyShareLink}>
-                <Copy className="mr-2 h-4 w-4" />
-                {copied ? 'Copied' : 'Copy Share Link'}
-              </Button>
-              <Link href="/dashboard">
-                <Button variant="outline" className="w-full">
-                  <ExternalLink className="mr-2 h-4 w-4" />
-                  Back to Dashboard
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-          <div
-            className={
-              isFullscreen
-                ? 'fixed inset-0 z-50 overflow-y-auto bg-slate-950 p-3 text-slate-950 sm:p-4'
-                : 'min-w-0'
-            }
-          >
             <div
               className={
                 isFullscreen
-                  ? 'mx-auto flex max-w-[1800px] items-center justify-between gap-3 rounded-lg border border-white/15 bg-white/10 px-4 py-3 text-white shadow-lg backdrop-blur'
-                  : 'mb-3 flex justify-end'
+                  ? 'fixed inset-0 z-50 flex h-[100dvh] flex-col overflow-hidden bg-slate-950 p-3 text-slate-950'
+                  : 'mt-3 min-w-0'
               }
             >
-              {isFullscreen ? (
-                <div>
-                  <div className="text-sm font-black uppercase tracking-wide text-emerald-100">Treasure Hunt</div>
-                  <div className="text-xs text-white/70">{lesson.title}</div>
-                </div>
-              ) : null}
-              <Button
-                variant={isFullscreen ? 'secondary' : 'outline'}
-                onClick={() => setIsFullscreen((value) => !value)}
+              <div
+                className={
+                  isFullscreen
+                    ? 'fixed right-5 top-5 z-[60] flex items-center justify-end'
+                    : 'mb-3 flex justify-end'
+                }
               >
-                {isFullscreen ? (
-                  <>
-                    <Minimize2 className="mr-2 h-4 w-4" />
-                    Exit Fullscreen
-                  </>
-                ) : (
-                  <>
-                    <Maximize2 className="mr-2 h-4 w-4" />
-                    Fullscreen
-                  </>
-                )}
-              </Button>
-            </div>
+                <Button
+                  variant={isFullscreen ? 'ghost' : 'outline'}
+                  onClick={() => setIsFullscreen((value) => !value)}
+                  size="icon"
+                  aria-label={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
+                  title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
+                  className={isFullscreen ? 'h-8 w-8 bg-white/25 text-slate-950 opacity-45 backdrop-blur hover:bg-white/75 hover:opacity-100' : ''}
+                >
+                  {isFullscreen ? (
+                    <Minimize2 className="h-3.5 w-3.5" />
+                  ) : (
+                    <Maximize2 className="h-3.5 w-3.5" />
+                  )}
+                </Button>
+              </div>
 
-            <div className={isFullscreen ? 'mx-auto mt-3 max-w-[1800px]' : ''}>
-              <GameShell game={game} fullscreen={isFullscreen} />
+              <div className={isFullscreen ? 'mx-auto h-[calc(100dvh-24px)] min-h-0 w-full max-w-[1800px] flex-1' : 'min-w-0'}>
+                <GameShell game={game} fullscreen={isFullscreen} />
+              </div>
             </div>
           </div>
 
-          <Card className={isFullscreen ? 'hidden' : ''}>
-            <CardHeader>
-              <CardTitle className="text-lg">Validation Summary</CardTitle>
-              <CardDescription>Teacher and system gates before launch.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              <SummaryRow label="Items" value={`${game.items.length}`} />
-              <SummaryRow label="Schema valid" value={`${game.items.filter((item) => item.validationStatus === 'valid').length}/${game.items.length}`} />
-              <SummaryRow
-                label="Avg. faithfulness"
-                value={`${Math.round((game.items.reduce((sum, item) => sum + (item.faithfulnessScore ?? 0), 0) / game.items.length) * 100)}%`}
-              />
-              <SummaryRow label="Safety" value={game.items.some((item) => item.safetyStatus === 'blocked') ? 'Blocked' : 'Pass'} />
-              <Link href={`/dashboard/lesson/${lesson.id}/validate/${game.id}`}>
-                <Button variant="outline" className="mt-3 w-full">
-                  Edit Validation
+          <aside className={isFullscreen ? 'hidden' : 'space-y-6'}>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Launch Controls</CardTitle>
+                <CardDescription>Publish or share this classroom activity.</CardDescription>
+              </CardHeader>
+              <CardContent className="grid gap-2">
+                <Button onClick={publishGame}>
+                  <Rocket className="mr-2 h-4 w-4" />
+                  {game.status === 'published' ? 'Published' : 'Publish Game'}
                 </Button>
-              </Link>
-            </CardContent>
-          </Card>
+                <Button variant="outline" onClick={copyShareLink}>
+                  <Copy className="mr-2 h-4 w-4" />
+                  {copied ? 'Copied' : 'Copy Share Link'}
+                </Button>
+                <Link href="/dashboard">
+                  <Button variant="outline" className="w-full">
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    Back to Dashboard
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Validation Summary</CardTitle>
+                <CardDescription>Teacher and system gates before launch.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm">
+                <SummaryRow label="Items" value={`${game.items.length}`} />
+                <SummaryRow label="Schema valid" value={`${game.items.filter((item) => item.validationStatus === 'valid').length}/${game.items.length}`} />
+                <SummaryRow
+                  label="Avg. faithfulness"
+                  value={`${Math.round((game.items.reduce((sum, item) => sum + (item.faithfulnessScore ?? 0), 0) / game.items.length) * 100)}%`}
+                />
+                <SummaryRow label="Safety" value={game.items.some((item) => item.safetyStatus === 'blocked') ? 'Blocked' : 'Pass'} />
+                <Link href={`/dashboard/lesson/${lesson.id}/validate/${game.id}`}>
+                  <Button variant="outline" className="mt-3 w-full">
+                    Edit Validation
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          </aside>
         </div>
       </main>
     </div>

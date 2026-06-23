@@ -138,18 +138,20 @@ export function TeacherEditForm({ item, itemNumber, onChange, onValidate }: Teac
         {draft.options.length > 0 && (
           <div className="space-y-3">
             <Label>Answer Options</Label>
-            {draft.options.map((option, index) => (
-              <Input
-                key={index}
-                value={option}
-                onChange={(e) => {
-                  const options = [...draft.options]
-                  options[index] = e.target.value
-                  patch({ options })
-                }}
-                placeholder={`Option ${String.fromCharCode(65 + index)}`}
-              />
-            ))}
+            <div className="grid gap-3 md:grid-cols-2">
+              {draft.options.map((option, index) => (
+                <Input
+                  key={index}
+                  value={option}
+                  onChange={(e) => {
+                    const options = [...draft.options]
+                    options[index] = e.target.value
+                    patch({ options })
+                  }}
+                  placeholder={`Option ${String.fromCharCode(65 + index)}`}
+                />
+              ))}
+            </div>
           </div>
         )}
 
@@ -163,9 +165,9 @@ export function TeacherEditForm({ item, itemNumber, onChange, onValidate }: Teac
           />
         </div>
 
-        <div className="flex flex-col gap-2 border-t border-border pt-4 sm:flex-row">
+        <div className="grid gap-2 border-t border-border pt-4 sm:grid-cols-2">
           {dirty && (
-            <Button onClick={handleSave} disabled={saving} className="sm:flex-1">
+            <Button onClick={handleSave} disabled={saving}>
               {saving ? 'Saving…' : 'Save Changes'}
             </Button>
           )}
@@ -173,11 +175,11 @@ export function TeacherEditForm({ item, itemNumber, onChange, onValidate }: Teac
             onClick={handleRecheck}
             disabled={rechecking || saving}
             variant={dirty ? 'outline' : 'default'}
-            className="sm:flex-1"
+            className={!dirty ? 'sm:col-span-1' : undefined}
           >
             {rechecking ? 'Checking…' : 'Re-check Item'}
           </Button>
-          <Button variant="outline" disabled className="sm:flex-1">
+          <Button variant="outline" disabled>
             Regenerate Item Coming Soon
           </Button>
         </div>

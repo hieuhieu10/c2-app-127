@@ -11,14 +11,14 @@ interface GameShellProps {
   fullscreen?: boolean
 }
 
-export function GameShell({ game, previewMode = false }: GameShellProps) {
+export function GameShell({ game, previewMode = false, fullscreen = false }: GameShellProps) {
   const def = getGameByType(game.templateType)
   if (def) {
     const Shell = def.Shell
-    return <Shell game={game} previewMode={previewMode} />
+    return <Shell game={game} previewMode={previewMode} fullscreen={fullscreen} />
   }
 
-  return <StandardGameShell game={game} previewMode={previewMode} />
+  return <StandardGameShell game={game} previewMode={previewMode} fullscreen={fullscreen} />
 }
 
 function StandardGameShell({ game, previewMode = false }: GameShellProps) {

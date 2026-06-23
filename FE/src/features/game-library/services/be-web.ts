@@ -1,4 +1,5 @@
 import type { Game, GameItem, GameTemplateType, Lesson } from '@/types/app'
+import type { GameRecommendation, SafetyReport, StageStatus } from '@/features/game-creation/ai-api'
 
 const BE_WEB_BASE_URL = process.env.NEXT_PUBLIC_BE_WEB_URL || 'http://localhost:8001'
 const ACCESS_TOKEN_KEY = 'be_web_access_token'
@@ -74,6 +75,102 @@ export interface ChangePasswordInput {
   newPassword: string
 }
 
+export interface BeWebChatSession {
+  id: number
+  title: string | null
+  subject: string | null
+  grade: number | null
+  difficulty: 'easy' | 'medium' | 'hard' | null
+  numItems: number | null
+  sourceText: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface BeWebChatSessionSummary extends BeWebChatSession {
+  messageCount: number
+  lastMessagePreview: string | null
+}
+
+export interface BeWebChatMessage {
+  id: number
+  sessionId: number
+  role: 'user' | 'assistant' | 'system'
+  messageType: 'user_prompt' | 'recommendations' | 'guardrail' | 'generation_result' | 'system'
+  content: string
+  payloadJson: Record<string, unknown> | null
+  status: 'pending' | 'running' | 'done' | 'error'
+  createdAt: string
+  updatedAt: string
+}
+
+export interface BeWebChatSessionDetail extends BeWebChatSession {
+  messages: BeWebChatMessage[]
+}
+
+export interface CreateChatSessionResponse extends BeWebChatSession {}
+
+export interface RecommendChatInput {
+  subject: string
+  grade: number
+  difficulty: 'easy' | 'medium' | 'hard'
+  prompt: string
+  sourceText?: string | null
+  attachedFileName?: string | null
+}
+
+export interface RecommendChatResponse {
+  userMessage: BeWebChatMessage
+  assistantMessage: BeWebChatMessage
+  session: BeWebChatSession
+}
+
+export interface GenerateChatInput {
+  templateId: string
+  promptMessageId?: number
+  recommendationMessageId?: number
+}
+
+export interface BeWebStageEvent {
+  type: 'stage'
+  id: string
+  label: string
+  subtitle: string
+  tag: string | null
+  status: StageStatus
+  elapsed_ms?: number
+  detail?: Record<string, unknown>
+}
+
+export interface BeWebSafetyEvent {
+  type: 'safety'
+  report: SafetyReport
+  elapsed_ms: number
+}
+
+export interface BeWebCompleteEvent {
+  type: 'complete'
+  template_id: string
+  template_name: string
+  content: Record<string, unknown>
+  safety_report: SafetyReport
+  elapsed_ms: number
+  assistantMessageId: number
+  gameId: number
+  lessonId: number
+}
+
+export interface BeWebErrorEvent {
+  type: 'error'
+  message: string
+}
+
+export type BeWebGenerateStreamEvent =
+  | BeWebStageEvent
+  | BeWebSafetyEvent
+  | BeWebCompleteEvent
+  | BeWebErrorEvent
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const token = getAccessToken()
   const isFormData = typeof FormData !== 'undefined' && init?.body instanceof FormData
@@ -104,6 +201,50 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const data = await response.json() as T
   debugLog(`BE_Web <- ${init?.method ?? 'GET'} ${path}`, data)
   return data
+}
+
+async function* streamRequest<T>(path: string, init?: RequestInit): AsyncGenerator<T> {
+  const token = getAccessToken()
+  const response = await fetch(`${BE_WEB_BASE_URL}${path}`, {
+    ...init,
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      'Content-Type': 'application/json',
+      ...init?.headers,
+    },
+  })
+
+  if (!response.ok || !response.body) {
+    let detail = `BE_Web request failed with ${response.status}`
+    try {
+      const body = await response.json()
+      detail = body.detail || detail
+    } catch {
+      // Keep status message if backend does not return JSON.
+    }
+    throw new Error(detail)
+  }
+
+  const reader = response.body.getReader()
+  const decoder = new TextDecoder()
+  let buffer = ''
+
+  while (true) {
+    const { done, value } = await reader.read()
+    if (done) break
+    buffer += decoder.decode(value, { stream: true })
+    const parts = buffer.split('\n\n')
+    buffer = parts.pop() || ''
+    for (const part of parts) {
+      const line = part.trim()
+      if (!line.startsWith('data: ')) continue
+      try {
+        yield JSON.parse(line.slice(6)) as T
+      } catch {
+        // Skip malformed events.
+      }
+    }
+  }
 }
 
 export const beWebApi = {
@@ -194,6 +335,34 @@ export const beWebApi = {
   publishGame(gameId: string | number) {
     return request<{ gameId: number; status: Game['status'] }>(`/api/games/${gameId}/publish`, {
       method: 'POST',
+    })
+  },
+
+  createChatSession() {
+    return request<CreateChatSessionResponse>('/api/chat/sessions', {
+      method: 'POST',
+    })
+  },
+
+  getChatSession(sessionId: string | number) {
+    return request<BeWebChatSessionDetail>(`/api/chat/sessions/${sessionId}`)
+  },
+
+  listChatSessions() {
+    return request<BeWebChatSessionSummary[]>('/api/chat/sessions')
+  },
+
+  recommendChat(sessionId: string | number, input: RecommendChatInput) {
+    return request<RecommendChatResponse>(`/api/chat/sessions/${sessionId}/recommend`, {
+      method: 'POST',
+      body: JSON.stringify(input),
+    })
+  },
+
+  generateChat(sessionId: string | number, input: GenerateChatInput) {
+    return streamRequest<BeWebGenerateStreamEvent>(`/api/chat/sessions/${sessionId}/generate`, {
+      method: 'POST',
+      body: JSON.stringify(input),
     })
   },
 }
