@@ -8,16 +8,27 @@ from app.agents.state import GenerationState
 from app.config import settings
 from app.retrieval.context import RetrievedContext, default_provider
 from app.templates.registry import get_template
+from app.validation.curriculum import validate_curriculum_content
 from app.validation.validator import json_schema_for, validate
 
 _TOOL_NAME = "emit_game_content"
 
 
+def _clean_optional_id(value: str | None) -> str | None:
+    if value is None:
+        return None
+    stripped = value.strip()
+    if stripped.lower() in {"", "string", "none", "null"}:
+        return None
+    return stripped
+
+
 def retrieve_node(state: GenerationState) -> GenerationState:
+    requested_objective_id = _clean_optional_id(state.get("objective_id"))
     ctx = default_provider.retrieve(
         subject=state["subject"],
         grade=state["grade"],
-        objective_id=state.get("objective_id"),
+        objective_id=requested_objective_id,
         prompt=state["prompt"],
         source_text=state.get("source_text"),
         uploaded_file_id=state.get("uploaded_file_id"),
@@ -25,7 +36,7 @@ def retrieve_node(state: GenerationState) -> GenerationState:
         teacher_requested_difficulty=state.get("difficulty", "medium"),
     )
     # Adopt the resolved objective id so downstream items reference a real objective.
-    return {"context": ctx, "objective_id": ctx.objective_id or state.get("objective_id")}
+    return {"context": ctx, "objective_id": ctx.objective_id or requested_objective_id}
 
 
 async def _generate(state: GenerationState, repair_errors: list[str] | None) -> dict:
@@ -66,6 +77,14 @@ async def repair_node(state: GenerationState) -> GenerationState:
 def validate_node(state: GenerationState) -> GenerationState:
     result = validate(state["template_id"], state.get("content") or {})
     if result.ok:
+        curriculum_errors = validate_curriculum_content(
+            content=result.content or {},
+            expected_objective_id=state.get("objective_id"),
+            grade=state["grade"],
+            context=state.get("context"),
+        )
+        if curriculum_errors:
+            return {"ok": False, "content": result.content, "validation_errors": curriculum_errors}
         return {"ok": True, "content": result.content, "validation_errors": []}
     return {"ok": False, "validation_errors": result.errors}
 

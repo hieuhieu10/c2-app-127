@@ -21,6 +21,7 @@ layers already cover the hard rejections.
 from __future__ import annotations
 
 import asyncio
+import re
 from functools import lru_cache
 from typing import Literal
 
@@ -61,6 +62,17 @@ _BLOCKED_TERMS = (
     "porn", "sex video", "nude", "heroin", "cocaine", "make a bomb", "suicide",
 )
 
+_DECIMAL_NUMBER_RE = re.compile(r"(?<!\d)\d+,\d+(?!\d)")
+_DECIMAL_SCOPE_TERMS = (
+    "so thap phan",
+    "phan thap phan",
+    "phan nguyen",
+    "dau phay",
+)
+_SUBJECT_ALIASES = {
+    "toan hoc": "toan",
+}
+
 
 @lru_cache(maxsize=1)
 def _coverage() -> dict[str, set[int]]:
@@ -85,7 +97,7 @@ def _check_scope(subject: str, grade: int) -> GuardrailReport | None:
         return None
 
     by_norm = {_norm(s): s for s in cov}
-    nsubj = _norm(subject)
+    nsubj = _SUBJECT_ALIASES.get(_norm(subject), _norm(subject))
     if nsubj not in by_norm:
         return GuardrailReport(
             allowed=False,
@@ -123,6 +135,32 @@ def _keyword_safety(prompt: str, source_text: str | None) -> GuardrailReport | N
             suggestion="Vui lòng nhập lại một chủ đề học tập an toàn, phù hợp lứa tuổi.",
         )
     return None
+
+
+def _keyword_curriculum_scope(subject: str, grade: int, prompt: str, source_text: str | None) -> GuardrailReport | None:
+    """Block clear above-grade primary Math concepts before retrieval/generation."""
+    if _norm(subject) not in {"toan", "toan hoc"} or grade >= 5:
+        return None
+
+    haystack_raw = f"{prompt} {source_text or ''}"
+    haystack = _norm(haystack_raw)
+    has_decimal_concept = any(term in haystack for term in _DECIMAL_SCOPE_TERMS)
+    has_decimal_notation = bool(_DECIMAL_NUMBER_RE.search(haystack_raw))
+    if not (has_decimal_concept or has_decimal_notation):
+        return None
+
+    return GuardrailReport(
+        allowed=False,
+        code="above_grade",
+        message=(
+            "Yêu cầu có nội dung về số thập phân dạng 0,5/1,25 hoặc phần thập phân. "
+            "Nội dung này thuộc phạm vi Toán lớp 5, chưa phù hợp với lớp dưới 5."
+        ),
+        suggestion=(
+            "Hãy chọn lớp 5 nếu muốn tạo trò chơi về số thập phân, hoặc đổi yêu cầu về "
+            "cấu tạo thập phân của số tự nhiên theo đúng lớp hiện tại."
+        ),
+    )
 
 
 _SCREEN_SYSTEM = """You are a safety-and-scope guardrail for a learning-game generator \
@@ -201,6 +239,10 @@ async def run_guardrails(
     keyword = _keyword_safety(prompt, source_text)
     if keyword is not None:
         return keyword
+
+    curriculum_scope = _keyword_curriculum_scope(subject, grade, prompt, source_text)
+    if curriculum_scope is not None:
+        return curriculum_scope
 
     if settings.has_api_key:
         try:

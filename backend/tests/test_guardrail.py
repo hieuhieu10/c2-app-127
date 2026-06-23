@@ -62,6 +62,20 @@ async def test_above_grade_prompt_blocked(monkeypatch):
     assert report.code == "above_grade"
 
 
+async def test_primary_decimal_request_below_grade_5_blocked(monkeypatch):
+    _patch_llm(monkeypatch, verdict="ok")
+    report = await run_guardrails(subject="Toán học", grade=3, prompt="Tạo câu hỏi so sánh số thập phân 0,5 và 1,25")
+    assert not report.allowed
+    assert report.code == "above_grade"
+    assert "lớp 5" in report.message
+
+
+async def test_decimal_place_value_wording_for_grade_3_is_allowed(monkeypatch):
+    _patch_llm(monkeypatch, verdict="ok")
+    report = await run_guardrails(subject="Toán học", grade=3, prompt="Tạo game về cấu tạo thập phân của số tự nhiên")
+    assert report.allowed
+
+
 # ── Case 3: not child-friendly ───────────────────────────────────────────────
 
 
