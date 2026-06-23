@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.api import auth, games
+from app.core.debug import install_api_debug_middleware
 from app.core.settings import settings
 from app.db import models  # noqa: F401
 from app.db.schema_compat import ensure_schema_compatibility
@@ -28,6 +29,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+install_api_debug_middleware(app, enabled=settings.api_debug)
 
 app.mount("/uploads", StaticFiles(directory=str(uploads_dir)), name="uploads")
 
