@@ -37,6 +37,7 @@ export type GameTemplateType =
   | 'true-false'
   | 'battleship'
   | 'feed-the-cats'
+  | 'cat-jump'
 
 export interface GameTemplate {
   id: string

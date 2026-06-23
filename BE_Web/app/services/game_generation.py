@@ -7,21 +7,34 @@ from app.db.models import Game, GameItem, GameReviewEvent, GameStatus, Lesson, R
 from app.schemas.ai import LessonRequest
 from app.schemas.games import GenerateGameRequest, GameResponse
 from app.services.ai_client import AIClient, AIClientError
-from app.services.game_mapper import GameMappingError, battleship_content_to_items, game_to_response, quiz_content_to_items
+from app.services.game_mapper import (
+    GameMappingError,
+    battleship_content_to_items,
+    cat_jump_content_to_items,
+    feed_cats_content_to_items,
+    game_to_response,
+    quiz_content_to_items,
+)
 
 PRODUCT_TEMPLATE_TO_AI_TEMPLATE = {
     "treasure_hunt": "quiz",
     "battleship": "battleship",
+    "cat_jump": "cat_jump",
+    "feed_the_cats": "feed_the_cats",
 }
 
 _CONTENT_MAPPERS = {
     "quiz": quiz_content_to_items,
     "battleship": battleship_content_to_items,
+    "cat_jump": cat_jump_content_to_items,
+    "feed_the_cats": feed_cats_content_to_items,
 }
 
 _DEFAULT_SETTINGS: dict[str, dict] = {
     "treasure_hunt": {"playerCount": 2, "mapTheme": "treasure-hunt"},
     "battleship": {},
+    "cat_jump": {},
+    "feed_the_cats": {},
 }
 
 

@@ -118,6 +118,27 @@ def valid_content(template_id: str) -> dict:
                 treat("7 + 2", "9"),
             ],
         }
+    if template_id == "cat_jump":
+        def level(name: str, seq: str) -> dict:
+            return {
+                "question": name,
+                "correct_answer": seq,
+                "hint": "Tìm quy luật của dãy số.",
+                "explanation": f"Dãy {name.lower()} giúp học sinh nhận biết quy luật số học.",
+                "objective_id": OBJ,
+            }
+
+        return {
+            "title": "Cat Jump — Dãy số",
+            "objective_id": OBJ,
+            "instructions": "Giúp chú mèo nhảy đúng tảng đá — chọn số tiếp theo trong dãy!",
+            "questions": [
+                level("Đếm thêm 3", "3,6,9,12,15,18,21,24"),
+                level("Đếm thêm 5", "5,10,15,20,25,30,35,40"),
+                level("Số bình phương", "1,4,9,16,25,36,49,64"),
+                level("Dãy Fibonacci", "1,1,2,3,5,8,13,21"),
+            ],
+        }
     raise ValueError(template_id)
 
 
@@ -138,6 +159,8 @@ def invalid_content(template_id: str) -> dict:
             q["distractors"] = q["distractors"][:2]  # below min_length=3
     elif template_id == "feed_the_cats":
         c["items"] = c["items"][:1]                  # below min_length=4
+    elif template_id == "cat_jump":
+        c["questions"] = c["questions"][:2]          # below min_length=4
     return c
 
 

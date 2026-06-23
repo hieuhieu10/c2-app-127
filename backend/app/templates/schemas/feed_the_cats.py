@@ -1,14 +1,17 @@
-"""Feed the Hungry Cats template schema — a drag-to-sort matching game.
+"""Feed the Hungry Cats template schema — a math-facts drag-and-drop game.
 
-Each fish-treat carries a short ``question`` (an expression, clue, or example) and
-the ``correct_answer`` is the label of the cat it should be fed to. Treats that
-share the same ``correct_answer`` belong to the same cat, so the play shell groups
-items by ``correct_answer`` to build the cats. A round therefore needs a few
-distinct answers (the cats), each with a couple of treats.
+**Math only.** Each fish-treat shows a basic arithmetic expression using +, -, ×, ÷
+and the student drags it to the cat whose label equals the numeric result.
 
-This generalises the original math design ("3 + 4" → cat "7") to any sorting task:
-classify examples into categories ("whale" → "Mammal"), match words to parts of
-speech ("happiness" → "Noun"), etc.
+``question``      — the arithmetic expression printed ON the treat, e.g. "3 + 4", "12 ÷ 3"
+``correct_answer`` — the numeric result as a string, e.g. "7", "4"
+
+Treats that share the same ``correct_answer`` feed the same cat, so the shell groups
+items by answer to build the cats. A round needs a few distinct numeric answers
+(the cats), each with at least two treats.
+
+Content type fits: addition, subtraction, multiplication, division, and mixed
+arithmetic practice in grades 1-6 only. Do NOT generate non-math content.
 """
 
 from __future__ import annotations
@@ -29,25 +32,39 @@ class FeedCatsItem(BaseModel):
         ...,
         min_length=1,
         description=(
-            "Short text printed ON THE FISH TREAT — a problem, clue, or example the student "
-            "must classify, e.g. '3 + 4', 'whale', or 'happiness'. Keep it to a few characters "
-            "or words so it fits on a small treat."
+            "A basic arithmetic expression printed ON THE FISH TREAT — MUST use only the "
+            "operations +, -, ×, ÷ (or *, /). Keep it short so it fits on a small treat, "
+            "e.g. '3 + 4', '15 - 8', '6 × 3', '12 ÷ 4', '7 × 8', '100 - 37'. "
+            "Do NOT write non-math content like words, categories, or definitions."
         ),
     )
     correct_answer: str = Field(
         ...,
         min_length=1,
         description=(
-            "Short label printed ON THE CAT this treat should be fed to — the matching value, "
-            "category, or bucket, e.g. '7', 'Mammal', or 'Noun'. Treats that belong together MUST "
-            "share the exact same correct_answer string (identical casing and spelling)."
+            "The numeric result of the expression as a plain string, e.g. '7', '4', '18'. "
+            "This label is printed ON THE CAT the treat must be fed to. "
+            "All treats that evaluate to the same number MUST share the exact same string "
+            "(e.g. all treats that equal 7 get correct_answer '7'). "
+            "Do NOT write non-numeric values like 'Mammal' or 'Noun'."
         ),
     )
-    hint: str = Field(..., min_length=1, description="A short hint for this treat.")
+    hint: str = Field(
+        ...,
+        min_length=1,
+        description=(
+            "A short calculation hint, e.g. 'Count up from 3 four times' or "
+            "'Break 15 into 10 + 5 then subtract 8'."
+        ),
+    )
     explanation: str = Field(
         ...,
         min_length=1,
-        description="Why this treat is fed to that cat; grounded in the source/curriculum.",
+        description=(
+            "A brief explanation of why the expression equals that result, "
+            "grounded in the arithmetic skill the teacher's objective targets, "
+            "e.g. '3 + 4 = 7 because we are adding ones to reach 7.'"
+        ),
     )
     objective_id: str = Field(
         ...,
@@ -62,8 +79,9 @@ class FeedCatsContent(GameContentBase):
         ...,
         min_length=1,
         description=(
-            "One-line instruction telling the student how to play, e.g. "
-            "'Drag each treat to the cat whose number matches the answer.'"
+            "One-line math-focused instruction telling the student how to play, e.g. "
+            "'Solve each sum on the fish treat, then drag it to the cat with that number!' "
+            "or 'Drag each treat to the cat whose number matches the answer.'"
         ),
     )
     items: list[FeedCatsItem] = Field(
@@ -71,8 +89,12 @@ class FeedCatsContent(GameContentBase):
         min_length=4,
         max_length=18,
         description=(
-            "The fish treats. Their `correct_answer` values must cluster into 2–5 distinct cats, "
-            "with at least 2 treats per cat, so every cat can be fed. Prefer evenly sized cats."
+            "The fish treats. Every treat MUST be an arithmetic expression (+, -, ×, ÷). "
+            "Their `correct_answer` numeric values must cluster into 2–5 distinct cats, "
+            "with at least 2 treats per cat, so every cat can be fed. "
+            "Vary the operations across treats — mix additions and subtractions, or "
+            "mix multiplications and divisions, to reinforce the lesson skill. "
+            "Prefer evenly sized cats."
         ),
     )
 
@@ -101,12 +123,22 @@ SPEC = GameSpec(
     id="feed_the_cats",
     name="Feed the Hungry Cats",
     description=(
-        "Drag each fish-treat to the cat whose label matches the treat's answer. A playful "
-        "drag-and-drop sorting game — best for math facts, classifying examples into categories, "
-        "and matching in the early grades."
+        "MATH ONLY. Drag each fish-treat to the cat whose number equals the arithmetic result. "
+        "Each treat shows a basic arithmetic expression (+, -, ×, ÷); the matching cat wears "
+        "the numeric answer. Best for drilling addition, subtraction, multiplication, and division "
+        "facts in grades 1-6. Do NOT use for non-math topics."
     ),
-    content_type_fit=("math-facts", "classification", "sorting", "categories", "vocabulary"),
-    grade_range=(1, 5),
+    content_type_fit=(
+        "math-facts",
+        "addition",
+        "subtraction",
+        "multiplication",
+        "division",
+        "arithmetic",
+        "basic-operations",
+        "number-facts",
+    ),
+    grade_range=(1, 6),
     content_model=FeedCatsContent,
     active=True,
     playable=True,

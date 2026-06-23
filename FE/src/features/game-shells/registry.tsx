@@ -14,6 +14,7 @@ import type { Game, GameTemplateType } from '@/types/app'
 import { TreasureHuntShell } from './treasure-hunt/TreasureHuntShell'
 import { BattleshipShell } from './battleship/BattleshipShell'
 import { FeedTheCatsShell } from './feed-the-cats/FeedTheCatsShell'
+import { CatJumpShell } from './cat-jump/CatJumpShell'
 
 export interface ShellProps {
   game: Game
@@ -79,6 +80,18 @@ export const GAMES: GameDefinition[] = [
     bestFor: 'Grades 1-5, math facts, classifying examples into categories, matching',
     example: 'Drag the "3 + 4" treat to the cat that wants 7. Match every treat to feed all the cats.',
     Shell: FeedTheCatsShell,
+  },
+  {
+    backendId: 'cat_jump',
+    type: 'cat-jump',
+    title: 'Cat Jump',
+    description: 'Guide a cat across 8 stepping stones by picking the next number in an escalating pattern sequence',
+    icon: '🐱',
+    itemCount: 6,
+    interactionType: 'Multiple-choice sequence',
+    bestFor: 'Grades 1-7, number patterns, skip-counting, sequences, Fibonacci, square numbers',
+    example: 'See 2, 4, 6 on the stones — tap 8 to hop the cat forward. Patterns grow harder each level.',
+    Shell: CatJumpShell,
   },
 ]
 

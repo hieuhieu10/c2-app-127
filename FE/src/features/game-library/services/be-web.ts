@@ -302,6 +302,7 @@ function productTemplateToGameTemplate(productTemplateId: string): GameTemplateT
   if (productTemplateId === 'treasure_hunt') return 'press-the-button'
   if (productTemplateId === 'battleship') return 'battleship'
   if (productTemplateId === 'feed_the_cats') return 'feed-the-cats'
+  if (productTemplateId === 'cat_jump') return 'cat-jump'
   return 'multiple-choice'
 }
 

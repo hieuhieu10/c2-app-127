@@ -79,6 +79,62 @@ def quiz_content_to_items(content: dict) -> list[dict]:
     return mapped
 
 
+def cat_jump_content_to_items(content: dict) -> list[dict]:
+    questions = content.get("questions")
+    if not isinstance(questions, list) or not questions:
+        raise GameMappingError("BE_AI cat_jump content must include a non-empty questions list")
+
+    mapped: list[dict] = []
+    for index, item in enumerate(questions):
+        question = item.get("question")
+        correct_answer = item.get("correct_answer")
+        if not isinstance(question, str) or not question.strip():
+            raise GameMappingError(f"BE_AI cat_jump item {index} is missing question")
+        if not isinstance(correct_answer, str) or not correct_answer.strip():
+            raise GameMappingError(f"BE_AI cat_jump item {index} is missing correct_answer")
+        mapped.append(
+            {
+                "order_index": index,
+                "question": question,
+                "correct_answer": correct_answer,
+                "options_json": [],
+                "explanation": item.get("explanation"),
+                "hint": item.get("hint"),
+                "validation_status": "valid",
+                "validation_errors_json": [],
+            }
+        )
+    return mapped
+
+
+def feed_cats_content_to_items(content: dict) -> list[dict]:
+    items = content.get("items")
+    if not isinstance(items, list) or not items:
+        raise GameMappingError("BE_AI feed_the_cats content must include a non-empty items list")
+
+    mapped: list[dict] = []
+    for index, item in enumerate(items):
+        question = item.get("question")
+        correct_answer = item.get("correct_answer")
+        if not isinstance(question, str) or not question.strip():
+            raise GameMappingError(f"BE_AI feed_the_cats item {index} is missing question")
+        if not isinstance(correct_answer, str) or not correct_answer.strip():
+            raise GameMappingError(f"BE_AI feed_the_cats item {index} is missing correct_answer")
+        mapped.append(
+            {
+                "order_index": index,
+                "question": question,
+                "correct_answer": correct_answer,
+                "options_json": [],
+                "explanation": item.get("explanation"),
+                "hint": item.get("hint"),
+                "validation_status": "valid",
+                "validation_errors_json": [],
+            }
+        )
+    return mapped
+
+
 def game_to_response(game: Game) -> GameResponse:
     return GameResponse(
         lessonId=game.lesson_id,

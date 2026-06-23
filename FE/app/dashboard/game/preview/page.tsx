@@ -14,7 +14,7 @@ import type { Game, GameItem, GameTemplateType } from '@/types/app'
 interface RawQuestion {
   question: string
   correct_answer: string
-  distractors: string[]
+  distractors?: string[]
   hint?: string
   explanation?: string
   objective_id?: string
@@ -22,6 +22,7 @@ interface RawQuestion {
 
 interface GameContent {
   questions?: RawQuestion[]
+  items?: RawQuestion[]
   title?: string
   [key: string]: unknown
 }
@@ -51,6 +52,17 @@ interface ShareSettings {
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
+
+/** Normalise the raw AI content dict into a flat RawQuestion array.
+ *
+ * Different templates use different top-level keys:
+ *   - quiz / battleship / cat_jump → content.questions
+ *   - feed_the_cats                → content.items
+ */
+function extractQuestions(content: GameContent): RawQuestion[] {
+  if (Array.isArray(content.items) && content.items.length > 0) return content.items
+  return content.questions ?? []
+}
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr]
@@ -143,7 +155,7 @@ export default function PreviewPage() {
     try {
       const parsed: PreviewData = JSON.parse(raw)
       setData(parsed)
-      setQuestions(parsed.content.questions ?? [])
+      setQuestions(extractQuestions(parsed.content))
       if (parsed.localId) { setLocalId(parsed.localId); setPublishState('published') }
     } catch {
       router.push('/dashboard/game/new')
@@ -186,11 +198,13 @@ export default function PreviewPage() {
   const persist = (status: 'draft' | 'published') => {
     if (!data) return
     const id = localId ?? newLocalGameId()
+    // Preserve the original key name (feed_the_cats uses `items`, others use `questions`).
+    const contentKey = Array.isArray(data.content.items) ? 'items' : 'questions'
     saveLocalGame({
       id,
       templateId: data.templateId,
       templateName: data.templateName,
-      content: { ...data.content, questions },
+      content: { ...data.content, [contentKey]: questions },
       safetyReport: data.safetyReport,
       metadata: data.metadata,
       status,
@@ -283,8 +297,8 @@ export default function PreviewPage() {
                       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }} onClick={e => e.stopPropagation()}>
                         <textarea value={editing.question} onChange={e => setEditing(p => p ? { ...p, question: e.target.value } : p)} rows={2} placeholder="Câu hỏi" style={{ fontSize: 13, fontFamily: 'inherit', border: '1px solid #e3e6ee', borderRadius: 6, padding: '5px 7px', outline: 'none', resize: 'vertical' }} />
                         <input value={editing.correct_answer} onChange={e => setEditing(p => p ? { ...p, correct_answer: e.target.value } : p)} placeholder="Đáp án đúng" style={{ fontSize: 13, fontFamily: 'inherit', border: '1.5px solid #c4ecd9', background: '#f3fbf7', borderRadius: 6, padding: '4px 7px', outline: 'none' }} />
-                        {editing.distractors.map((d, di) => (
-                          <input key={di} value={d} onChange={e => setEditing(p => { if (!p) return p; const ds = [...p.distractors]; ds[di] = e.target.value; return { ...p, distractors: ds } })} placeholder={`Phương án nhiễu ${di + 1}`} style={{ fontSize: 13, fontFamily: 'inherit', border: '1px solid #e3e6ee', borderRadius: 6, padding: '4px 7px', outline: 'none' }} />
+                        {(editing.distractors ?? []).map((d, di) => (
+                          <input key={di} value={d} onChange={e => setEditing(p => { if (!p) return p; const ds = [...(p.distractors ?? [])]; ds[di] = e.target.value; return { ...p, distractors: ds } })} placeholder={`Phương án nhiễu ${di + 1}`} style={{ fontSize: 13, fontFamily: 'inherit', border: '1px solid #e3e6ee', borderRadius: 6, padding: '4px 7px', outline: 'none' }} />
                         ))}
                         <button onClick={handleSaveEdit} style={{ alignSelf: 'flex-end', fontSize: 12, fontWeight: 600, color: '#fff', background: '#4f46e5', border: 'none', borderRadius: 6, padding: '5px 12px', cursor: 'pointer', fontFamily: 'inherit' }}>Lưu</button>
                       </div>
