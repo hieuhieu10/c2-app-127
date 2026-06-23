@@ -33,6 +33,14 @@ DATABASE_URL=postgresql+psycopg://user:password@localhost:5432/be_web
 http://localhost:8000
 ```
 
+Để xem request/response BE_Web trong terminal khi debug local, đặt trong `BE_Web/.env`:
+
+```env
+API_DEBUG=true
+```
+
+Không bật chế độ này ở môi trường production.
+
 ## Bảng Dữ Liệu
 
 - `users`
