@@ -15,6 +15,7 @@ import { TreasureHuntShell } from './treasure-hunt/TreasureHuntShell'
 import { BattleshipShell } from './battleship/BattleshipShell'
 import { FeedTheCatsShell } from './feed-the-cats/FeedTheCatsShell'
 import { CatJumpShell } from './cat-jump/CatJumpShell'
+import { BeatForgeShell } from './beat-forge/BeatForgeShell'
 
 export interface ShellProps {
   game: Game
@@ -92,6 +93,18 @@ export const GAMES: GameDefinition[] = [
     bestFor: 'Grades 1-7, number patterns, skip-counting, sequences, Fibonacci, square numbers',
     example: 'See 2, 4, 6 on the stones — tap 8 to hop the cat forward. Patterns grow harder each level.',
     Shell: CatJumpShell,
+  },
+  {
+    backendId: 'beat_forge',
+    type: 'beat-forge',
+    title: 'Beat Forge',
+    description: 'Fill instrument lines with limited note blocks — fractions must sum exactly to the bar\'s time signature',
+    icon: '🎵',
+    itemCount: 3,
+    interactionType: 'Drag-and-drop fraction puzzle',
+    bestFor: 'Grades 2-8, fraction addition, music theory, rhythm, number sense',
+    example: 'You have 3 half-notes and 6 quarter-notes — fill 3 bars in 4/4 time so every fraction adds up perfectly.',
+    Shell: BeatForgeShell,
   },
 ]
 

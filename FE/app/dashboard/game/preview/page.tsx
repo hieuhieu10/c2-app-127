@@ -58,10 +58,62 @@ interface ShareSettings {
  * Different templates use different top-level keys:
  *   - quiz / battleship / cat_jump → content.questions
  *   - feed_the_cats                → content.items
+ *   - beat_forge                   → uses lanes (not a Q&A list; returns [] here)
  */
 function extractQuestions(content: GameContent): RawQuestion[] {
   if (Array.isArray(content.items) && content.items.length > 0) return content.items
   return content.questions ?? []
+}
+
+interface BeatForgeLaneRaw {
+  correct_answer: string
+  hint?: string
+  explanation?: string
+}
+
+function beatForgeContentToGame(content: GameContent): Game {
+  const timeSig = String(content.time_signature ?? '4/4')
+  const lanes = (content.lanes as BeatForgeLaneRaw[] | undefined) ?? []
+
+  // options_json[0..5]: half, quarter, eighth, dotted_half, dotted_quarter, triplet_eighth
+  const configItem: GameItem = {
+    id: '0',
+    type: 'beat-forge',
+    question: String(content.title ?? 'Beat Forge'),
+    correctAnswer: timeSig,
+    options: [
+      String(Number(content.half_notes           ?? 0)),
+      String(Number(content.quarter_notes        ?? 0)),
+      String(Number(content.eighth_notes         ?? 0)),
+      String(Number(content.dotted_half_notes    ?? 0)),
+      String(Number(content.dotted_quarter_notes ?? 0)),
+      String(Number(content.triplet_eighth_notes ?? 0)),
+    ],
+    explanation: '',
+    validationStatus: 'valid',
+  }
+
+  const laneItems: GameItem[] = lanes.map((lane, i) => ({
+    id: String(i + 1),
+    type: 'beat-forge' as GameTemplateType,
+    question: `Lane ${i + 1}`,
+    correctAnswer: lane.correct_answer ?? '',
+    options: [],
+    explanation: lane.explanation ?? '',
+    hint: lane.hint || undefined,
+    validationStatus: 'valid' as const,
+  }))
+
+  return {
+    id: 'preview',
+    lessonId: 'preview',
+    templateType: 'beat-forge',
+    items: [configItem, ...laneItems],
+    settings: { numItems: lanes.length },
+    status: 'draft',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }
 }
 
 function shuffle<T>(arr: T[]): T[] {
@@ -167,8 +219,17 @@ export default function PreviewPage() {
   // Some games can only be summarised in-app (full play needs a BE_Web game id).
   const previewOnly = gameDef?.previewOnly ?? false
 
-  // Rebuild the Game (and reshuffle options) whenever the question set changes.
-  const game = useMemo(() => questionsToGame(questions, templateType), [questions, templateType])
+  const isBeatForge = data?.templateId === 'beat_forge'
+
+  // Rebuild the Game whenever question set or raw content changes.
+  const game = useMemo(
+    () => isBeatForge && data ? beatForgeContentToGame(data.content) : questionsToGame(questions, templateType),
+    [isBeatForge, data, questions, templateType],
+  )
+
+  const numQuestions = isBeatForge
+    ? ((data?.content.lanes as unknown[] | undefined)?.length ?? 0)
+    : questions.length
 
   if (!data) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', fontFamily: "'Be Vietnam Pro', sans-serif", color: '#9aa2b2' }}>
@@ -178,7 +239,6 @@ export default function PreviewPage() {
 
   const { safetyReport, metadata, templateName } = data
   const hasWarning = safetyReport.overall === 'warning'
-  const numQuestions = questions.length
 
   const handleSaveEdit = () => {
     if (!editing) return
@@ -198,13 +258,16 @@ export default function PreviewPage() {
   const persist = (status: 'draft' | 'published') => {
     if (!data) return
     const id = localId ?? newLocalGameId()
-    // Preserve the original key name (feed_the_cats uses `items`, others use `questions`).
-    const contentKey = Array.isArray(data.content.items) ? 'items' : 'questions'
+    // beat_forge content is structured around lanes, not a flat Q&A list — preserve as-is.
+    // For other templates, write back the (possibly edited) questions under the original key.
+    const persistContent = isBeatForge
+      ? data.content
+      : { ...data.content, [Array.isArray(data.content.items) ? 'items' : 'questions']: questions }
     saveLocalGame({
       id,
       templateId: data.templateId,
       templateName: data.templateName,
-      content: { ...data.content, [contentKey]: questions },
+      content: persistContent,
       safetyReport: data.safetyReport,
       metadata: data.metadata,
       status,
@@ -342,7 +405,7 @@ export default function PreviewPage() {
 
           <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '6px 26px 30px' }}>
             <div style={{ width: '100%', maxWidth: 760 }}>
-              {numQuestions === 0 ? (
+              {game.items.length === 0 ? (
                 <div style={{ textAlign: 'center', color: '#9aa2b2', padding: 60 }}>Chưa có câu hỏi nào.</div>
               ) : (
                 <GameShell key={`${templateType}-${previewMode}`} game={game} previewMode={previewOnly ? true : previewMode === 'preview'} />

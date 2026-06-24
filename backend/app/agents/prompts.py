@@ -174,6 +174,21 @@ def build_generator_user(
             "- Distractors should be short wrong right-side cards, e.g. '3 + 4 = 7' or '3 quả', not long explanations.\n"
             "- The rationale should describe the actual text matching mechanic; do not call it picture matching unless images are present."
         )
+    if template.id == "beat_forge":
+        parts.append(
+            "\nBeat Forge lane arithmetic — CRITICAL:\n"
+            "Bar capacity in 24th-units: 4/4=24  3/4=18  2/4=12  6/8=18\n"
+            "Note values in 24th-units:  1/2=12  1/4=6  1/8=3  d.1/2=18  d.1/4=9  t.1/8=2\n"
+            "\n"
+            "Each lane's correct_answer tokens MUST sum exactly to the bar capacity.\n"
+            "  4/4 (cap=24): '1/4,1/4,1/4,1/4'=24 ✓  '1/2,1/4,1/4'=24 ✓  '1/8,1/8,1/4,1/2'=24 ✓\n"
+            "  3/4 (cap=18): '1/4,1/4,1/4'=18 ✓  'd.1/2'=18 ✓  'd.1/4,d.1/4'=18 ✓\n"
+            "  6/8 (cap=18): '1/8,1/8,1/8,1/8,1/8,1/8'=18 ✓  'd.1/4,d.1/4'=18 ✓\n"
+            "\n"
+            "Supply counts (half_notes etc.) are auto-computed server-side from the lanes —\n"
+            "provide best-effort counts but any arithmetic error there is corrected automatically.\n"
+            "The ONLY thing that must be exactly right is each lane's token sum = bar capacity."
+        )
     if repair_errors:
         parts.append(
             "\nYour previous output FAILED schema validation. Fix exactly these problems "

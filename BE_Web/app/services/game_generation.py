@@ -10,6 +10,7 @@ from app.services.ai_client import AIClient, AIClientError
 from app.services.game_mapper import (
     GameMappingError,
     battleship_content_to_items,
+    beat_forge_content_to_items,
     cat_jump_content_to_items,
     feed_cats_content_to_items,
     game_to_response,
@@ -21,6 +22,7 @@ PRODUCT_TEMPLATE_TO_AI_TEMPLATE = {
     "battleship": "battleship",
     "cat_jump": "cat_jump",
     "feed_the_cats": "feed_the_cats",
+    "beat_forge": "beat_forge",
 }
 
 _CONTENT_MAPPERS = {
@@ -28,6 +30,7 @@ _CONTENT_MAPPERS = {
     "battleship": battleship_content_to_items,
     "cat_jump": cat_jump_content_to_items,
     "feed_the_cats": feed_cats_content_to_items,
+    "beat_forge": beat_forge_content_to_items,
 }
 
 _DEFAULT_SETTINGS: dict[str, dict] = {
@@ -35,6 +38,7 @@ _DEFAULT_SETTINGS: dict[str, dict] = {
     "battleship": {},
     "cat_jump": {},
     "feed_the_cats": {},
+    "beat_forge": {},
 }
 
 

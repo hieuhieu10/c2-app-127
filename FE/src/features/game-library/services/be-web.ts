@@ -303,6 +303,7 @@ function productTemplateToGameTemplate(productTemplateId: string): GameTemplateT
   if (productTemplateId === 'battleship') return 'battleship'
   if (productTemplateId === 'feed_the_cats') return 'feed-the-cats'
   if (productTemplateId === 'cat_jump') return 'cat-jump'
+  if (productTemplateId === 'beat_forge') return 'beat-forge'
   return 'multiple-choice'
 }
 

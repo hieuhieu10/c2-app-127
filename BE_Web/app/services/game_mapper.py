@@ -107,6 +107,68 @@ def cat_jump_content_to_items(content: dict) -> list[dict]:
     return mapped
 
 
+def beat_forge_content_to_items(content: dict) -> list[dict]:
+    time_sig = content.get("time_signature")
+    if not time_sig:
+        raise GameMappingError("beat_forge content must include time_signature")
+
+    half_notes           = int(content.get("half_notes", 0))
+    quarter_notes        = int(content.get("quarter_notes", 0))
+    eighth_notes         = int(content.get("eighth_notes", 0))
+    dotted_half_notes    = int(content.get("dotted_half_notes", 0))
+    dotted_quarter_notes = int(content.get("dotted_quarter_notes", 0))
+    triplet_eighth_notes = int(content.get("triplet_eighth_notes", 0))
+    lanes = content.get("lanes")
+
+    if not isinstance(lanes, list) or len(lanes) < 2:
+        raise GameMappingError("beat_forge content must include at least 2 lanes")
+
+    mapped: list[dict] = []
+
+    # Item 0: global config — time signature + all six note-type supply counts.
+    # options_json indices: [0]=half, [1]=quarter, [2]=eighth,
+    #                       [3]=dotted_half, [4]=dotted_quarter, [5]=triplet_eighth
+    mapped.append(
+        {
+            "order_index": 0,
+            "question": content.get("title", "Beat Forge"),
+            "correct_answer": time_sig,
+            "options_json": [
+                str(half_notes),
+                str(quarter_notes),
+                str(eighth_notes),
+                str(dotted_half_notes),
+                str(dotted_quarter_notes),
+                str(triplet_eighth_notes),
+            ],
+            "explanation": "",
+            "hint": "",
+            "validation_status": "valid",
+            "validation_errors_json": [],
+        }
+    )
+
+    # Items 1..n: one per lane
+    for i, lane in enumerate(lanes):
+        correct = lane.get("correct_answer", "")
+        if not correct:
+            raise GameMappingError(f"beat_forge lane {i} is missing correct_answer")
+        mapped.append(
+            {
+                "order_index": i + 1,
+                "question": f"Lane {i + 1}",
+                "correct_answer": correct,
+                "options_json": [],
+                "explanation": lane.get("explanation", ""),
+                "hint": lane.get("hint", ""),
+                "validation_status": "valid",
+                "validation_errors_json": [],
+            }
+        )
+
+    return mapped
+
+
 def feed_cats_content_to_items(content: dict) -> list[dict]:
     items = content.get("items")
     if not isinstance(items, list) or not items:
