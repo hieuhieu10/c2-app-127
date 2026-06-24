@@ -3,6 +3,7 @@ import type { GameRecommendation, SafetyReport, StageStatus } from '@/features/g
 
 const BE_WEB_BASE_URL = process.env.NEXT_PUBLIC_BE_WEB_URL || 'http://localhost:8001'
 const ACCESS_TOKEN_KEY = 'be_web_access_token'
+const API_DEBUG = process.env.NEXT_PUBLIC_API_DEBUG === 'true'
 
 export interface BeWebGameItem {
   id: number
@@ -173,6 +174,10 @@ export type BeWebGenerateStreamEvent =
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const token = getAccessToken()
   const isFormData = typeof FormData !== 'undefined' && init?.body instanceof FormData
+  debugLog(`BE_Web -> ${init?.method ?? 'GET'} ${path}`, {
+    headers: init?.headers,
+    body: isFormData ? '<FormData>' : init?.body,
+  })
   const response = await fetch(`${BE_WEB_BASE_URL}${path}`, {
     ...init,
     headers: {
@@ -193,7 +198,9 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     throw new Error(detail)
   }
 
-  return response.json() as Promise<T>
+  const data = await response.json() as T
+  debugLog(`BE_Web <- ${init?.method ?? 'GET'} ${path}`, data)
+  return data
 }
 
 async function* streamRequest<T>(path: string, init?: RequestInit): AsyncGenerator<T> {
@@ -462,4 +469,30 @@ function resolveBeWebAssetUrl(path?: string | null): string | null {
     return path
   }
   return `${BE_WEB_BASE_URL}${path}`
+}
+
+function debugLog(label: string, payload: unknown) {
+  if (!API_DEBUG) return
+  console.debug(`[API DEBUG] ${label}`, redact(payload))
+}
+
+function redact(value: unknown): unknown {
+  if (typeof value === 'string') {
+    try {
+      return redact(JSON.parse(value))
+    } catch {
+      return value
+    }
+  }
+  if (Array.isArray(value)) return value.map(redact)
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(Object.entries(value as Record<string, unknown>).map(([key, item]) => {
+      const normalized = key.toLowerCase().replaceAll('-', '_')
+      if (['authorization', 'cookie', 'password', 'token', 'api_key', 'secret'].some(s => normalized.includes(s))) {
+        return [key, '<redacted>']
+      }
+      return [key, redact(item)]
+    }))
+  }
+  return value
 }

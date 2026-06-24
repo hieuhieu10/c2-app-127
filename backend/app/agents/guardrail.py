@@ -21,6 +21,7 @@ layers already cover the hard rejections.
 from __future__ import annotations
 
 import asyncio
+import re
 from functools import lru_cache
 from typing import Literal
 
@@ -61,6 +62,32 @@ _BLOCKED_TERMS = (
     "porn", "sex video", "nude", "heroin", "cocaine", "make a bomb", "suicide",
 )
 
+_DECIMAL_NUMBER_RE = re.compile(r"(?<!\d)\d+,\d+(?!\d)")
+_DECIMAL_SCOPE_TERMS = (
+    "so thap phan",
+    "phan thap phan",
+    "phan nguyen",
+    "dau phay",
+)
+_FRACTION_NUMBER_RE = re.compile(r"(?<!\d)\d+/\d+(?!\d)")
+_FRACTION_SCOPE_TERMS = (
+    "phan so",
+    "tu so",
+    "mau so",
+    "rut gon phan so",
+    "so sanh phan so",
+    "cong phan so",
+    "tru phan so",
+)
+_PERCENT_SCOPE_TERMS = (
+    "phan tram",
+    "ti so phan tram",
+    "ty so phan tram",
+)
+_SUBJECT_ALIASES = {
+    "toan hoc": "toan",
+}
+
 
 @lru_cache(maxsize=1)
 def _coverage() -> dict[str, set[int]]:
@@ -85,7 +112,7 @@ def _check_scope(subject: str, grade: int) -> GuardrailReport | None:
         return None
 
     by_norm = {_norm(s): s for s in cov}
-    nsubj = _norm(subject)
+    nsubj = _SUBJECT_ALIASES.get(_norm(subject), _norm(subject))
     if nsubj not in by_norm:
         return GuardrailReport(
             allowed=False,
@@ -125,10 +152,66 @@ def _keyword_safety(prompt: str, source_text: str | None) -> GuardrailReport | N
     return None
 
 
-_SCREEN_SYSTEM = """You are a safety-and-scope guardrail for a Vietnamese learning-game \
-generator for school children (chương trình GDPT 2018). You DO NOT create content; you only \
-judge whether a teacher's request should proceed. Given the subject, grade, and request, return \
-exactly one verdict via the tool:
+def _keyword_curriculum_scope(subject: str, grade: int, prompt: str, source_text: str | None) -> GuardrailReport | None:
+    """Block clear above-grade primary Math concepts before retrieval/generation."""
+    if _norm(subject) not in {"toan", "toan hoc"} or grade >= 5:
+        return None
+
+    haystack_raw = f"{prompt} {source_text or ''}"
+    haystack = _norm(haystack_raw)
+
+    if grade < 4:
+        has_fraction_concept = any(term in haystack for term in _FRACTION_SCOPE_TERMS)
+        has_fraction_notation = bool(_FRACTION_NUMBER_RE.search(haystack_raw))
+        if has_fraction_concept or has_fraction_notation:
+            return GuardrailReport(
+                allowed=False,
+                code="above_grade",
+                message=(
+                    "Yêu cầu có nội dung về phân số như tử số, mẫu số, so sánh hoặc phép tính phân số. "
+                    "Nội dung này thuộc phạm vi Toán lớp 4 trở lên, chưa phù hợp với Toán lớp 3."
+                ),
+                suggestion=(
+                    "Hãy đổi lớp sang 4 nếu muốn tạo trò chơi về phân số, hoặc giữ lớp 3 và chọn nội dung "
+                    "như phép nhân/chia trong phạm vi 100, chu vi/diện tích cơ bản, đo lường hoặc bảng số liệu đơn giản."
+                ),
+            )
+
+    has_percent_concept = "%" in haystack_raw or any(term in haystack for term in _PERCENT_SCOPE_TERMS)
+    if has_percent_concept:
+        return GuardrailReport(
+            allowed=False,
+            code="above_grade",
+            message="Yêu cầu có nội dung về tỉ số phần trăm, thuộc phạm vi Toán lớp 5.",
+            suggestion="Hãy chọn lớp 5 nếu muốn tạo trò chơi về phần trăm, hoặc đổi nội dung về phạm vi lớp hiện tại.",
+        )
+
+    has_decimal_concept = any(term in haystack for term in _DECIMAL_SCOPE_TERMS)
+    has_decimal_notation = bool(_DECIMAL_NUMBER_RE.search(haystack_raw))
+    if not (has_decimal_concept or has_decimal_notation):
+        return None
+
+    return GuardrailReport(
+        allowed=False,
+        code="above_grade",
+        message=(
+            "Yêu cầu có nội dung về số thập phân dạng 0,5/1,25 hoặc phần thập phân. "
+            "Nội dung này thuộc phạm vi Toán lớp 5, chưa phù hợp với lớp dưới 5."
+        ),
+        suggestion=(
+            "Hãy chọn lớp 5 nếu muốn tạo trò chơi về số thập phân, hoặc đổi yêu cầu về "
+            "cấu tạo thập phân của số tự nhiên theo đúng lớp hiện tại."
+        ),
+    )
+
+
+_SCREEN_SYSTEM = """You are a safety-and-scope guardrail for a learning-game generator \
+for school children following Vietnam's GDPT 2018 curriculum. The UI/output language is \
+Vietnamese, but that does NOT mean the subject is Vietnamese Language. The subject authority \
+is ONLY the explicit `Môn` field in the user message. For example, if `Môn: Toán`, evaluate \
+the request as Mathematics even though the request and your explanation are written in Vietnamese. \
+You DO NOT create content; you only judge whether a teacher's request should proceed. Given the \
+subject, grade, and request, return exactly one verdict via the tool:
 - "ok": the request is on-topic for the subject, within the grade's scope, and child-appropriate.
 - "irrelevant": the request asks for content that does not belong to the stated subject.
 - "above_grade": the request belongs to the subject but clearly exceeds the stated grade's level.
@@ -198,6 +281,10 @@ async def run_guardrails(
     keyword = _keyword_safety(prompt, source_text)
     if keyword is not None:
         return keyword
+
+    curriculum_scope = _keyword_curriculum_scope(subject, grade, prompt, source_text)
+    if curriculum_scope is not None:
+        return curriculum_scope
 
     if settings.has_api_key:
         try:

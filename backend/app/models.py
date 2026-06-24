@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class LessonRequest(BaseModel):
@@ -28,6 +28,13 @@ class LessonRequest(BaseModel):
     override_template: str | None = Field(
         None, description="Force a specific template id (FR-05); skips recommendation."
     )
+
+    @field_validator("objective_id", "uploaded_file_id", "override_template", mode="before")
+    @classmethod
+    def _empty_or_placeholder_to_none(cls, value: object) -> object:
+        if isinstance(value, str) and value.strip().lower() in {"", "string", "none", "null"}:
+            return None
+        return value
 
 
 class TemplateCandidate(BaseModel):

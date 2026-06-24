@@ -32,6 +32,19 @@ class Settings(BaseSettings):
     max_repairs: int = 2
     # Tokens budget for a single generation call.
     max_tokens: int = 4096
+    # Log API request/response bodies for local debugging. Do not enable in prod.
+    api_debug: bool = False
+
+    # Retrieval provider: file, hybrid, or weaviate.
+    # - file: scan local GDPT JSON objectives.
+    # - hybrid: use Weaviate vector retrieval when available, fallback to file.
+    # - weaviate: require Weaviate vector retrieval.
+    retrieval_provider: str = "file"
+    weaviate_url: str = "http://localhost:8080"
+    weaviate_collection: str = "CurriculumObjective"
+    embedding_model: str = "BAAI/bge-m3"
+    embedding_device: str = ""
+    embedding_batch_size: int = 16
 
     @property
     def provider(self) -> str:

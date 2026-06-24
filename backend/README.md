@@ -29,6 +29,7 @@ Tạo file `.env` ở repo root, ví dụ:
 LLM_PROVIDER=auto
 OPENAI_API_KEY=sk-...
 DEFAULT_MODEL=gpt-4.1-mini
+API_DEBUG=false
 ```
 
 Provider hỗ trợ:
@@ -40,6 +41,14 @@ Provider hỗ trợ:
 | `anthropic` | `ANTHROPIC_API_KEY` | `claude-sonnet-4-6` |
 
 `LLM_PROVIDER=auto` ưu tiên OpenAI, sau đó DeepSeek, sau đó Anthropic. Nếu muốn ép provider, đặt `LLM_PROVIDER=openai`, `deepseek` hoặc `anthropic`.
+
+Để xem request/response API trong terminal backend khi debug local, đặt:
+
+```env
+API_DEBUG=true
+```
+
+Khi bật, backend log request body, JSON response và từng SSE event của `/generate/stream`. Không bật chế độ này ở môi trường production.
 
 Với DeepSeek, `DEEPSEEK_BASE_URL` mặc định là:
 
@@ -258,6 +267,59 @@ Bản canonical để review nằm tại:
 ```text
 knowledge_base/gdpt_2018/
 ```
+
+## Hybrid RAG Với BGE-M3 Và Weaviate
+
+Mặc định backend vẫn dùng `RETRIEVAL_PROVIDER=file`, tức là đọc `objectives.json` và match bằng keyword/metadata như trước. Để bật kiến trúc hybrid RAG:
+
+```env
+RETRIEVAL_PROVIDER=hybrid
+WEAVIATE_URL=http://localhost:8080
+WEAVIATE_COLLECTION=CurriculumObjective
+EMBEDDING_MODEL=BAAI/bge-m3
+```
+
+Ý nghĩa mode:
+
+| Mode | Hành vi |
+|---|---|
+| `file` | Chỉ dùng JSON local, phù hợp test nhanh và môi trường chưa có Docker. |
+| `hybrid` | Dùng BGE-M3 + Weaviate nếu sẵn sàng; nếu lỗi thì fallback về JSON local. |
+| `weaviate` | Bắt buộc dùng BGE-M3 + Weaviate; lỗi nếu DB/model chưa sẵn sàng. |
+
+Chạy Weaviate bằng Docker:
+
+```powershell
+docker compose -f docker-compose.rag.yml up -d
+```
+
+Ingest GDPT 2018 objectives vào Weaviate:
+
+```powershell
+cd backend
+uv sync --extra dev
+uv run python scripts/ingest_gdpt_to_weaviate.py
+```
+
+Lần đầu cài BGE-M3 sẽ kéo `sentence-transformers` và `torch`, có thể khá nặng. Nếu `uv` timeout khi tải `torch`, tăng timeout rồi chạy lại:
+
+```powershell
+$env:UV_HTTP_TIMEOUT = "120"
+uv sync --extra dev
+```
+
+Pipeline retrieval sau khi bật RAG:
+
+```text
+Teacher prompt/source_text
+-> BGE-M3 embedding
+-> Weaviate vector search với filter subject + grade
+-> objective candidates
+-> structured GDPT context/difficulty/scope logic như cũ
+-> recommend/generate/validate
+```
+
+Lưu ý: Weaviate chỉ giúp tìm objective gần nghĩa hơn khi prompt hoặc giáo án dài. Các quyết định chuẩn chương trình như `subject`, `grade`, `scope_status`, `allowed_difficulty_range` vẫn dựa trên metadata GDPT có cấu trúc, không giao hoàn toàn cho vector search.
 
 Khi cập nhật canonical KB, mirror lại bằng:
 

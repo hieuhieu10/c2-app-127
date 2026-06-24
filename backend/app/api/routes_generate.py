@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
 import time
 from collections.abc import AsyncGenerator
 from pathlib import Path
@@ -37,6 +38,7 @@ from app.templates.registry import (
 )
 
 _BATTLESHIP_HTML = Path(__file__).resolve().parents[2] / "static" / "battleship.html"
+_debug_logger = logging.getLogger("api.debug")
 
 router = APIRouter(tags=["agent-workflow"])
 
@@ -90,7 +92,9 @@ async def recommend_games_route(req: LessonRequest) -> RecommendGamesResponse:
     recs = await recommend_games(
         subject=req.subject, grade=req.grade, difficulty=req.difficulty, prompt=req.prompt
     )
-    return RecommendGamesResponse(recommendations=[GameRecommendation(**r) for r in recs])
+    response = RecommendGamesResponse(recommendations=[GameRecommendation(**r) for r in recs])
+    _debug_payload("recommend/games response", response.model_dump())
+    return response
 
 
 @router.post("/recommend", response_model=RecommendResponse)
@@ -121,6 +125,8 @@ async def generate(req: LessonRequest) -> GameResponse:
     state = dict(req)
     state["template_id"] = req.override_template
     state.update(retrieve_node(state))  # type: ignore[arg-type]
+    if state.get("error") or not state.get("objective_id"):
+        return _to_response(state)
     state.update(await generate_node(state))  # type: ignore[arg-type]
     state.update(validate_node(state))  # type: ignore[arg-type]
     attempts = 0
@@ -149,7 +155,9 @@ async def generate_full(req: LessonRequest) -> GameResponse:
     )
     if state.get("blocked"):
         raise HTTPException(status_code=422, detail=state["guardrail"])
-    return _to_response(state)
+    response = _to_response(state)
+    _debug_payload("generate/full response", response.model_dump())
+    return response
 
 
 @router.post("/game/battleship/generate", response_class=HTMLResponse)
@@ -166,6 +174,8 @@ async def generate_battleship_game(req: LessonRequest) -> HTMLResponse:
     state["num_items"] = max(state.get("num_items") or 5, 20)
 
     state.update(retrieve_node(state))  # type: ignore[arg-type]
+    if state.get("error") or not state.get("objective_id"):
+        raise HTTPException(status_code=422, detail=state.get("error") or "No matching curriculum objective found.")
     state.update(await generate_node(state))  # type: ignore[arg-type]
     state.update(validate_node(state))  # type: ignore[arg-type]
     attempts = 0
@@ -209,6 +219,7 @@ async def _stream_pipeline(req: LessonRequest) -> AsyncGenerator[str, None]:
     t0 = time.monotonic()
 
     def _ev(data: dict) -> str:
+        _debug_payload("generate/stream event", data)
         return f"data: {json.dumps(data, ensure_ascii=False)}\n\n"
 
     def ms() -> int:
@@ -238,6 +249,14 @@ async def _stream_pipeline(req: LessonRequest) -> AsyncGenerator[str, None]:
                    "subtitle": f"Trích xuất {num_passages} đoạn nội dung liên quan",
                    "tag": "PyMuPDF · OCR", "status": "done", "elapsed_ms": ms()})
         await asyncio.sleep(0)
+
+        if state.get("error") or not state.get("objective_id"):
+            yield _ev({"type": "stage", "id": "rag", "label": "Tra cứu khung chương trình GDPT 2018",
+                       "subtitle": state.get("error") or "Không tìm thấy objective GDPT phù hợp",
+                       "tag": "RAG", "status": "error", "elapsed_ms": ms()})
+            await asyncio.sleep(0)
+            yield _ev({"type": "error", "message": state.get("error", "Không tìm thấy objective GDPT phù hợp")})
+            return
 
         yield _ev({"type": "stage", "id": "rag", "label": "Tra cứu khung chương trình GDPT 2018",
                    "subtitle": f"Tìm thấy yêu cầu cần đạt · {req.subject} lớp {req.grade}",
@@ -382,3 +401,15 @@ def _to_response(state: dict) -> GameResponse:
         repair_attempts=state.get("repair_attempts", 0),
         error=state.get("error"),
     )
+
+
+def _debug_payload(label: str, payload: object, limit: int = 8000) -> None:
+    if not settings.api_debug:
+        return
+    try:
+        text = json.dumps(payload, ensure_ascii=False, default=str)
+    except TypeError:
+        text = str(payload)
+    if len(text) > limit:
+        text = text[:limit] + f"... <truncated {len(text) - limit} chars>"
+    _debug_logger.info("[API DEBUG] %s: %s", label, text)

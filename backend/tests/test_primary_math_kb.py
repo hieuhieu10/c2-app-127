@@ -57,6 +57,8 @@ def test_retrieval_matches_representative_primary_math_topics():
         (3, "Tao game chia deu 12 cai keo cho 3 ban", "math_3_division_equal_sharing"),
         (3, "Tạo 5 bài toán đố về phép nhân và phép chia trong phạm vi 100", "math_3_multiplication_division_within_100"),
         (4, "Tao game ve phan so va so sanh phan so", "math_4_fractions_intro"),
+        (4, "Tạo câu hỏi đo lường về cột cờ cao 6m", "math_4_measurement_units_area_mass"),
+        (4, "Chỉ tạo câu hỏi về đơn vị đo lường, không thống kê, không biểu đồ cột", "math_4_measurement_units_area_mass"),
         (5, "Tạo game về tỉ số phần trăm và giảm giá", "math_5_percent_ratio"),
     ]
 

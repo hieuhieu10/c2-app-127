@@ -38,6 +38,14 @@ Nếu BE_AI không chạy ở `http://localhost:8000`, đặt:
 NEXT_PUBLIC_AI_URL=http://localhost:8000
 ```
 
+Để xem request/response FE gọi BE_AI/BE_Web trong browser console:
+
+```env
+NEXT_PUBLIC_API_DEBUG=true
+```
+
+Với Next.js, sau khi đổi biến môi trường cần restart `npm run dev`.
+
 ## Cài Đặt Và Chạy
 
 ```powershell
