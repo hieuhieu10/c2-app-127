@@ -197,6 +197,31 @@ def feed_cats_content_to_items(content: dict) -> list[dict]:
     return mapped
 
 
+def farm_builder_content_to_items(content: dict) -> list[dict]:
+    challenges = content.get("challenges")
+    if not isinstance(challenges, list) or not challenges:
+        raise GameMappingError("BE_AI farm_builder content must include a non-empty challenges list")
+
+    mapped: list[dict] = []
+    for index, challenge in enumerate(challenges):
+        target_area = challenge.get("target_area")
+        if not isinstance(target_area, int) or target_area < 1:
+            raise GameMappingError(f"BE_AI farm_builder challenge {index} must have a positive integer target_area")
+        mapped.append(
+            {
+                "order_index": index,
+                "question": f"Quây đúng {target_area} ô vuông",
+                "correct_answer": str(target_area),
+                "options_json": [],
+                "explanation": challenge.get("explanation") or "",
+                "hint": challenge.get("hint") or "",
+                "validation_status": "valid",
+                "validation_errors_json": [],
+            }
+        )
+    return mapped
+
+
 def game_to_response(game: Game) -> GameResponse:
     return GameResponse(
         lessonId=game.lesson_id,

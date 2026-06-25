@@ -16,6 +16,7 @@ import { BattleshipShell } from './battleship/BattleshipShell'
 import { FeedTheCatsShell } from './feed-the-cats/FeedTheCatsShell'
 import { CatJumpShell } from './cat-jump/CatJumpShell'
 import { BeatForgeShell } from './beat-forge/BeatForgeShell'
+import { FarmBuilderShell } from './farm-builder/FarmBuilderShell'
 
 export interface ShellProps {
   game: Game
@@ -105,6 +106,18 @@ export const GAMES: GameDefinition[] = [
     bestFor: 'Grades 2-8, fraction addition, music theory, rhythm, number sense',
     example: 'You have 3 half-notes and 6 quarter-notes — fill 3 bars in 4/4 time so every fraction adds up perfectly.',
     Shell: BeatForgeShell,
+  },
+  {
+    backendId: 'farm_builder',
+    type: 'farm-builder',
+    title: 'Xây Dựng Trang Trại',
+    description: 'Đặt hàng rào trên lưới để quây đúng diện tích yêu cầu — hình gọn hơn nhận được nhiều sao hơn',
+    icon: '🌾',
+    itemCount: 5,
+    interactionType: 'Vẽ tự do trên lưới',
+    bestFor: 'Lớp 4-8, diện tích, chu vi, thừa số, tư duy không gian',
+    example: 'Quây đúng 12 ô vuông bằng hàng rào. Hình 3×4 cần ít rào nhất — đó là bí quyết!',
+    Shell: FarmBuilderShell,
   },
 ]
 

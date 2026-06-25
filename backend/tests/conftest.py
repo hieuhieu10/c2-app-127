@@ -139,6 +139,49 @@ def valid_content(template_id: str) -> dict:
                 level("Dãy Fibonacci", "1,1,2,3,5,8,13,21"),
             ],
         }
+    if template_id == "beat_forge":
+        def lane(notes: str) -> dict:
+            return {
+                "correct_answer": notes,
+                "hint": "Thêm các nốt nhạc sao cho tổng bằng đúng độ dài của nhịp.",
+                "explanation": "Nhịp điệu này thể hiện phép cộng phân số trong âm nhạc.",
+                "objective_id": OBJ,
+            }
+
+        return {
+            "title": "Beat Forge — Phân số âm nhạc",
+            "objective_id": OBJ,
+            "time_signature": "4/4",
+            "half_notes": 0,
+            "quarter_notes": 8,
+            "eighth_notes": 0,
+            "dotted_half_notes": 0,
+            "dotted_quarter_notes": 0,
+            "triplet_eighth_notes": 0,
+            "lanes": [
+                lane("1/4,1/4,1/4,1/4"),   # 6+6+6+6 = 24 ✓
+                lane("1/4,1/4,1/4,1/4"),   # 6+6+6+6 = 24 ✓
+            ],
+        }
+    if template_id == "farm_builder":
+        def challenge(area: int, hint: str) -> dict:
+            return {
+                "target_area": area,
+                "hint": hint,
+                "explanation": f"Hình chữ nhật với diện tích {area} ô vuông có chu vi nhỏ nhất khi các cạnh gần bằng nhau.",
+                "objective_id": OBJ,
+            }
+
+        return {
+            "title": "Xây Dựng Trang Trại — Diện tích",
+            "objective_id": OBJ,
+            "instructions": "Đặt hàng rào để quây đúng số ô vuông được chỉ định!",
+            "challenges": [
+                challenge(6, "Hãy thử hình chữ nhật 2×3 — đó là 6 ô vuông!"),
+                challenge(12, "Hình 3×4 có đúng 12 ô vuông và cần ít hàng rào nhất."),
+                challenge(16, "Hình vuông 4×4 là cách gọn nhất cho diện tích 16!"),
+            ],
+        }
     raise ValueError(template_id)
 
 
@@ -161,6 +204,10 @@ def invalid_content(template_id: str) -> dict:
         c["items"] = c["items"][:1]                  # below min_length=4
     elif template_id == "cat_jump":
         c["questions"] = c["questions"][:2]          # below min_length=4
+    elif template_id == "beat_forge":
+        c["lanes"] = c["lanes"][:1]                  # below min_length=2
+    elif template_id == "farm_builder":
+        c["challenges"] = c["challenges"][:2]        # below min_length=3
     return c
 
 

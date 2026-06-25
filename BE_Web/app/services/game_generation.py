@@ -12,6 +12,7 @@ from app.services.game_mapper import (
     battleship_content_to_items,
     beat_forge_content_to_items,
     cat_jump_content_to_items,
+    farm_builder_content_to_items,
     feed_cats_content_to_items,
     game_to_response,
     quiz_content_to_items,
@@ -23,6 +24,7 @@ PRODUCT_TEMPLATE_TO_AI_TEMPLATE = {
     "cat_jump": "cat_jump",
     "feed_the_cats": "feed_the_cats",
     "beat_forge": "beat_forge",
+    "farm_builder": "farm_builder",
 }
 
 _CONTENT_MAPPERS = {
@@ -31,6 +33,7 @@ _CONTENT_MAPPERS = {
     "cat_jump": cat_jump_content_to_items,
     "feed_the_cats": feed_cats_content_to_items,
     "beat_forge": beat_forge_content_to_items,
+    "farm_builder": farm_builder_content_to_items,
 }
 
 _DEFAULT_SETTINGS: dict[str, dict] = {
@@ -39,6 +42,7 @@ _DEFAULT_SETTINGS: dict[str, dict] = {
     "cat_jump": {},
     "feed_the_cats": {},
     "beat_forge": {},
+    "farm_builder": {},
 }
 
 

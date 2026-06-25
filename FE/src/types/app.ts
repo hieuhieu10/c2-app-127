@@ -39,6 +39,7 @@ export type GameTemplateType =
   | 'feed-the-cats'
   | 'cat-jump'
   | 'beat-forge'
+  | 'farm-builder'
 
 export interface GameTemplate {
   id: string

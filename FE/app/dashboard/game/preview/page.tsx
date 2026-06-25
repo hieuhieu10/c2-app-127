@@ -58,9 +58,21 @@ interface ShareSettings {
  * Different templates use different top-level keys:
  *   - quiz / battleship / cat_jump → content.questions
  *   - feed_the_cats                → content.items
+ *   - farm_builder                 → content.challenges (target_area → correct_answer)
  *   - beat_forge                   → uses lanes (not a Q&A list; returns [] here)
  */
 function extractQuestions(content: GameContent): RawQuestion[] {
+  if (Array.isArray(content.challenges) && content.challenges.length > 0) {
+    return (content.challenges as Array<{ target_area?: number; hint?: string; explanation?: string; objective_id?: string }>).map(
+      (ch) => ({
+        question: `Quây đúng ${ch.target_area ?? '?'} ô vuông`,
+        correct_answer: String(ch.target_area ?? ''),
+        hint: ch.hint,
+        explanation: ch.explanation,
+        objective_id: ch.objective_id,
+      })
+    )
+  }
   if (Array.isArray(content.items) && content.items.length > 0) return content.items
   return content.questions ?? []
 }
@@ -258,9 +270,10 @@ export default function PreviewPage() {
   const persist = (status: 'draft' | 'published') => {
     if (!data) return
     const id = localId ?? newLocalGameId()
-    // beat_forge content is structured around lanes, not a flat Q&A list — preserve as-is.
+    // beat_forge and farm_builder use structured content not reducible to a flat Q&A list — preserve as-is.
     // For other templates, write back the (possibly edited) questions under the original key.
-    const persistContent = isBeatForge
+    const isFarmBuilder = data.templateId === 'farm_builder'
+    const persistContent = (isBeatForge || isFarmBuilder)
       ? data.content
       : { ...data.content, [Array.isArray(data.content.items) ? 'items' : 'questions']: questions }
     saveLocalGame({
