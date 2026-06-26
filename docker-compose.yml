@@ -21,6 +21,28 @@ services:
       dockerfile: backend/Dockerfile
     container_name: learngame-be-ai
     restart: unless-stopped
+    environment:
+      LLM_PROVIDER: ${LLM_PROVIDER:-openai}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      DEEPSEEK_BASE_URL: ${DEEPSEEK_BASE_URL:-https://api.deepseek.com}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      DEFAULT_MODEL: ${DEFAULT_MODEL:-gpt-4.1-mini}
+      MAX_REPAIRS: ${MAX_REPAIRS:-2}
+      MAX_TOKENS: ${MAX_TOKENS:-4096}
+      API_DEBUG: ${API_DEBUG:-false}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+
+      RETRIEVAL_PROVIDER: ${RETRIEVAL_PROVIDER:-file}
+      WEAVIATE_URL: ${WEAVIATE_URL:-http://weaviate:8080}
+      WEAVIATE_COLLECTION: ${WEAVIATE_COLLECTION:-CurriculumObjective}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-BAAI/bge-m3}
+      EMBEDDING_DEVICE: ${EMBEDDING_DEVICE:-}
+      EMBEDDING_BATCH_SIZE: ${EMBEDDING_BATCH_SIZE:-16}
+
+      AI_LOG_SERVER: ${AI_LOG_SERVER:-}
+      AI_LOG_API_KEY: ${AI_LOG_API_KEY:-}
+      AI_LOG_DIR: ${AI_LOG_DIR:-.ai-log}
     depends_on:
       weaviate:
         condition: service_healthy
