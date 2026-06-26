@@ -21,8 +21,6 @@ services:
       dockerfile: backend/Dockerfile
     container_name: learngame-be-ai
     restart: unless-stopped
-    env_file:
-      - .env.production
     depends_on:
       weaviate:
         condition: service_healthy
@@ -40,8 +38,6 @@ services:
       dockerfile: BE_Web/Dockerfile
     container_name: learngame-be-web
     restart: unless-stopped
-    env_file:
-      - .env.production
     environment:
       DATABASE_URL: ${DATABASE_URL}
       BE_AI_BASE_URL: ${BE_AI_BASE_URL}
