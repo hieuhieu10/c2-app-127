@@ -40,8 +40,8 @@ class Settings(BaseSettings):
     # - hybrid: use Weaviate vector retrieval when available, fallback to file.
     # - weaviate: require Weaviate vector retrieval.
     retrieval_provider: str = "file"
-    weaviate_url: str = "http://localhost:8080"
-    weaviate_collection: str = "CurriculumObjective"
+    weaviate_url: str = ""
+    weaviate_collection: str = ""
     embedding_model: str = "BAAI/bge-m3"
     embedding_device: str = ""
     embedding_batch_size: int = 16

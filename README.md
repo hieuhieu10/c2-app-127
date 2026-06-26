@@ -41,7 +41,7 @@ scripts/                    AI logging / course utility scripts
 - `uv` để quản lý môi trường Python backend
 - Node.js 20+
 - `npm`
-- PostgreSQL là tùy chọn. Local development của BE_Web mặc định dùng SQLite.
+- PostgreSQL là database runtime của BE_Web.
 - Docker là tùy chọn nếu muốn chạy Weaviate cho hybrid RAG.
 - Một LLM API key nếu muốn chạy generation thật: OpenAI, DeepSeek hoặc Anthropic.
 
@@ -82,23 +82,23 @@ BE_Web đọc `BE_Web/.env` nếu có, nếu không sẽ dùng `BE_Web/.env.exam
 
 | Biến | Bắt buộc | Mặc định |
 |---|---:|---|
-| `DATABASE_URL` | Không | `sqlite:///./be_web.db` |
-| `BE_AI_BASE_URL` | Không | `http://localhost:8000` |
+| `DATABASE_URL` | Có | Ví dụ `postgresql+psycopg://user:password@localhost:5432/learngame_AI` |
+| `BE_AI_BASE_URL` | Có | Local: `http://localhost:8000`; Docker: `http://be-ai:8000` |
 | `BE_AI_TIMEOUT_SECONDS` | Không | `30.0` |
 | `CORS_ORIGINS` | Không | `["http://localhost:3000"]` |
 | `JWT_SECRET_KEY` | Nên có | `change-me` |
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | Không | `10080` |
 
-SQLite local tự tạo file `BE_Web/be_web.db` khi chạy app. Nếu schema local bị lệch sau khi pull code mới, có thể tạo DB mới bằng cách backup file cũ rồi tạo schema lại:
+BE_Web không fallback sang SQLite. Khi thay đổi schema, tạo và áp migration bằng Alembic:
 
 ```powershell
 cd BE_Web
-Move-Item .\be_web.db .\be_web.db.bak
 $env:PYTHONPATH='.'
-uv run python -c "from app.db import models; from app.db.session import Base, engine; Base.metadata.create_all(bind=engine)"
+uv run alembic revision --autogenerate -m "describe schema change"
+uv run alembic upgrade head
 ```
 
-DB mới sẽ trắng, nên cần đăng ký/đăng nhập lại user. Nếu cần giữ dữ liệu thật, dùng Alembic/PostgreSQL thay vì xóa SQLite local.
+SQLite chỉ còn được dùng trong test in-memory.
 
 ### FE
 
@@ -133,10 +133,10 @@ Copy-Item .env.example .env
 uv sync --extra dev
 ```
 
-SQLite local chạy được ngay. Nếu dùng PostgreSQL, đặt:
+Đặt `DATABASE_URL` trong `BE_Web/.env`:
 
 ```text
-DATABASE_URL=postgresql+psycopg://user:password@localhost:5432/be_web
+DATABASE_URL=postgresql+psycopg://user:password@localhost:5432/learngame_AI
 ```
 
 ### 3. Cài FE
@@ -318,6 +318,76 @@ uv run pytest
 cd FE
 npm run build
 ```
+
+## Deploy Docker/VPS
+
+Repo có sẵn bộ file deploy Docker:
+
+```text
+FE/Dockerfile
+BE_Web/Dockerfile
+backend/Dockerfile
+docker-compose.yml
+.dockerignore
+.env.production
+```
+
+Các service trong `docker-compose.yml`:
+
+- `fe`: Next.js frontend, port `3000`.
+- `be-web`: BE_Web FastAPI, port `8001`, tự chạy `alembic upgrade head` trước khi start.
+- `be-ai`: BE_AI FastAPI, port `8000`.
+- `postgres`: PostgreSQL runtime DB cho BE_Web.
+
+Trước khi chạy trên VPS, sửa `.env.production`:
+
+```env
+POSTGRES_USER=learngame
+POSTGRES_PASSWORD=change-this-postgres-password
+POSTGRES_DB=learngame_AI
+
+DATABASE_URL=postgresql+psycopg://learngame:change-this-postgres-password@postgres:5432/learngame_AI
+BE_AI_BASE_URL=http://be-ai:8000
+JWT_SECRET_KEY=change-this-to-a-long-random-secret
+
+OPENAI_API_KEY=...
+NEXT_PUBLIC_BE_WEB_URL=https://api-domain-cua-ban
+CORS_ORIGINS=["https://domain-fe-cua-ban"]
+```
+
+Trong Docker Compose, không dùng `localhost` cho service nội bộ:
+
+- `BE_AI_BASE_URL` dùng `http://be-ai:8000`.
+- `DATABASE_URL` dùng host `postgres`.
+- Weaviate/RAG đã nằm trong `docker-compose.yml`; `WEAVIATE_URL` dùng `http://weaviate:8080`.
+- `NEXT_PUBLIC_BE_WEB_URL` là URL public mà browser truy cập được, thường là domain API sau Nginx/HTTPS.
+
+Chạy deploy:
+
+```bash
+docker compose --env-file .env.production up -d --build
+docker compose ps
+docker compose logs -f be-web
+docker compose --env-file .env.production exec be-ai python scripts/ingest_gdpt_to_weaviate.py
+```
+
+Khuyến nghị deploy lần đầu để `RETRIEVAL_PROVIDER=hybrid`; sau khi Weaviate đã chạy ổn và ingest dữ liệu thành công mới đổi sang `weaviate` nếu muốn bắt buộc dùng vector DB.
+
+Nếu cần chạy migration thủ công:
+
+```bash
+docker compose exec be-web sh -lc "PYTHONPATH=. alembic upgrade head"
+```
+
+Gợi ý reverse proxy:
+
+```text
+https://domain-fe-cua-ban      -> fe:3000
+https://api-domain-cua-ban     -> be-web:8001
+```
+
+`be-ai` nên để nội bộ Docker network, không public ra internet nếu không cần debug.
+Weaviate cũng chỉ dùng nội bộ Docker network, không publish port `8080`/`50051` ra internet.
 
 Eval evidence mới nhất nằm ở [docs/EVAL_EVIDENCE.md](docs/EVAL_EVIDENCE.md).
 

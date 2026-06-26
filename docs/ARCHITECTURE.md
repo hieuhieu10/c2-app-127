@@ -19,7 +19,7 @@ Architecture hiện tại có các nhóm component chính:
 - **GDPT 2018 JSON KB**: curriculum authority cho Toán tiểu học lớp 1-5.
 - **LLM Provider**: OpenAI, DeepSeek hoặc Anthropic.
 - **BE_Web - FastAPI**: auth, saved games, teacher review APIs, approve/publish, avatar upload và static serving.
-- **DB**: SQLite khi chạy local hoặc PostgreSQL khi production.
+- **DB**: PostgreSQL qua `DATABASE_URL`.
 
 ## Sơ Đồ Data Flow
 
@@ -95,7 +95,7 @@ Ghi chú quan trọng:
 | Runtime KB | `backend/data/gdpt_2018/` | JSON objectives được BE_AI load khi chạy. |
 | Canonical KB | `knowledge_base/gdpt_2018/` | Source documents và curated objectives để review/chỉnh sửa. |
 | Browser Storage | `sessionStorage` / `localStorage` | Preview payload và local published games của chat-flow. |
-| DB | `BE_Web/be_web.db` mặc định | `users`, `lessons`, `games`, `game_items`, `game_review_events`. |
+| DB | PostgreSQL qua `DATABASE_URL` | `users`, `lessons`, `games`, `game_items`, `game_review_events`. |
 | LLM Provider | API bên ngoài | OpenAI, DeepSeek hoặc Anthropic. |
 
 ## Luồng Retrieval Knowledge Base

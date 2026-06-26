@@ -1,0 +1,103 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: learngame-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  be-ai:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: learngame-be-ai
+    restart: unless-stopped
+    env_file:
+      - .env.production
+    depends_on:
+      weaviate:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+
+  be-web:
+    build:
+      context: .
+      dockerfile: BE_Web/Dockerfile
+    container_name: learngame-be-web
+    restart: unless-stopped
+    env_file:
+      - .env.production
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      BE_AI_BASE_URL: ${BE_AI_BASE_URL}
+      CORS_ORIGINS: ${CORS_ORIGINS}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      UPLOAD_DIR: /app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      be-ai:
+        condition: service_healthy
+    volumes:
+      - be_web_uploads:/app/uploads
+    ports:
+      - "8001:8001"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/health')"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+
+  fe:
+    build:
+      context: .
+      dockerfile: FE/Dockerfile
+      args:
+        NEXT_PUBLIC_BE_WEB_URL: ${NEXT_PUBLIC_BE_WEB_URL}
+        NEXT_PUBLIC_AI_URL: ${NEXT_PUBLIC_AI_URL:-}
+        NEXT_PUBLIC_API_DEBUG: ${NEXT_PUBLIC_API_DEBUG:-false}
+    container_name: learngame-fe
+    restart: unless-stopped
+    depends_on:
+      be-web:
+        condition: service_healthy
+    ports:
+      - "3001:3000"
+
+  weaviate:
+    image: semitechnologies/weaviate:1.27.0
+    container_name: learngame-weaviate
+    restart: unless-stopped
+    environment:
+      QUERY_DEFAULTS_LIMIT: "25"
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: "true"
+      PERSISTENCE_DATA_PATH: "/var/lib/weaviate"
+      DEFAULT_VECTORIZER_MODULE: "none"
+      CLUSTER_HOSTNAME: "learngame-weaviate"
+    volumes:
+      - weaviate_data:/var/lib/weaviate
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8080/v1/.well-known/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:
+  be_web_uploads:
+  weaviate_data:

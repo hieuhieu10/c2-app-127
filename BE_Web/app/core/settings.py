@@ -17,8 +17,8 @@ class Settings(BaseSettings):
     )
 
     app_name: str = "BE_Web"
-    database_url: str = "sqlite:///./be_web.db"
-    be_ai_base_url: str = "http://localhost:8000"
+    database_url: str = Field(..., description="PostgreSQL connection URL for BE_Web.")
+    be_ai_base_url: str = Field(..., description="Base URL for the BE_AI service.")
     be_ai_timeout_seconds: float = 30.0
     api_debug: bool = False
     cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:3000"])

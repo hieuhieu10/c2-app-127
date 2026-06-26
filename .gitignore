@@ -11,9 +11,15 @@ build/
 *.egg-info/
 .pytest_cache/
 .mypy_cache/
-
+.env.production
 # OS
 .DS_Store
+.ai-log/session.jsonl
 
 # AI logs — tracked structure, ignored content
 .ai-log/*.jsonl
+
+.ai-log/
+
+# Runtime uploads
+BE_Web/uploads/
