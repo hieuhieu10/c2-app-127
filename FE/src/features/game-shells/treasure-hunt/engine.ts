@@ -21,8 +21,8 @@ interface PathPoint {
 }
 
 const PLAYER_PRESETS = [
-  { id: 'player-1', name: 'Alex', avatar: '🧒', color: '#f97316' },
-  { id: 'player-2', name: 'Bella', avatar: '👧', color: '#0ea5e9' },
+  { id: 'player-1', name: 'An', avatar: '🧒', color: '#f97316' },
+  { id: 'player-2', name: 'Bống', avatar: '👧', color: '#0ea5e9' },
 ]
 
 const PLAYER_1_PATH: PathPoint[] = [

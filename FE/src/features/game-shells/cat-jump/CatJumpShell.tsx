@@ -62,7 +62,7 @@ function parseLevels(items: GameItem[]): Level[] {
         .split(',')
         .map((n) => parseInt(n.trim(), 10))
         .filter((n) => !isNaN(n) && n > 0)
-      return { name: it.question || 'Sequence', seq, hint: it.hint ?? '' }
+      return { name: it.question || 'Dãy số', seq, hint: it.hint ?? '' }
     })
     .filter((lv) => lv.seq.length === 8)
 }
@@ -261,7 +261,7 @@ export function CatJumpShell({ game }: { game: Game; previewMode?: boolean; scen
   const [S, setS] = useState<GState>(() =>
     levels.length > 0
       ? initState(levels, 0, 0)
-      : initState([{ name: 'Hop by 2', seq: [2, 4, 6, 8, 10, 12, 14, 16], hint: 'Add 2 each time' }], 0, 0)
+      : initState([{ name: 'Nhảy cách 2', seq: [2, 4, 6, 8, 10, 12, 14, 16], hint: 'Cộng thêm 2 mỗi bước' }], 0, 0)
   )
   const [scale, setScale] = useState(1)
   const wrapRef = useRef<HTMLDivElement>(null)
@@ -379,20 +379,20 @@ export function CatJumpShell({ game }: { game: Game; previewMode?: boolean; scen
   let overlayTitle = '', overlaySub = '', overlayBtn = '', overlayAction = () => {}
   let showStars = false
   if (S.status === 'levelcomplete') {
-    overlayTitle = 'Nice hopping!'
-    overlaySub = `${S.levelName} — cleared!`
-    overlayBtn = S.levelIndex + 1 < levels.length ? 'Next river' : 'Finish'
+    overlayTitle = 'Nhảy giỏi lắm!'
+    overlaySub = `${S.levelName} — hoàn thành!`
+    overlayBtn = S.levelIndex + 1 < levels.length ? 'Sông tiếp theo' : 'Kết thúc'
     overlayAction = nextLevel
     showStars = true
   } else if (S.status === 'gameover') {
-    overlayTitle = 'Splash!'
-    overlaySub = 'The cat fell in. Try this river again.'
-    overlayBtn = 'Try again'
+    overlayTitle = 'Tõm!'
+    overlaySub = 'Chú mèo rơi xuống nước rồi. Thử lại con sông này nhé.'
+    overlayBtn = 'Thử lại'
     overlayAction = () => startLevel(S.levelIndex, S.score)
   } else if (S.status === 'win') {
-    overlayTitle = 'You crossed every river!'
-    overlaySub = `Final score ★ ${S.score}`
-    overlayBtn = 'Play again'
+    overlayTitle = 'Bạn đã qua hết các con sông!'
+    overlaySub = `Điểm cuối ★ ${S.score}`
+    overlayBtn = 'Chơi lại'
     overlayAction = () => startLevel(0, 0)
   }
 
@@ -401,7 +401,7 @@ export function CatJumpShell({ game }: { game: Game; previewMode?: boolean; scen
       <div className="cj">
         <style>{CSS}</style>
         <div style={{ padding: '2rem', textAlign: 'center', color: '#9C8A78', fontWeight: 700, fontFamily: 'sans-serif' }}>
-          No levels yet — generate a Cat Jump game to start playing.
+          Chưa có màn chơi nào — hãy tạo trò Mèo Nhảy để bắt đầu.
         </div>
       </div>
     )
@@ -498,9 +498,9 @@ export function CatJumpShell({ game }: { game: Game; previewMode?: boolean; scen
 
             {/* ── HUD: level + progress ── */}
             <div style={{ position: 'absolute', left: '22px', top: '18px', padding: '10px 18px 12px', background: '#fffdf7', borderRadius: '18px', boxShadow: '0 5px 10px rgba(0,0,0,.12)', minWidth: '150px' }}>
-              <div style={{ fontFamily: "'Baloo 2', cursive", fontSize: '19px', fontWeight: 800, color: '#5a3d12', lineHeight: 1 }}>Level {S.levelIndex + 1}</div>
+              <div style={{ fontFamily: "'Baloo 2', cursive", fontSize: '19px', fontWeight: 800, color: '#5a3d12', lineHeight: 1 }}>Màn {S.levelIndex + 1}</div>
               <div style={{ fontSize: '12px', fontWeight: 700, color: '#c97b4a', marginTop: '3px' }}>{S.levelName}</div>
-              {S.hint && <div style={{ fontSize: '11px', fontWeight: 600, color: '#8a7a5c', marginTop: '2px', fontStyle: 'italic' }}>Hint: {S.hint}</div>}
+              {S.hint && <div style={{ fontSize: '11px', fontWeight: 600, color: '#8a7a5c', marginTop: '2px', fontStyle: 'italic' }}>Gợi ý: {S.hint}</div>}
               <div style={{ marginTop: '9px', width: '152px', height: '9px', borderRadius: '6px', background: '#ecdfc8', overflow: 'hidden' }}>
                 <div style={{ height: '100%', width: ((S.catIndex / 8) * 100) + '%', background: '#82a35f', borderRadius: '6px', transition: 'width .5s ease' }} />
               </div>
@@ -535,7 +535,7 @@ export function CatJumpShell({ game }: { game: Game; previewMode?: boolean; scen
             {S.status === 'playing' && !S.hopping && (
               <>
                 <div style={{ position: 'absolute', left: '50%', top: '474px', transform: 'translateX(-50%)', whiteSpace: 'nowrap', fontFamily: "'Baloo 2', cursive", fontSize: '17px', fontWeight: 700, color: '#fffdf7', textShadow: '0 2px 4px rgba(0,0,0,.25)' }}>
-                  Which number comes next?
+                  Số nào tiếp theo?
                 </div>
                 <div style={{ position: 'absolute', left: '50%', top: '506px', transform: 'translateX(-50%)', display: 'flex', gap: '26px' }}>
                   {S.choices.map((c, i) => (

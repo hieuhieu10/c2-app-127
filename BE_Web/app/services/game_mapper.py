@@ -198,23 +198,41 @@ def feed_cats_content_to_items(content: dict) -> list[dict]:
 
 
 def farm_builder_content_to_items(content: dict) -> list[dict]:
-    challenges = content.get("challenges")
-    if not isinstance(challenges, list) or not challenges:
-        raise GameMappingError("BE_AI farm_builder content must include a non-empty challenges list")
+    problems = content.get("problems")
+    if not isinstance(problems, list) or len(problems) < 3:
+        raise GameMappingError("BE_AI farm_builder content must include at least 3 problems")
 
     mapped: list[dict] = []
-    for index, challenge in enumerate(challenges):
-        target_area = challenge.get("target_area")
-        if not isinstance(target_area, int) or target_area < 1:
-            raise GameMappingError(f"BE_AI farm_builder challenge {index} must have a positive integer target_area")
+    for index, problem in enumerate(problems):
+        shape_type = problem.get("shape_type")
+        constraint = problem.get("constraint")
+        value = problem.get("value")
+        if not isinstance(shape_type, str) or not shape_type.strip():
+            raise GameMappingError(f"BE_AI farm_builder problem {index} is missing shape_type")
+        if not isinstance(constraint, str) or not constraint.strip():
+            raise GameMappingError(f"BE_AI farm_builder problem {index} is missing constraint")
+        if not isinstance(value, int) or value < 1:
+            raise GameMappingError(f"BE_AI farm_builder problem {index} must have a positive integer value")
+
+        # Human-readable question sentence
+        question = f"Xây trang trại {shape_type} với {constraint} = {value}"
+        if constraint == "diện tích":
+            question += " ô vuông"
+        else:
+            question += " đoạn rào"
+
+        # options_json encodes the full problem spec for the shell:
+        #   [0] shape_type  — e.g. "hình vuông"
+        #   [1] constraint  — e.g. "diện tích"
+        #   [2] str(value)  — e.g. "12"
         mapped.append(
             {
                 "order_index": index,
-                "question": f"Quây đúng {target_area} ô vuông",
-                "correct_answer": str(target_area),
-                "options_json": [],
-                "explanation": challenge.get("explanation") or "",
-                "hint": challenge.get("hint") or "",
+                "question": question,
+                "correct_answer": f"{shape_type}|{constraint}|{value}",
+                "options_json": [shape_type, constraint, str(value)],
+                "explanation": problem.get("explanation") or "",
+                "hint": problem.get("hint") or "",
                 "validation_status": "valid",
                 "validation_errors_json": [],
             }

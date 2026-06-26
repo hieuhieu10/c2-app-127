@@ -41,7 +41,7 @@ export function TreasureHuntShell({ game, fullscreen = false }: TreasureHuntShel
   if (!currentQuestion || !activePlayer) {
     return (
       <div className="rounded-lg border border-dashed border-border bg-secondary/20 p-8 text-center text-muted-foreground">
-        No game items available.
+        Chưa có nội dung trò chơi nào.
       </div>
     )
   }
@@ -93,12 +93,12 @@ export function TreasureHuntShell({ game, fullscreen = false }: TreasureHuntShel
       <div className="bg-gradient-to-r from-cyan-400 via-sky-300 to-emerald-300 px-5 py-4">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
-            <div className="text-xs font-black uppercase tracking-[0.18em] text-emerald-950/75">Game Template</div>
-            <h3 className="text-2xl font-black text-emerald-950">Treasure Hunt</h3>
+            <div className="text-xs font-black uppercase tracking-[0.18em] text-emerald-950/75">Mẫu Trò Chơi</div>
+            <h3 className="text-2xl font-black text-emerald-950">Săn Kho Báu</h3>
           </div>
           <div className="grid grid-cols-2 gap-2 text-center">
-            <StatPill label="Round" value={`${currentIndex + 1}/${game.items.length}`} />
-            <StatPill label="Move" value={`+${Math.round(movePercent)}%`} />
+            <StatPill label="Vòng" value={`${currentIndex + 1}/${game.items.length}`} />
+            <StatPill label="Tiến" value={`+${Math.round(movePercent)}%`} />
           </div>
         </div>
       </div>
@@ -116,7 +116,7 @@ export function TreasureHuntShell({ game, fullscreen = false }: TreasureHuntShel
           <div className="rounded-lg border border-white/70 bg-white/80 p-4 shadow-lg">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <div className="text-xs font-black uppercase tracking-[0.16em] text-sky-700">Current Turn</div>
+                <div className="text-xs font-black uppercase tracking-[0.16em] text-sky-700">Lượt Hiện Tại</div>
                 <div className="mt-1 flex items-center gap-2 text-xl font-black">
                   <span>{activePlayer.avatar}</span>
                   <span>{activePlayer.name}</span>
@@ -144,8 +144,8 @@ export function TreasureHuntShell({ game, fullscreen = false }: TreasureHuntShel
               {currentQuestion.explanation && <p className="mt-2 text-sm opacity-85">{currentQuestion.explanation}</p>}
               <Button onClick={goNext} className="mt-4 h-11 w-full bg-emerald-600 font-black hover:bg-emerald-700">
                 {players.some((player) => player.position >= FINISH_POSITION) || currentIndex >= game.items.length - 1
-                  ? 'View Results'
-                  : 'Next Question'}
+                  ? 'Xem Kết Quả'
+                  : 'Câu Tiếp'}
               </Button>
             </div>
           )}
@@ -227,10 +227,10 @@ function TreasureMap({
       />
 
       <div className="absolute left-[7%] top-[77%] rounded-full border border-amber-950/25 bg-[#fff7d6]/95 px-3 py-1 text-xs font-black text-amber-950 shadow">
-        Start
+        Bắt đầu
       </div>
-      <TreasureCave className="right-[2%] top-[26%]" label="Treasure Cave 1" />
-      <TreasureCave className="right-[2%] top-[63%]" label="Treasure Cave 2" />
+      <TreasureCave className="right-[2%] top-[26%]" label="Hang Báu 1" />
+      <TreasureCave className="right-[2%] top-[63%]" label="Hang Báu 2" />
 
       {players.map((player, index) => {
         const point = getPathPoint(getVisualProgress(player.position), index, players.length)
@@ -304,7 +304,7 @@ function QuestionCard({
 }) {
   return (
     <div className="rounded-lg border border-white/70 bg-white/90 p-4 shadow-lg">
-      <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-700">Question</div>
+      <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-700">Câu Hỏi</div>
       <h4 className="mt-2 text-xl font-black leading-snug text-slate-950">{question}</h4>
       <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
         {options.map((option, index) => {
@@ -342,7 +342,7 @@ function QuestionCard({
 function Leaderboard({ players }: { players: TreasurePlayer[] }) {
   return (
     <div className="rounded-lg border border-white/70 bg-white/80 p-4 shadow-lg">
-      <div className="text-sm font-black text-slate-950">Leaderboard</div>
+      <div className="text-sm font-black text-slate-950">Bảng Xếp Hạng</div>
       <div className="mt-3 space-y-3">
         {players.map((player, index) => (
           <div key={player.id}>
@@ -385,38 +385,38 @@ function TreasureEndScreen({
           <div className="absolute inset-x-8 bottom-2 h-16 rounded-t-full bg-yellow-300/80 blur-md" />
           <AssetImage
             src={treasureHuntAssets.objects.caveOpen}
-            alt="Open treasure cave"
+            alt="Hang kho báu đã mở"
             className="absolute inset-0 h-full w-full object-contain"
             fallback={<div className="absolute inset-0 flex items-end justify-center pb-5 text-6xl">⛰️</div>}
           />
           <AssetImage
             src={treasureHuntAssets.objects.treasureChest}
-            alt="Treasure chest"
+            alt="Rương kho báu"
             className="absolute bottom-0 left-1/2 h-20 w-20 -translate-x-1/2 object-contain"
             fallback={<div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-5xl">💰</div>}
           />
         </div>
-        <div className="mt-4 text-xs font-black uppercase tracking-[0.2em] text-amber-800">Treasure Cave Opened</div>
-        <h3 className="mt-2 text-4xl font-black">{winner.name} wins!</h3>
+        <div className="mt-4 text-xs font-black uppercase tracking-[0.2em] text-amber-800">Hang Kho Báu Đã Mở</div>
+        <h3 className="mt-2 text-4xl font-black">{winner.name} chiến thắng!</h3>
         <p className="mt-2 text-sm font-semibold text-slate-700">
-          The player found gold and jewels after {totalQuestions} questions.
+          Người chơi tìm thấy vàng và châu báu sau {totalQuestions} câu hỏi.
         </p>
       </div>
 
       <div className="grid gap-3 p-5 md:grid-cols-3">
         {rankings.map((player, index) => (
           <div key={player.id} className="rounded-lg border border-white/70 bg-white/80 p-4 text-center shadow">
-            <div className="text-sm font-black text-amber-700">Rank {index + 1}</div>
+            <div className="text-sm font-black text-amber-700">Hạng {index + 1}</div>
             <div className="mt-2 text-4xl">{player.avatar}</div>
             <div className="mt-1 text-xl font-black">{player.name}</div>
             <div className="mt-3 grid grid-cols-2 gap-2 text-sm font-bold">
               <div className="rounded bg-emerald-100 p-2">
                 <div>{player.correctAnswers}</div>
-                <div className="text-xs text-emerald-800">Correct</div>
+                <div className="text-xs text-emerald-800">Đúng</div>
               </div>
               <div className="rounded bg-sky-100 p-2">
                 <div>{player.score}</div>
-                <div className="text-xs text-sky-800">Score</div>
+                <div className="text-xs text-sky-800">Điểm</div>
               </div>
             </div>
           </div>
@@ -425,7 +425,7 @@ function TreasureEndScreen({
 
       <div className="border-t border-white/70 p-5">
         <Button onClick={onRestart} className="h-12 w-full bg-emerald-600 text-base font-black hover:bg-emerald-700">
-          Play Again
+          Chơi Lại
         </Button>
       </div>
     </div>

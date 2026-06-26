@@ -34,7 +34,7 @@ function StandardGameShell({ game, previewMode = false }: GameShellProps) {
   if (!currentItem) {
     return (
       <div className="rounded-lg border border-dashed border-border bg-secondary/20 p-8 text-center text-muted-foreground">
-        No game items available.
+        Chưa có nội dung trò chơi nào.
       </div>
     )
   }
@@ -49,7 +49,7 @@ function StandardGameShell({ game, previewMode = false }: GameShellProps) {
       <div className="border-b border-border px-5 py-4">
         <div className="flex items-center justify-between gap-4">
           <div>
-            <div className="text-xs font-semibold uppercase text-muted-foreground">Game Shell</div>
+            <div className="text-xs font-semibold uppercase text-muted-foreground">Khung Trò Chơi</div>
             <h3 className="text-lg font-semibold capitalize">{game.templateType.replaceAll('-', ' ')}</h3>
           </div>
           <div className="text-sm text-muted-foreground">
@@ -69,8 +69,8 @@ function StandardGameShell({ game, previewMode = false }: GameShellProps) {
                 : 'border-amber-200 bg-amber-50 text-amber-900'
             }`}
           >
-            <div className="font-semibold">{isCorrect ? 'Correct answer' : 'Review answer'}</div>
-            <p className="mt-1">{currentItem.explanation || 'No explanation provided.'}</p>
+            <div className="font-semibold">{isCorrect ? 'Đáp án đúng' : 'Xem lại đáp án'}</div>
+            <p className="mt-1">{currentItem.explanation || 'Chưa có giải thích.'}</p>
           </div>
         )}
 
@@ -83,21 +83,21 @@ function StandardGameShell({ game, previewMode = false }: GameShellProps) {
             }}
             disabled={currentIndex === 0}
           >
-            Previous
+            Quay lại
           </Button>
           <Button
             onClick={() => setCheckedItems((previous) => ({ ...previous, [currentItem.id]: true }))}
             disabled={!currentAnswer}
             className="sm:flex-1"
           >
-            Check Answer
+            Kiểm Tra
           </Button>
           <Button
             variant="outline"
             onClick={() => setCurrentIndex((value) => Math.min(game.items.length - 1, value + 1))}
             disabled={currentIndex === game.items.length - 1}
           >
-            Next
+            Tiếp
           </Button>
         </div>
       </div>
@@ -139,7 +139,7 @@ function PressTheButtonShell({ game, previewMode = false }: GameShellProps) {
   if (!currentItem) {
     return (
       <div className="rounded-lg border border-dashed border-border bg-secondary/20 p-8 text-center text-muted-foreground">
-        No game items available.
+        Chưa có nội dung trò chơi nào.
       </div>
     )
   }
@@ -179,9 +179,9 @@ function PressTheButtonShell({ game, previewMode = false }: GameShellProps) {
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full border-4 border-yellow-300 bg-yellow-400 text-4xl shadow-[0_0_40px_rgba(250,204,21,0.55)]">
             ★
           </div>
-          <div className="mt-5 text-sm font-black uppercase tracking-[0.24em] text-cyan-100">Game complete</div>
+          <div className="mt-5 text-sm font-black uppercase tracking-[0.24em] text-cyan-100">Hoàn thành</div>
           <div className="mt-2 text-6xl font-black tracking-tight">{score}</div>
-          <div className="mt-2 text-sm text-cyan-100">Final score</div>
+          <div className="mt-2 text-sm text-cyan-100">Điểm cuối</div>
         </div>
         <div className="grid gap-3 p-5 sm:grid-cols-2">
           <Button
@@ -196,10 +196,10 @@ function PressTheButtonShell({ game, previewMode = false }: GameShellProps) {
               setFinished(false)
             }}
           >
-            Play Again
+            Chơi Lại
           </Button>
           <Button variant="outline" disabled className="h-12 border-white/20 bg-white/5 text-white">
-            {game.items.length} questions completed
+            Đã hoàn thành {game.items.length} câu
           </Button>
         </div>
       </div>
@@ -214,20 +214,20 @@ function PressTheButtonShell({ game, previewMode = false }: GameShellProps) {
         </div>
 
         <div className="grid grid-cols-3 gap-2 p-4 text-center sm:gap-3">
-          <ScoreTile label="Time" value={`${timeLeft}s`} tone={timeLeft <= 4 ? 'danger' : 'default'} />
-          <ScoreTile label="Score" value={score.toString()} />
-          <ScoreTile label="Streak" value={`x${streak}`} tone={streak > 1 ? 'hot' : 'default'} />
+          <ScoreTile label="Thời gian" value={`${timeLeft}s`} tone={timeLeft <= 4 ? 'danger' : 'default'} />
+          <ScoreTile label="Điểm" value={score.toString()} />
+          <ScoreTile label="Chuỗi" value={`x${streak}`} tone={streak > 1 ? 'hot' : 'default'} />
         </div>
       </div>
 
       <div className="space-y-5 bg-[linear-gradient(135deg,#020617_0%,#082f49_55%,#064e3b_100%)] p-5">
         <div className="flex items-center justify-between text-xs font-black uppercase tracking-[0.18em] text-cyan-100">
-          <span>Round {currentIndex + 1} / {game.items.length}</span>
-          <span>Press the Button</span>
+          <span>Vòng {currentIndex + 1} / {game.items.length}</span>
+          <span>Nhấn Nút</span>
         </div>
 
         <div className="rounded-lg border border-cyan-300/30 bg-white/10 p-6 text-center shadow-inner backdrop-blur">
-          <div className="text-sm font-bold uppercase tracking-[0.25em] text-cyan-100">Challenge</div>
+          <div className="text-sm font-bold uppercase tracking-[0.25em] text-cyan-100">Thử Thách</div>
           <div className="mt-3 text-4xl font-black leading-tight tracking-tight sm:text-6xl">{currentItem.question}</div>
         </div>
 
@@ -266,13 +266,13 @@ function PressTheButtonShell({ game, previewMode = false }: GameShellProps) {
 
         {checked && (
           <div className={`rounded-lg border p-4 text-sm ${isCorrect ? 'border-lime-300/40 bg-lime-400/15 text-lime-50' : 'border-yellow-300/40 bg-yellow-400/15 text-yellow-50'}`}>
-            <div className="text-lg font-black">{isCorrect ? 'Nice hit!' : timeLeft === 0 ? 'Time is up' : 'Try the next one'}</div>
+            <div className="text-lg font-black">{isCorrect ? 'Tuyệt vời!' : timeLeft === 0 ? 'Hết giờ' : 'Thử câu tiếp theo'}</div>
             <p className="mt-1 text-white/85">{currentItem.explanation}</p>
           </div>
         )}
 
         <Button onClick={nextQuestion} disabled={!checked} className="h-12 w-full bg-yellow-400 font-black text-slate-950 hover:bg-yellow-300 disabled:bg-white/20 disabled:text-white/50">
-          {currentIndex === game.items.length - 1 ? 'Finish Game' : 'Next Question'}
+          {currentIndex === game.items.length - 1 ? 'Kết Thúc' : 'Câu Tiếp'}
         </Button>
       </div>
     </div>
@@ -347,7 +347,7 @@ function ItemRenderer({
       <div className="space-y-4">
         <h4 className="text-xl font-semibold leading-snug">{item.question}</h4>
         <div className="grid grid-cols-2 gap-3">
-          {['True', 'False'].map((option) => (
+          {['Đúng', 'Sai'].map((option) => (
             <button
               key={option}
               type="button"
@@ -370,7 +370,7 @@ function ItemRenderer({
       <input
         value={answer}
         onChange={(event) => onAnswer(event.target.value)}
-        placeholder="Type answer"
+        placeholder="Nhập đáp án"
         className="w-full rounded-md border border-input bg-background px-3 py-3 text-base outline-none focus:ring-2 focus:ring-ring"
       />
     </div>

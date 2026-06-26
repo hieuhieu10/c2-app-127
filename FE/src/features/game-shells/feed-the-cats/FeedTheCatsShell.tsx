@@ -131,7 +131,7 @@ function CatView({ cat, idx }: { cat: Cat; idx: number }) {
   const vars: CSSVars = { '--body': cat.body, '--ear': cat.ear, '--yd': `${idx * -3.05}s` }
   return (
     <div className="fhc-cat" data-cat-id={cat.id} style={vars}>
-      <div className="fhc-yum-wrap">{cat.happy ? <div className="fhc-yum">★ Yum!</div> : null}</div>
+      <div className="fhc-yum-wrap">{cat.happy ? <div className="fhc-yum">★ Ngon!</div> : null}</div>
       <div className={`fhc-fx${cat.happy ? ' bounce' : cat.wrong ? ' shake' : ''}`}>
         <div className="fhc-catbox">
           <div className="fhc-tail" />
@@ -171,10 +171,10 @@ function CatView({ cat, idx }: { cat: Cat; idx: number }) {
         </div>
       </div>
       {cat.full ? (
-        <div className="fhc-full">Full &amp; happy ★</div>
+        <div className="fhc-full">No nê ★</div>
       ) : (
         <div className="fhc-want">
-          <div className="lbl">I want</div>
+          <div className="lbl">Mình muốn</div>
           <div className="tgt">{cat.target}</div>
         </div>
       )}
@@ -291,7 +291,7 @@ export function FeedTheCatsShell({ game }: { game: Game; previewMode?: boolean; 
     return (
       <div className="fhc">
         <style>{CSS}</style>
-        <div className="fhc-empty">No treats to serve yet — add some questions to feed the cats.</div>
+        <div className="fhc-empty">Chưa có miếng cá nào — hãy thêm câu hỏi để cho mèo ăn.</div>
       </div>
     )
   }
@@ -304,16 +304,16 @@ export function FeedTheCatsShell({ game }: { game: Game; previewMode?: boolean; 
         <div className="fhc-brand">
           <div className="fhc-logo"><div className="tri" /></div>
           <div>
-            <div className="fhc-title">Feed the Hungry Cats</div>
-            <div className="fhc-sub">Drag each fish treat to the cat whose number matches the answer</div>
+            <div className="fhc-title">Cho Mèo Đói Ăn</div>
+            <div className="fhc-sub">Kéo từng miếng cá tới chú mèo có số khớp với đáp án</div>
           </div>
         </div>
         <div className="fhc-tools">
           <div className="fhc-score"><span className="fishdot" /><span>{G.score}</span></div>
-          <button className="fhc-btn" onClick={toggleSound} title={muted ? 'Sound off' : 'Sound on'}>
-            <span className="note">♪</span>{muted ? 'Sound off' : 'Sound on'}
+          <button className="fhc-btn" onClick={toggleSound} title={muted ? 'Tắt âm' : 'Bật âm'}>
+            <span className="note">♪</span>{muted ? 'Tắt âm' : 'Bật âm'}
           </button>
-          <button className="fhc-btn primary" onClick={newGame}>New game</button>
+          <button className="fhc-btn primary" onClick={newGame}>Chơi mới</button>
         </div>
       </div>
 
@@ -325,10 +325,10 @@ export function FeedTheCatsShell({ game }: { game: Game; previewMode?: boolean; 
 
       <div className="fhc-tray">
         <div className="fhc-tray-inner">
-          <div className="fhc-tray-label">FISH TREAT TRAY</div>
+          <div className="fhc-tray-label">KHAY MIẾNG CÁ</div>
           <div className="fhc-tray-row">
             {trayFoods.map((f) => <FishTreat key={f.id} food={f} onDown={onFoodDown} />)}
-            {trayEmpty ? <div className="fhc-tray-empty">All treats served!</div> : null}
+            {trayEmpty ? <div className="fhc-tray-empty">Đã phục vụ hết!</div> : null}
           </div>
         </div>
       </div>
@@ -345,9 +345,9 @@ export function FeedTheCatsShell({ game }: { game: Game; previewMode?: boolean; 
           <div className="star" style={{ left: '70%', top: '24%', fontSize: 24, color: '#5FB38F', animationDelay: '.3s' }}>★</div>
           <div className="star" style={{ left: '46%', top: '18%', fontSize: 20, color: '#EFA661', animationDelay: '.6s' }}>★</div>
           <div className="card">
-            <h2>Every cat is full! ★</h2>
-            <p>Great matching — the kitties are purring.</p>
-            <button onClick={nextRound}>Feed more cats</button>
+            <h2>Mọi chú mèo đều no! ★</h2>
+            <p>Ghép cặp tuyệt vời — các bé mèo đang kêu rừ rừ.</p>
+            <button onClick={nextRound}>Cho thêm mèo ăn</button>
           </div>
         </div>
       ) : null}

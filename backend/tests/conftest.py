@@ -164,22 +164,30 @@ def valid_content(template_id: str) -> dict:
             ],
         }
     if template_id == "farm_builder":
-        def challenge(area: int, hint: str) -> dict:
+        def problem(shape: str, con: str, val: int, hint: str, explanation: str) -> dict:
             return {
-                "target_area": area,
+                "shape_type": shape,
+                "constraint": con,
+                "value": val,
                 "hint": hint,
-                "explanation": f"Hình chữ nhật với diện tích {area} ô vuông có chu vi nhỏ nhất khi các cạnh gần bằng nhau.",
+                "explanation": explanation,
                 "objective_id": OBJ,
             }
 
         return {
-            "title": "Xây Dựng Trang Trại — Diện tích",
+            "title": "Xây Dựng Trang Trại — Hình học",
             "objective_id": OBJ,
-            "instructions": "Đặt hàng rào để quây đúng số ô vuông được chỉ định!",
-            "challenges": [
-                challenge(6, "Hãy thử hình chữ nhật 2×3 — đó là 6 ô vuông!"),
-                challenge(12, "Hình 3×4 có đúng 12 ô vuông và cần ít hàng rào nhất."),
-                challenge(16, "Hình vuông 4×4 là cách gọn nhất cho diện tích 16!"),
+            "instructions": "Đặt hàng rào để tạo đúng hình theo yêu cầu!",
+            "problems": [
+                problem("hình vuông", "diện tích", 9,
+                        "Hình vuông có 4 cạnh bằng nhau. 3 × 3 = 9.",
+                        "Diện tích = cạnh × cạnh = 3 × 3 = 9 ô vuông."),
+                problem("hình chữ nhật", "diện tích", 12,
+                        "Hãy thử cạnh 3 và 4. 3 × 4 = 12.",
+                        "Diện tích = chiều dài × chiều rộng = 3 × 4 = 12 ô vuông."),
+                problem("hình chữ nhật", "chu vi", 14,
+                        "Nhớ công thức: chu vi = 2 × (dài + rộng). Thử dài=4, rộng=3.",
+                        "Chu vi = 2 × (4 + 3) = 14 đoạn rào."),
             ],
         }
     raise ValueError(template_id)
@@ -207,7 +215,7 @@ def invalid_content(template_id: str) -> dict:
     elif template_id == "beat_forge":
         c["lanes"] = c["lanes"][:1]                  # below min_length=2
     elif template_id == "farm_builder":
-        c["challenges"] = c["challenges"][:2]        # below min_length=3
+        c["problems"] = c["problems"][:2]            # below min_length=3
     return c
 
 

@@ -26,12 +26,12 @@ import type { Game } from '@/types/app'
 // ── Constants ───────────────────────────────────────────────────────────────────
 
 const INST_MAP: Record<string, { label: string; role: string; color: string; tint: string }> = {
-  boom:  { label: 'Boom',  role: 'the heartbeat',  color: '#e08a6b', tint: '#eaa78e' },
-  clap:  { label: 'Clap',  role: 'the backbeat',   color: '#d98aa6', tint: '#e6abbf' },
-  tss:   { label: 'Tss',   role: 'fast hats',      color: '#8fb8d4', tint: '#b6d2e4' },
-  bloop: { label: 'Bloop', role: 'sustained bass', color: '#9b8cc7', tint: '#bdb2dd' },
-  yeah:  { label: 'Yeah!', role: 'vocal chop',     color: '#e0b35e', tint: '#ecca8a' },
-  pluck: { label: 'Pluck', role: 'melody',         color: '#7bbf9e', tint: '#a6d6bf' },
+  boom:  { label: 'Boom',  role: 'nhịp tim',     color: '#e08a6b', tint: '#eaa78e' },
+  clap:  { label: 'Clap',  role: 'nhịp phụ',     color: '#d98aa6', tint: '#e6abbf' },
+  tss:   { label: 'Tss',   role: 'hi-hat nhanh', color: '#8fb8d4', tint: '#b6d2e4' },
+  bloop: { label: 'Bloop', role: 'bè trầm ngân', color: '#9b8cc7', tint: '#bdb2dd' },
+  yeah:  { label: 'Yeah!', role: 'tiếng hát',    color: '#e0b35e', tint: '#ecca8a' },
+  pluck: { label: 'Pluck', role: 'giai điệu',    color: '#7bbf9e', tint: '#a6d6bf' },
 }
 
 // Bar capacity in 24th-units; beatU = grid-line spacing (also 24th-units).
@@ -398,17 +398,17 @@ export function BeatForgeShell({ game }: { game: Game; previewMode?: boolean; sc
   // ── Palette ──────────────────────────────────────────────────────────────────
   // dispN/dispD show the actual fraction value (e.g. dotted quarter → 3/8).
   const allPalette: PaletteItem[] = [
-    { n:1, d:2, dispN:1, dispD:2,  name:'half',        w:184, total: initSupply.half },
-    { n:1, d:4, dispN:1, dispD:4,  name:'quarter',     w:104, total: initSupply.quarter },
-    { n:1, d:8, dispN:1, dispD:8,  name:'eighth',      w: 60, total: initSupply.eighth },
-    { n:1, d:2, dot:true, dispN:3, dispD:4,  name:'dot ½',  w:220, total: initSupply.dottedHalf },
-    { n:1, d:4, dot:true, dispN:3, dispD:8,  name:'dot ¼',  w:136, total: initSupply.dottedQuarter },
-    { n:1, d:8, triplet:true, dispN:1, dispD:12, name:'triplet ⅛', w: 48, total: initSupply.tripletEighth },
+    { n:1, d:2, dispN:1, dispD:2,  name:'nốt trắng',    w:184, total: initSupply.half },
+    { n:1, d:4, dispN:1, dispD:4,  name:'nốt đen',      w:104, total: initSupply.quarter },
+    { n:1, d:8, dispN:1, dispD:8,  name:'móc đơn',      w: 60, total: initSupply.eighth },
+    { n:1, d:2, dot:true, dispN:3, dispD:4,  name:'trắng chấm',  w:220, total: initSupply.dottedHalf },
+    { n:1, d:4, dot:true, dispN:3, dispD:8,  name:'đen chấm',  w:136, total: initSupply.dottedQuarter },
+    { n:1, d:8, triplet:true, dispN:1, dispD:12, name:'chùm ba', w: 48, total: initSupply.tripletEighth },
   ]
   const palette = allPalette.filter(p => p.total > 0)
 
   const target    = simplify(cap24, 24)
-  const targetLbl = target.d === 1 ? `${target.n} whole` : `${target.n}/${target.d}`
+  const targetLbl = target.d === 1 ? `${target.n} nốt tròn` : `${target.n}/${target.d}`
 
   // ── Guard ────────────────────────────────────────────────────────────────────
   if (game.items.length < 2) {
@@ -416,7 +416,7 @@ export function BeatForgeShell({ game }: { game: Game; previewMode?: boolean; sc
       <div className="bf">
         <style>{CSS}</style>
         <div style={{ padding:'2rem', textAlign:'center', color:'#9b8cc7', fontWeight:700, fontFamily:'sans-serif' }}>
-          No Beat Forge puzzle yet — generate a game to start playing.
+          Chưa có câu đố Xưởng Nhịp Điệu — hãy tạo một trò chơi để bắt đầu.
         </div>
       </div>
     )
@@ -430,13 +430,13 @@ export function BeatForgeShell({ game }: { game: Game; previewMode?: boolean; sc
       {/* ── TOP BAR ── */}
       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:'16px', flexWrap:'wrap', padding:'13px 22px', background:'#fbf7ee', border:'2px solid #3a3326', borderRadius:'18px', boxShadow:'0 3px 0 #3a3326' }}>
         <div style={{ display:'flex', flexDirection:'column', lineHeight:1, flex:'0 0 auto' }}>
-          <span style={{ fontWeight:800, fontSize:'25px', color:'#3a3326', letterSpacing:'-0.6px' }}>Beat Forge</span>
-          <span style={{ fontFamily:"'Patrick Hand',cursive", fontSize:'13px', color:'#9b8cc7', marginTop:'3px' }}>fill every bar · make a beat</span>
+          <span style={{ fontWeight:800, fontSize:'25px', color:'#3a3326', letterSpacing:'-0.6px' }}>Xưởng Nhịp Điệu</span>
+          <span style={{ fontFamily:"'Patrick Hand',cursive", fontSize:'13px', color:'#9b8cc7', marginTop:'3px' }}>lấp đầy mọi ô nhịp · tạo một giai điệu</span>
         </div>
 
         <div style={{ display:'flex', alignItems:'center', gap:'8px', flex:'0 0 auto' }}>
           <span style={{ fontWeight:700, fontSize:'22px', color:'#3a3326', background:'#fffdf7', border:'2px solid #3a3326', borderRadius:'10px', padding:'6px 18px' }}>{timeSig}</span>
-          <span style={{ fontSize:'11px', fontWeight:600, color:'#a89c84', letterSpacing:'0.4px' }}>TIME · fill to {targetLbl}</span>
+          <span style={{ fontSize:'11px', fontWeight:600, color:'#a89c84', letterSpacing:'0.4px' }}>NHỊP · lấp đến {targetLbl}</span>
         </div>
 
         <div style={{ display:'flex', alignItems:'center', gap:'14px', flex:'0 0 auto' }}>
@@ -452,7 +452,7 @@ export function BeatForgeShell({ game }: { game: Game; previewMode?: boolean; sc
             onClick={toggle}
             style={{ display:'flex', alignItems:'center', gap:'8px', fontFamily:"'Bricolage Grotesque',sans-serif", fontWeight:700, fontSize:'15px', color:'#3a3326', background:'#7bbf9e', border:'2px solid #3a3326', borderRadius:'999px', padding:'9px 19px', cursor:'pointer', boxShadow:'0 3px 0 #3a3326' }}
           >
-            {playing ? '■ Stop' : '▶ Play'}
+            {playing ? '■ Dừng' : '▶ Phát'}
           </button>
         </div>
       </div>
@@ -470,10 +470,10 @@ export function BeatForgeShell({ game }: { game: Game; previewMode?: boolean; sc
           const hint    = hints[laneIdx] ?? ''
 
           let helper = '', hue = '#bcb29c', showFrac2 = false, fNum = 0, fDen = 1
-          if (empty)      { helper = 'drag note blocks here →'; hue = '#bcb29c' }
-          else if (over)  { const o = simplify(total24 - cap24, 24); helper = 'over by'; hue = '#c8553d'; showFrac2 = true; fNum = o.n; fDen = o.d }
-          else if (full)  { helper = 'full — sounds clean!'; hue = meta.color }
-          else            { const r = simplify(cap24 - total24, 24); helper = 'needs'; hue = meta.color; showFrac2 = true; fNum = r.n; fDen = r.d }
+          if (empty)      { helper = 'kéo khối nốt vào đây →'; hue = '#bcb29c' }
+          else if (over)  { const o = simplify(total24 - cap24, 24); helper = 'dư'; hue = '#c8553d'; showFrac2 = true; fNum = o.n; fDen = o.d }
+          else if (full)  { helper = 'đầy — nghe rất gọn!'; hue = meta.color }
+          else            { const r = simplify(cap24 - total24, 24); helper = 'cần'; hue = meta.color; showFrac2 = true; fNum = r.n; fDen = r.d }
 
           const sumHue = empty ? '#bcb29c' : over ? '#c8553d' : meta.color
 
@@ -494,13 +494,13 @@ export function BeatForgeShell({ game }: { game: Game; previewMode?: boolean; sc
                     onClick={e => { e.stopPropagation(); setInstPickerFor(instPickerFor === lane.id ? null : lane.id) }}
                     style={{ alignSelf:'flex-start', fontWeight:800, fontSize:'15px', color:'#3a3326', background:meta.tint, border:'2px solid #3a3326', borderRadius:'9px', padding:'4px 12px', transform:'rotate(-2.5deg)', boxShadow:'0 2px 0 #3a3326', cursor:'pointer' }}
                   >
-                    {lane.inst ? meta.label : '+ pick ▾'}
+                    {lane.inst ? meta.label : '+ chọn ▾'}
                   </button>
                   {lane.inst && (
                     <button
                       onClick={e => clearLane(lane.id, e)}
                       style={{ fontFamily:"'Patrick Hand',cursive", fontSize:'13px', color:'#a89c84', background:'transparent', border:'none', cursor:'pointer', padding:'0', textAlign:'left' }}
-                    >↺ clear</button>
+                    >↺ xoá</button>
                   )}
                 </div>
 
@@ -523,7 +523,7 @@ export function BeatForgeShell({ game }: { game: Game; previewMode?: boolean; sc
                         <div
                           key={nt.id}
                           onClick={e => removeNote(lane.id, nt.id, e)}
-                          title="click to remove"
+                          title="bấm để xoá"
                           style={{ position:'relative', width:pct+'%', height:'100%', boxSizing:'border-box', background:meta.tint, border:'2px solid rgba(58,51,38,0.22)', borderRadius:'9px', display:'flex', alignItems:'center', justifyContent:'center', flex:'0 0 auto', cursor:'pointer' }}
                         >
                           <span style={{ display:'inline-flex', flexDirection:'column', alignItems:'center', lineHeight:0.82, fontWeight:800, fontSize:'18px', color:'#3a3326' }}>
@@ -544,7 +544,7 @@ export function BeatForgeShell({ game }: { game: Game; previewMode?: boolean; sc
 
                   {empty && (
                     <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center', fontFamily:"'Patrick Hand',cursive", color:'#bcb29c', fontSize:'16px', pointerEvents:'none' }}>
-                      drag note blocks here →
+                      kéo khối nốt vào đây →
                     </div>
                   )}
 
@@ -591,7 +591,7 @@ export function BeatForgeShell({ game }: { game: Game; previewMode?: boolean; sc
                   </div>
 
                   {full && (
-                    <div style={{ fontWeight:800, fontSize:'13px', color:'#fffdf7', background:meta.color, border:'2px solid #3a3326', borderRadius:'8px', padding:'3px 10px', transform:'rotate(-7deg)', boxShadow:'0 2px 0 #3a3326', animation:'bf-pop .35s ease-out' }}>FULL ✓</div>
+                    <div style={{ fontWeight:800, fontSize:'13px', color:'#fffdf7', background:meta.color, border:'2px solid #3a3326', borderRadius:'8px', padding:'3px 10px', transform:'rotate(-7deg)', boxShadow:'0 2px 0 #3a3326', animation:'bf-pop .35s ease-out' }}>ĐẦY ✓</div>
                   )}
                 </div>
 
@@ -633,8 +633,8 @@ export function BeatForgeShell({ game }: { game: Game; previewMode?: boolean; sc
       {/* ── NOTE BLOCKS PALETTE ── */}
       <div style={{ display:'flex', alignItems:'center', gap:'20px', padding:'15px 22px', background:'#fbf7ee', border:'2px solid #3a3326', borderRadius:'18px', boxShadow:'0 3px 0 #3a3326', flexWrap:'wrap' }}>
         <div style={{ display:'flex', flexDirection:'column', gap:'3px', width:'130px', flex:'0 0 auto' }}>
-          <span style={{ fontWeight:700, fontSize:'16px', color:'#3a3326' }}>Note blocks</span>
-          <span style={{ fontFamily:"'Patrick Hand',cursive", fontSize:'13px', color:'#7c7363', lineHeight:1.15 }}>drag onto a track — or tap a track, then a block</span>
+          <span style={{ fontWeight:700, fontSize:'16px', color:'#3a3326' }}>Khối nốt nhạc</span>
+          <span style={{ fontFamily:"'Patrick Hand',cursive", fontSize:'13px', color:'#7c7363', lineHeight:1.15 }}>kéo vào một dòng — hoặc chạm dòng rồi chạm khối</span>
         </div>
 
         <div style={{ display:'flex', alignItems:'flex-end', gap:'12px', flex:'1 1 auto', flexWrap:'wrap' }}>
@@ -671,7 +671,7 @@ export function BeatForgeShell({ game }: { game: Game; previewMode?: boolean; sc
                 </span>
                 <span style={{ fontFamily:"'Patrick Hand',cursive", fontSize:'12px', color:'#7c7363', marginTop:'1px' }}>{p.name}</span>
                 <span style={{ fontFamily:"'Bricolage Grotesque',sans-serif", fontWeight:700, fontSize:'11px', color:disabled ? '#c8553d' : accent }}>
-                  {rem} left
+                  còn {rem}
                 </span>
               </div>
             )
@@ -679,9 +679,9 @@ export function BeatForgeShell({ game }: { game: Game; previewMode?: boolean; sc
         </div>
 
         <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:'3px', flex:'0 0 auto' }}>
-          <span style={{ fontFamily:"'Patrick Hand',cursive", fontSize:'13px', color:'#a89c84' }}>adding to</span>
+          <span style={{ fontFamily:"'Patrick Hand',cursive", fontSize:'13px', color:'#a89c84' }}>đang thêm vào</span>
           <span style={{ fontWeight:700, fontSize:'17px', color: lanes[selected]?.inst ? INST_MAP[lanes[selected].inst!].color : '#bcb29c' }}>
-            {lanes[selected]?.inst ? INST_MAP[lanes[selected].inst!].label : `Lane ${selected + 1}`}
+            {lanes[selected]?.inst ? INST_MAP[lanes[selected].inst!].label : `Dòng ${selected + 1}`}
           </span>
         </div>
       </div>
@@ -690,10 +690,10 @@ export function BeatForgeShell({ game }: { game: Game; previewMode?: boolean; sc
       {(initSupply.dottedHalf > 0 || initSupply.dottedQuarter > 0 || initSupply.tripletEighth > 0) && (
         <div style={{ display:'flex', gap:'18px', flexWrap:'wrap', padding:'10px 18px', background:'#fffdf7', border:'1.5px solid #e3dccb', borderRadius:'12px', fontSize:'12px', color:'#7c7363', fontFamily:"'Patrick Hand',cursive" }}>
           {(initSupply.dottedHalf > 0 || initSupply.dottedQuarter > 0) && (
-            <span><strong style={{ color:'#9b8cc7' }}>·</strong> = dotted note — adds half its own value. Dotted ¼ = ¼ + ⅛ = <strong>3/8</strong>.</span>
+            <span><strong style={{ color:'#9b8cc7' }}>·</strong> = nốt chấm dôi — cộng thêm nửa giá trị của chính nó. Đen chấm = ¼ + ⅛ = <strong>3/8</strong>.</span>
           )}
           {initSupply.tripletEighth > 0 && (
-            <span><strong style={{ color:'#e08a6b' }}>T</strong> = triplet eighth — three fit in one quarter. Each = <strong>1/12</strong> of a whole note.</span>
+            <span><strong style={{ color:'#e08a6b' }}>T</strong> = chùm ba móc đơn — ba nốt vừa một nốt đen. Mỗi nốt = <strong>1/12</strong> của một nốt tròn.</span>
           )}
         </div>
       )}
@@ -709,23 +709,23 @@ export function BeatForgeShell({ game }: { game: Game; previewMode?: boolean; sc
             style={{ background:'#fbf7ee', border:'2px solid #3a3326', borderRadius:'22px', boxShadow:'0 12px 0 rgba(0,0,0,0.18)', padding:'32px', width:'420px', maxWidth:'100%', display:'flex', flexDirection:'column', gap:'18px', textAlign:'center' }}
           >
             <span style={{ fontSize:'52px', lineHeight:1 }}>🎵</span>
-            <span style={{ fontWeight:800, fontSize:'26px', color:'#3a3326' }}>Beat complete!</span>
+            <span style={{ fontWeight:800, fontSize:'26px', color:'#3a3326' }}>Hoàn thành giai điệu!</span>
             <span style={{ fontFamily:"'Patrick Hand',cursive", fontSize:'16px', color:'#7c7363', lineHeight:1.4 }}>
-              You filled all {numLanes} bars in <strong>{timeSig}</strong> time using every note block.
-              Press Play to hear your beat!
+              Bạn đã lấp đầy cả {numLanes} ô nhịp <strong>{timeSig}</strong> bằng mọi khối nốt.
+              Nhấn Phát để nghe giai điệu của bạn!
             </span>
             <div style={{ display:'flex', gap:'12px', justifyContent:'center', flexWrap:'wrap' }}>
               <button
                 onClick={toggle}
                 style={{ fontFamily:"'Bricolage Grotesque',sans-serif", fontWeight:700, fontSize:'15px', color:'#3a3326', background:'#7bbf9e', border:'2px solid #3a3326', borderRadius:'999px', padding:'10px 22px', cursor:'pointer', boxShadow:'0 3px 0 #3a3326' }}
               >
-                {playing ? '■ Stop' : '▶ Play my beat'}
+                {playing ? '■ Dừng' : '▶ Phát giai điệu'}
               </button>
               <button
                 onClick={() => setWon(false)}
                 style={{ fontFamily:"'Bricolage Grotesque',sans-serif", fontWeight:700, fontSize:'15px', color:'#3a3326', background:'#e3dccb', border:'2px solid #3a3326', borderRadius:'999px', padding:'10px 22px', cursor:'pointer', boxShadow:'0 3px 0 #3a3326' }}
               >
-                Keep editing
+                Tiếp tục chỉnh
               </button>
             </div>
           </div>

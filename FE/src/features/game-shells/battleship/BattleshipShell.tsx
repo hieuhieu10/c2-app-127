@@ -17,9 +17,9 @@ const G = 6
 
 interface ShipDef { id: string; name: string; length: number }
 const SHIP_DEFS: ShipDef[] = [
-  { id: 'patrol', name: 'TAU TUAN TRA', length: 2 },
-  { id: 'submarine', name: 'TAU NGAM', length: 3 },
-  { id: 'battleship', name: 'THIET GIAC HAM', length: 4 },
+  { id: 'patrol', name: 'TÀU TUẦN TRA', length: 2 },
+  { id: 'submarine', name: 'TÀU NGẦM', length: 3 },
+  { id: 'battleship', name: 'THIẾT GIÁP HẠM', length: 4 },
 ]
 
 interface Avatar { em: string; label: string; frames?: [string, string]; smooth?: boolean }
@@ -47,10 +47,10 @@ type SkillId = 'luffy_line' | 'zoro_zigzag' | 'chopper_revive' | 'whitebeard_squ
 interface Skill { id: SkillId; name: string; desc: string; kind: 'attack' | 'revive'; needsOrient?: boolean }
 // Keyed by the AVATARS `label` so the skill is tied to the chosen captain.
 const SKILLS: Record<string, Skill> = {
-  LUFFY:      { id: 'luffy_line',        name: 'GUM-GUM GATLING', desc: 'Fire 4 cells in a straight line (H/V)', kind: 'attack', needsOrient: true },
-  ZORO:       { id: 'zoro_zigzag',       name: 'ONIGIRI SLASH',   desc: 'Fire 4 cells in a zig-zag line',        kind: 'attack' },
-  CHOPPER:    { id: 'chopper_revive',    name: 'RUMBLE BALL',     desc: 'Revive one destroyed ship',             kind: 'revive' },
-  WHITEBEARD: { id: 'whitebeard_square', name: 'GURA GURA',       desc: 'Fire a 2x2 square of cells',            kind: 'attack' },
+  LUFFY:      { id: 'luffy_line',        name: 'GUM-GUM GATLING', desc: 'Bắn 4 ô trên một đường thẳng (NGANG/DỌC)', kind: 'attack', needsOrient: true },
+  ZORO:       { id: 'zoro_zigzag',       name: 'ONIGIRI SLASH',   desc: 'Bắn 4 ô theo đường zíc-zắc',            kind: 'attack' },
+  CHOPPER:    { id: 'chopper_revive',    name: 'RUMBLE BALL',     desc: 'Hồi sinh một tàu đã chìm',              kind: 'revive' },
+  WHITEBEARD: { id: 'whitebeard_square', name: 'GURA GURA',       desc: 'Bắn một ô vuông 2x2',                   kind: 'attack' },
 }
 const skillFor = (av: Avatar | null): Skill | null => (av ? SKILLS[av.label] ?? null : null)
 
@@ -145,8 +145,8 @@ function initState(questions: BQ[]): State {
     questions: shuffle(questions),
     qIdx: 0,
     players: [
-      { id: 1, name: 'PLAYER 1', av: null, grid: makeGrid(), ships: [] },
-      { id: 2, name: 'PLAYER 2', av: null, grid: makeGrid(), ships: [] },
+      { id: 1, name: 'NGƯỜI CHƠI 1', av: null, grid: makeGrid(), ships: [] },
+      { id: 2, name: 'NGƯỜI CHƠI 2', av: null, grid: makeGrid(), ships: [] },
     ],
     cur: 0,
     phase: 'char_select',
@@ -426,7 +426,7 @@ export function BattleshipShell({ game, scene }: { game: Game; previewMode?: boo
     if (S.players[pi].ships.length < SHIP_DEFS.length) return
     sfx('click')
     if (pi === 0) {
-      S.sw = { msg: 'PASS TO P2!', sub: 'Player 1 — look away from the screen!', next: 'placement_p2', btn: "PLAYER 2 — I'M READY" }
+      S.sw = { msg: 'CHUYỂN CHO NGƯỜI 2!', sub: 'Người chơi 1 — hãy quay mặt khỏi màn hình!', next: 'placement_p2', btn: 'NGƯỜI CHƠI 2 — ĐÃ SẴN SÀNG' }
       S.selShip = 0; S.orient = 'H'; S.hvr = []; S.phase = 'pl_switch'
     } else {
       S.phase = 'game_start'
@@ -530,14 +530,14 @@ export function BattleshipShell({ game, scene }: { game: Game; previewMode?: boo
     return out
   }
 
-  const sunkBanner = S.sunkNote ? <div className="sunk-note">-- {S.sunkNote} DESTROYED! --</div> : null
+  const sunkBanner = S.sunkNote ? <div className="sunk-note">-- {S.sunkNote} BỊ HUỶ DIỆT! --</div> : null
 
   const battleAction = () => {
     if (S.battleSub === 'miss') {
       return (
         <div className="tbox">
-          <div className="rbanner bad">[ MISS! ]</div>
-          <p className="vt-text">Opponent&apos;s turn next...</p>
+          <div className="rbanner bad">[ TRƯỢT! ]</div>
+          <p className="vt-text">Đến lượt đối thủ...</p>
         </div>
       )
     }
@@ -547,27 +547,27 @@ export function BattleshipShell({ game, scene }: { game: Game; previewMode?: boo
         return (
           <div className="tbox skill-box">
             <div className="skill-title">★ {sk.name} ★</div>
-            <div className="target-hint">&gt;&gt; PICK A TARGET — HITS UP TO 4 CELLS &lt;&lt;</div>
+            <div className="target-hint">&gt;&gt; CHỌN MỤC TIÊU — TRÚNG TỚI 4 Ô &lt;&lt;</div>
             {sk.needsOrient ? (
               <div className="ort">
-                <button className={`ob ${S.skOrient === 'H' ? 'on' : ''}`} onClick={() => setSkOrient('H')}>HORIZ</button>
-                <button className={`ob ${S.skOrient === 'V' ? 'on' : ''}`} onClick={() => setSkOrient('V')}>VERT</button>
+                <button className={`ob ${S.skOrient === 'H' ? 'on' : ''}`} onClick={() => setSkOrient('H')}>NGANG</button>
+                <button className={`ob ${S.skOrient === 'V' ? 'on' : ''}`} onClick={() => setSkOrient('V')}>DỌC</button>
               </div>
             ) : null}
-            <button className="btn sec" onClick={cancelSkill}>&gt; CANCEL</button>
+            <button className="btn sec" onClick={cancelSkill}>&gt; HUỶ</button>
           </div>
         )
       }
-      return <>{sunkBanner}<div className="target-hint">&gt;&gt; SELECT TARGET ON ENEMY GRID &lt;&lt;</div></>
+      return <>{sunkBanner}<div className="target-hint">&gt;&gt; CHỌN MỤC TIÊU TRÊN LƯỚI ĐỊCH &lt;&lt;</div></>
     }
     if (S.battleSub === 'revive') {
       const me = cur()
       const sunk = me.ships.filter((s) => s.sunk)
       return (
         <div className="tbox skill-box">
-          <div className="skill-title">★ RUMBLE BALL — REVIVE ★</div>
+          <div className="skill-title">★ RUMBLE BALL — HỒI SINH ★</div>
           {sunk.length === 0 ? (
-            <p className="vt-text">No destroyed ships to revive.</p>
+            <p className="vt-text">Không có tàu nào bị chìm để hồi sinh.</p>
           ) : (
             <div className="revive-list">
               {sunk.map((s) => (
@@ -577,7 +577,7 @@ export function BattleshipShell({ game, scene }: { game: Game; previewMode?: boo
               ))}
             </div>
           )}
-          <button className="btn sec" onClick={cancelSkill}>&gt; CANCEL</button>
+          <button className="btn sec" onClick={cancelSkill}>&gt; HUỶ</button>
         </div>
       )
     }
@@ -594,7 +594,7 @@ export function BattleshipShell({ game, scene }: { game: Game; previewMode?: boo
               </button>
             ))}
           </div>
-          {S.q.hint ? <div className="hint">HINT: {S.q.hint}</div> : null}
+          {S.q.hint ? <div className="hint">GỢI Ý: {S.q.hint}</div> : null}
         </div>
       )
     }
@@ -606,24 +606,24 @@ export function BattleshipShell({ game, scene }: { game: Game; previewMode?: boo
       return (
         <div className="tbox">
           {sunkBanner}
-          <div className={`rbanner ${ok ? 'ok' : 'bad'}`}>{ok ? '[ CORRECT! ]' : '[ WRONG! ]'}</div>
+          <div className={`rbanner ${ok ? 'ok' : 'bad'}`}>{ok ? '[ ĐÚNG! ]' : '[ SAI! ]'}</div>
           <div className="opts">
             {S.opts.map((o) => (
               <button key={o} className={`opt ${o === S.q!.correct_answer ? 'rev' : ''}`} disabled>{o}</button>
             ))}
           </div>
-          {S.q.explanation ? <div className="expl">INFO: {S.q.explanation}</div> : null}
+          {S.q.explanation ? <div className="expl">THÔNG TIN: {S.q.explanation}</div> : null}
           {ok ? (
             <div className="action-row">
-              <button className="btn ok" onClick={bomb}>&gt; FIRE TORPEDO!</button>
+              <button className="btn ok" onClick={bomb}>&gt; BẮN NGƯ LÔI!</button>
               {skillReady ? (
                 <button className="btn skill" onClick={useSkill} disabled={!canRevive} title={sk!.desc}>
-                  ★ {sk!.name}{canRevive ? '' : ' (NO SHIPS)'}
+                  ★ {sk!.name}{canRevive ? '' : ' (KHÔNG CÓ TÀU)'}
                 </button>
               ) : null}
             </div>
           ) : (
-            <button className="btn sec" onClick={endTurn}>&gt; END TURN</button>
+            <button className="btn sec" onClick={endTurn}>&gt; KẾT THÚC LƯỢT</button>
           )}
         </div>
       )
@@ -641,7 +641,7 @@ export function BattleshipShell({ game, scene }: { game: Game; previewMode?: boo
             <div className={`cs-side ${team}`}>
               <div className="cs-banner">{p.name}</div>
               <div className="cs-portrait"><CharSprite av={p.av} size="xl" /></div>
-              <div className="cs-charname">{p.av ? p.av.label : '— SELECT —'}</div>
+              <div className="cs-charname">{p.av ? p.av.label : '— CHỌN —'}</div>
               {(() => {
                 const sk = skillFor(p.av)
                 return sk ? (
@@ -663,13 +663,13 @@ export function BattleshipShell({ game, scene }: { game: Game; previewMode?: boo
         }
         return (
           <div className="screen cs">
-            <div className="cs-title">⚓ CHOOSE YOUR CAPTAIN</div>
+            <div className="cs-title">⚓ CHỌN THUYỀN TRƯỞNG</div>
             <div className="vs-stage">
               {side(0, 'p1')}
               <div className="vs-badge"><span>VS</span></div>
               {side(1, 'p2')}
             </div>
-            <button className="btn" onClick={startPlacement} disabled={!both}>{both ? '> START GAME' : '— SELECT BOTH —'}</button>
+            <button className="btn" onClick={startPlacement} disabled={!both}>{both ? '> BẮT ĐẦU' : '— CHỌN CẢ HAI —'}</button>
           </div>
         )
       }
@@ -681,11 +681,11 @@ export function BattleshipShell({ game, scene }: { game: Game; previewMode?: boo
         const allDone = placed.size === SHIP_DEFS.length
         return (
           <div className="screen">
-            <div className="px-head">{p.av ? p.av.em : ''} {p.name} — DEPLOY FLEET</div>
-            <p className="vt-text">Place your ships. Don&apos;t let the enemy see!</p>
+            <div className="px-head">{p.av ? p.av.em : ''} {p.name} — TRIỂN KHAI HẠM ĐỘI</div>
+            <p className="vt-text">Đặt tàu của bạn. Đừng để đối thủ nhìn thấy!</p>
             <div className="pl-row">
               <div className="inv">
-                <div className="px-label">YOUR FLEET</div>
+                <div className="px-label">HẠM ĐỘI CỦA BẠN</div>
                 <div style={{ height: 4, background: 'repeating-linear-gradient(90deg,var(--bd) 0,var(--bd) 4px,transparent 4px,transparent 8px)', opacity: .5, margin: '4px 0' }} />
                 {SHIP_DEFS.map((s, i) => {
                   const done = placed.has(s.id)
@@ -699,16 +699,16 @@ export function BattleshipShell({ game, scene }: { game: Game; previewMode?: boo
                   )
                 })}
                 <div style={{ marginTop: '.5rem' }}>
-                  <div className="px-label" style={{ marginBottom: '.35rem' }}>DIRECTION:</div>
+                  <div className="px-label" style={{ marginBottom: '.35rem' }}>HƯỚNG:</div>
                   <div className="ort">
-                    <button className={`ob ${S.orient === 'H' ? 'on' : ''}`} onClick={() => setOrient('H')}>HORIZ</button>
-                    <button className={`ob ${S.orient === 'V' ? 'on' : ''}`} onClick={() => setOrient('V')}>VERT</button>
+                    <button className={`ob ${S.orient === 'H' ? 'on' : ''}`} onClick={() => setOrient('H')}>NGANG</button>
+                    <button className={`ob ${S.orient === 'V' ? 'on' : ''}`} onClick={() => setOrient('V')}>DỌC</button>
                   </div>
                 </div>
-                {allDone ? <button className="btn ok" onClick={() => donePlacement(pi)} style={{ marginTop: '.65rem' }}>&gt; DONE [OK]</button> : null}
+                {allDone ? <button className="btn ok" onClick={() => donePlacement(pi)} style={{ marginTop: '.65rem' }}>&gt; XONG [OK]</button> : null}
               </div>
               <div className="gw">
-                <div className="glbl">{p.name} GRID</div>
+                <div className="glbl">LƯỚI CỦA {p.name}</div>
                 <div className="grid" onMouseLeave={clearHover}>{renderCells(pi, 'pl')}</div>
               </div>
             </div>
@@ -729,9 +729,9 @@ export function BattleshipShell({ game, scene }: { game: Game; previewMode?: boo
         return (
           <div className="splash screen">
             <div className="spav">⚓</div>
-            <div className="px-title blink">BATTLE START!</div>
-            <p className="vt-text">{p.av ? p.av.em : ''} {p.name} goes first.</p>
-            <button className="btn ok" onClick={begin}>&gt; PRESS START</button>
+            <div className="px-title blink">BẮT ĐẦU TRẬN!</div>
+            <p className="vt-text">{p.av ? p.av.em : ''} {p.name} đi trước.</p>
+            <button className="btn ok" onClick={begin}>&gt; NHẤN BẮT ĐẦU</button>
           </div>
         )
       }
@@ -747,13 +747,13 @@ export function BattleshipShell({ game, scene }: { game: Game; previewMode?: boo
             {/* Ocean photo is the global .bsw background; .battle-bg is a soft scrim. */}
             <div className="battle-bg" aria-hidden />
             <div className="tbar">
-              <span>{p.name}&apos;S TURN</span>
+              <span>LƯỢT CỦA {p.name}</span>
               {psk ? (
                 <span className={`skill-chip${S.skillUsed[S.cur] ? ' used' : ''}`}>
-                  {S.skillUsed[S.cur] ? 'SKILL USED' : `SKILL: ${psk.name}`}
+                  {S.skillUsed[S.cur] ? 'ĐÃ DÙNG KĨ NĂNG' : `KĨ NĂNG: ${psk.name}`}
                 </span>
               ) : null}
-              <span className="ml">HITS: {S.hits[S.cur]}</span>
+              <span className="ml">TRÚNG: {S.hits[S.cur]}</span>
             </div>
             <div className="battle-arena">
               <div className={`arena-char p1 ${S.cur === 0 ? 'active' : 'dim'}`}>
@@ -761,7 +761,7 @@ export function BattleshipShell({ game, scene }: { game: Game; previewMode?: boo
                 <div className="arena-name">{S.players[0].name}</div>
               </div>
               <div className="gw">
-                <div className="glbl">{op.name} — ENEMY GRID &nbsp;[{free} CELLS LEFT]</div>
+                <div className="glbl">{op.name} — LƯỚI ĐỊCH &nbsp;[CÒN {free} Ô]</div>
                 <div
                   className={`grid${isTargeting ? ' targeting' : ''}`}
                   onMouseLeave={S.skillActive ? clearSkillHover : undefined}
@@ -781,19 +781,19 @@ export function BattleshipShell({ game, scene }: { game: Game; previewMode?: boo
         return (
           <div className="screen battle">
             <div className="battle-bg" aria-hidden />
-            <div className="px-title blink">GAME OVER</div>
+            <div className="px-title blink">KẾT THÚC TRẬN</div>
             <div className="battle-arena">
               <div className={`arena-char p1 ${S.winner === 0 ? 'active' : 'dim'}`}>
                 <CharSprite av={S.players[0].av} size="lg" />
                 <div className="arena-name">{S.players[0].name}{S.winner === 0 ? ' ★' : ''}</div>
               </div>
               <div className="result-center">
-                <div className="px-head">{w.name}<br />WINS!</div>
+                <div className="px-head">{w.name}<br />CHIẾN THẮNG!</div>
                 <div className="stat-row">
-                  <div className="stat-box"><div className="v">{S.hits[0]}</div><div className="l">{S.players[0].name} — HITS</div></div>
-                  <div className="stat-box"><div className="v">{S.hits[1]}</div><div className="l">{S.players[1].name} — HITS</div></div>
+                  <div className="stat-box"><div className="v">{S.hits[0]}</div><div className="l">{S.players[0].name} — TRÚNG</div></div>
+                  <div className="stat-box"><div className="v">{S.hits[1]}</div><div className="l">{S.players[1].name} — TRÚNG</div></div>
                 </div>
-                <button className="btn" onClick={resetGame}>&gt; PLAY AGAIN [R]</button>
+                <button className="btn" onClick={resetGame}>&gt; CHƠI LẠI [R]</button>
               </div>
               <div className={`arena-char p2 ${S.winner === 1 ? 'active' : 'dim'}`}>
                 <CharSprite av={S.players[1].av} size="lg" />
@@ -814,8 +814,8 @@ export function BattleshipShell({ game, scene }: { game: Game; previewMode?: boo
       <button
         className="mute-btn"
         onClick={toggleMute}
-        aria-label={muted ? 'Unmute sound' : 'Mute sound'}
-        title={muted ? 'Unmute' : 'Mute'}
+        aria-label={muted ? 'Bật âm thanh' : 'Tắt âm thanh'}
+        title={muted ? 'Bật âm' : 'Tắt âm'}
       >
         {muted ? '🔇' : '🔊'}
       </button>
@@ -826,7 +826,7 @@ export function BattleshipShell({ game, scene }: { game: Game; previewMode?: boo
 
 // ── Scoped retro stylesheet (ported from battleship.css, scoped under .bsw) ──
 const CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&display=swap');
 .bsw {
   /* Vinik24-inspired soft pastel theme (light blue sea). --ink is the shared soft
      "almost-black" outline/shadow; --inv is the shared light tint for text on colour. */
@@ -836,7 +836,7 @@ const CSS = `
   --gold:#be955c; --plum:#8b5580; --rose:#c38890; --bd:#7d93ab; --px:4px;
   position:relative; overflow:hidden; border-radius:14px;
   background:#bcdff2 url('/games/battleship/back.jpg') center/cover no-repeat;
-  color:var(--text); font-family:'VT323','Courier New',monospace; font-size:18px;
+  color:var(--text); font-family:'Baloo 2',sans-serif; font-weight:700; font-size:18px;
   image-rendering:pixelated; display:flex; align-items:flex-start; justify-content:center;
   padding:1.25rem .75rem; min-height:520px;
 }
@@ -861,12 +861,12 @@ const CSS = `
 .bsw .blink { animation:bs-blink 1s step-start infinite; }
 .bsw .screen { animation:bs-appear .05s step-start; display:flex; flex-direction:column; align-items:center; gap:1rem; }
 
-.bsw .px-title { font-family:'Press Start 2P',monospace; font-size:1.4rem; color:var(--accent); text-align:center; text-shadow:3px 3px 0 var(--ink),0 0 24px rgba(65,106,163,.25); line-height:1.9; }
-.bsw .px-head { font-family:'Press Start 2P',monospace; font-size:.7rem; color:var(--yellow); text-align:center; text-shadow:2px 2px 0 var(--ink); line-height:2; }
-.bsw .px-label { font-family:'Press Start 2P',monospace; font-size:.5rem; color:var(--accent); text-shadow:1px 1px 0 rgba(255,255,255,.5); }
-.bsw .vt-text { font-family:'VT323',monospace; font-size:1.1rem; color:var(--dim); text-align:center; }
+.bsw .px-title { font-family:'Baloo 2',sans-serif; font-size:1.4rem; color:var(--accent); text-align:center; text-shadow:3px 3px 0 var(--ink),0 0 24px rgba(65,106,163,.25); line-height:1.9; }
+.bsw .px-head { font-family:'Baloo 2',sans-serif; font-size:.7rem; color:var(--yellow); text-align:center; text-shadow:2px 2px 0 var(--ink); line-height:2; }
+.bsw .px-label { font-family:'Baloo 2',sans-serif; font-size:.5rem; color:var(--accent); text-shadow:1px 1px 0 rgba(255,255,255,.5); }
+.bsw .vt-text { font-family:'Baloo 2',sans-serif; font-size:1.1rem; color:var(--dim); text-align:center; }
 
-.bsw .btn { font-family:'Press Start 2P',monospace; font-size:.52rem; letter-spacing:.5px; line-height:2; padding:.6rem 1.35rem; background:var(--accent); color:var(--inv); border:var(--px) solid var(--ink); box-shadow:var(--px) var(--px) 0 var(--ink), inset calc(-1 * var(--px)) calc(-1 * var(--px)) 0 rgba(0,0,0,.22), inset var(--px) var(--px) 0 rgba(255,255,255,.28); cursor:pointer; display:inline-block; text-shadow:1px 1px 0 rgba(0,0,0,.3); }
+.bsw .btn { font-family:'Baloo 2',sans-serif; font-size:.52rem; letter-spacing:.5px; line-height:2; padding:.6rem 1.35rem; background:var(--accent); color:var(--inv); border:var(--px) solid var(--ink); box-shadow:var(--px) var(--px) 0 var(--ink), inset calc(-1 * var(--px)) calc(-1 * var(--px)) 0 rgba(0,0,0,.22), inset var(--px) var(--px) 0 rgba(255,255,255,.28); cursor:pointer; display:inline-block; text-shadow:1px 1px 0 rgba(0,0,0,.3); }
 .bsw .btn:hover:not(:disabled) { background:#4f7cb8; color:#fff; }
 .bsw .btn:active:not(:disabled) { transform:translate(var(--px),var(--px)); box-shadow:1px 1px 0 var(--ink), inset var(--px) var(--px) 0 rgba(0,0,0,.22), inset calc(-1 * var(--px)) calc(-1 * var(--px)) 0 rgba(255,255,255,.28); }
 .bsw .btn:disabled { opacity:.4; cursor:not-allowed; }
@@ -881,24 +881,24 @@ const CSS = `
    Piece character art drops in by setting "frames" on the AVATARS entries.
 */
 .bsw .screen.cs { gap:1.1rem; width:100%; }
-.bsw .cs-title { font-family:'Press Start 2P',monospace; font-size:1rem; color:var(--accent); text-align:center; text-shadow:3px 3px 0 var(--ink),0 0 20px rgba(65,106,163,.25); line-height:1.6; }
+.bsw .cs-title { font-family:'Baloo 2',sans-serif; font-size:1rem; color:var(--accent); text-align:center; text-shadow:3px 3px 0 var(--ink),0 0 20px rgba(65,106,163,.25); line-height:1.6; }
 .bsw .vs-stage { display:flex; align-items:stretch; justify-content:center; width:100%; }
 .bsw .cs-side { flex:1 1 0; min-width:0; display:flex; flex-direction:column; align-items:center; gap:.7rem; padding:.9rem .7rem 1rem; border:var(--px) solid var(--bd); box-shadow:var(--px) var(--px) 0 var(--ink); }
 .bsw .cs-side.p1 { background:linear-gradient(180deg,#cfe1f3 0,#bcd4ec 70%,#aecae4 100%); border-color:#5f86b3; }
 .bsw .cs-side.p2 { background:linear-gradient(180deg,#f3ddc8 0,#edccb0 70%,#e6bf9d 100%); border-color:#c69a6a; }
-.bsw .cs-banner { width:100%; font-family:'Press Start 2P',monospace; font-size:.55rem; text-align:center; padding:.5rem; color:#fff; text-shadow:2px 2px 0 var(--ink); border:3px solid var(--ink); }
+.bsw .cs-banner { width:100%; font-family:'Baloo 2',sans-serif; font-size:.55rem; text-align:center; padding:.5rem; color:#fff; text-shadow:2px 2px 0 var(--ink); border:3px solid var(--ink); }
 .bsw .cs-side.p1 .cs-banner { background:#416aa3; box-shadow:inset 0 0 0 2px #9dbdd7; }
 .bsw .cs-side.p2 .cs-banner { background:#c8895c; box-shadow:inset 0 0 0 2px #f0c79e; }
 .bsw .cs-portrait { width:100%; min-height:210px; display:flex; align-items:flex-end; justify-content:center; padding:.4rem; overflow:hidden; }
 .bsw .cs-side.p1 .cs-portrait { background:radial-gradient(circle at 50% 35%,rgba(65,106,163,.22),transparent 70%); }
 .bsw .cs-side.p2 .cs-portrait { background:radial-gradient(circle at 50% 35%,rgba(194,141,117,.28),transparent 70%); transform:scaleX(-1); } /* p2 faces inward toward VS */
-.bsw .cs-charname { font-family:'Press Start 2P',monospace; font-size:.5rem; text-shadow:1px 1px 0 rgba(255,255,255,.55); min-height:1.1em; }
+.bsw .cs-charname { font-family:'Baloo 2',sans-serif; font-size:.5rem; text-shadow:1px 1px 0 rgba(255,255,255,.55); min-height:1.1em; }
 .bsw .cs-side.p1 .cs-charname { color:#3a5f96; }
 .bsw .cs-side.p2 .cs-charname { color:#9a6a3f; }
 .bsw .vs-badge { align-self:center; flex:none; width:60px; height:60px; margin:0 -16px; z-index:3; display:flex; align-items:center; justify-content:center; background:var(--ink); border:var(--px) solid var(--gold); transform:rotate(45deg); box-shadow:var(--px) var(--px) 0 var(--ink),0 0 16px rgba(190,149,92,.45); }
-.bsw .vs-badge span { display:block; transform:rotate(-45deg); font-family:'Press Start 2P',monospace; font-size:.8rem; color:#fff; text-shadow:2px 2px 0 rgba(0,0,0,.5); }
+.bsw .vs-badge span { display:block; transform:rotate(-45deg); font-family:'Baloo 2',sans-serif; font-size:.8rem; color:#fff; text-shadow:2px 2px 0 rgba(0,0,0,.5); }
 .bsw .av-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:.35rem; }
-.bsw .av-btn { background:var(--sf2); border:3px solid var(--bd); box-shadow:2px 2px 0 var(--ink); padding:.35rem .2rem; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:.1rem; color:var(--dim); font-family:'VT323',monospace; font-size:.85rem; min-height:44px; min-width:44px; }
+.bsw .av-btn { background:var(--sf2); border:3px solid var(--bd); box-shadow:2px 2px 0 var(--ink); padding:.35rem .2rem; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:.1rem; color:var(--dim); font-family:'Baloo 2',sans-serif; font-size:.85rem; min-height:44px; min-width:44px; }
 .bsw .av-btn .em { font-size:1.6rem; line-height:1.1; }
 .bsw .av-btn:hover { border-color:var(--accent); color:var(--accent); }
 .bsw .av-btn.chosen { border-color:var(--ok-br); background:#dcebd9; color:var(--ok); box-shadow:2px 2px 0 var(--ink); }
@@ -927,7 +927,7 @@ const CSS = `
 .bsw .csprite.lg .frame { font-size:5rem; }
 .bsw .csprite.xl { width:180px; height:180px; }
 .bsw .csprite.xl .frame { font-size:8.5rem; }
-.bsw .csprite.empty { display:inline-flex; align-items:center; justify-content:center; font-family:'Press Start 2P',monospace; font-size:2.2rem; color:var(--dim); }
+.bsw .csprite.empty { display:inline-flex; align-items:center; justify-content:center; font-family:'Baloo 2',sans-serif; font-size:2.2rem; color:var(--dim); }
 @media (prefers-reduced-motion: reduce) {
   .bsw .csprite.ph, .bsw .csprite .frame { animation:none !important; }
   .bsw .csprite .frame.f2 { opacity:0; }
@@ -935,31 +935,31 @@ const CSS = `
 
 .bsw .pl-row { display:flex; gap:1.5rem; align-items:flex-start; flex-wrap:wrap; justify-content:center; }
 .bsw .inv { background:var(--sf1); border:var(--px) solid var(--bd); box-shadow:var(--px) var(--px) 0 var(--ink); padding:1rem; display:flex; flex-direction:column; gap:.55rem; min-width:185px; }
-.bsw .ship-row { display:flex; align-items:center; gap:.5rem; padding:.4rem .5rem; border:2px solid transparent; cursor:pointer; font-family:'VT323',monospace; font-size:.95rem; color:var(--dim); min-height:44px; }
+.bsw .ship-row { display:flex; align-items:center; gap:.5rem; padding:.4rem .5rem; border:2px solid transparent; cursor:pointer; font-family:'Baloo 2',sans-serif; font-size:.95rem; color:var(--dim); min-height:44px; }
 .bsw .ship-row.sel { border-color:var(--accent); background:var(--sf2); color:var(--text); }
 .bsw .ship-row.done { opacity:.4; cursor:default; }
 .bsw .sdots { display:flex; gap:2px; }
 .bsw .sd { width:10px; height:10px; background:var(--ship); }
 .bsw .sd.on { background:var(--accent); }
 .bsw .ort { display:flex; gap:.4rem; margin-top:.2rem; }
-.bsw .ob { font-family:'Press Start 2P',monospace; font-size:.42rem; padding:.4rem .65rem; background:var(--sf2); border:2px solid var(--bd); color:var(--dim); cursor:pointer; box-shadow:2px 2px 0 var(--ink); min-height:44px; display:flex; align-items:center; }
+.bsw .ob { font-family:'Baloo 2',sans-serif; font-size:.42rem; padding:.4rem .65rem; background:var(--sf2); border:2px solid var(--bd); color:var(--dim); cursor:pointer; box-shadow:2px 2px 0 var(--ink); min-height:44px; display:flex; align-items:center; }
 .bsw .ob:hover { color:var(--text); border-color:var(--accent); }
 .bsw .ob.on { background:#d4e0ee; border-color:var(--accent); color:var(--accent); }
 .bsw .ob:active { transform:translate(2px,2px); box-shadow:none; }
 
 .bsw .gw { display:flex; flex-direction:column; align-items:center; gap:.45rem; }
-.bsw .glbl { font-family:'Press Start 2P',monospace; font-size:.42rem; color:var(--dim); text-align:center; text-shadow:1px 1px 0 rgba(255,255,255,.5); }
+.bsw .glbl { font-family:'Baloo 2',sans-serif; font-size:.42rem; color:var(--dim); text-align:center; text-shadow:1px 1px 0 rgba(255,255,255,.5); }
 .bsw .grid { display:grid; grid-template-columns:repeat(6,1fr); gap:2px; background:var(--ink); padding:4px; border:var(--px) solid var(--bd); box-shadow:var(--px) var(--px) 0 var(--ink); }
-.bsw .cell { width:52px; height:52px; background:var(--water); display:flex; align-items:center; justify-content:center; cursor:pointer; font-family:'Press Start 2P',monospace; font-size:.6rem; color:var(--inv); user-select:none; position:relative; }
+.bsw .cell { width:52px; height:52px; background:var(--water); display:flex; align-items:center; justify-content:center; cursor:pointer; font-family:'Baloo 2',sans-serif; font-size:.6rem; color:var(--inv); user-select:none; position:relative; }
 .bsw .cell:hover:not(.nc) { background:var(--water-hi); }
 .bsw .cell.nc { cursor:default; }
 .bsw .cell.shp { background:var(--ship); }
 .bsw .cell.hit { background:var(--hit); }
-.bsw .cell.hit::after { content:'X'; font-family:'Press Start 2P',monospace; font-size:.6rem; color:var(--inv); }
+.bsw .cell.hit::after { content:'X'; font-family:'Baloo 2',sans-serif; font-size:.6rem; color:var(--inv); }
 .bsw .cell.mss { background:var(--miss-bg); border:2px solid #9dbdd7; }
-.bsw .cell.mss::after { content:'~'; font-family:'VT323',monospace; font-size:1.4rem; color:#cfe0ef; }
+.bsw .cell.mss::after { content:'~'; font-family:'Baloo 2',sans-serif; font-size:1.4rem; color:#cfe0ef; }
 .bsw .cell.snk { background:#5b3138; }
-.bsw .cell.snk::after { content:'X'; font-family:'Press Start 2P',monospace; font-size:.55rem; color:var(--rose); }
+.bsw .cell.snk::after { content:'X'; font-family:'Baloo 2',sans-serif; font-size:.55rem; color:var(--rose); }
 .bsw .cell.prv { background:rgba(124,161,192,.55); border:2px solid var(--accent); }
 .bsw .cell.bad { background:rgba(154,79,80,.5); border:2px solid var(--bad); }
 .bsw .grid.targeting { border-color:var(--accent); box-shadow:var(--px) var(--px) 0 var(--ink),0 0 12px rgba(65,106,163,.35); }
@@ -979,7 +979,7 @@ const CSS = `
   background:linear-gradient(180deg,rgba(255,255,255,.14) 0,rgba(255,255,255,.04) 45%,rgba(57,48,74,.18) 100%);
 }
 
-.bsw .tbar { display:flex; align-items:center; gap:.6rem; background:var(--sf1); border:var(--px) solid var(--bd); box-shadow:var(--px) var(--px) 0 var(--ink); padding:.5rem 1rem; font-family:'Press Start 2P',monospace; font-size:.5rem; color:var(--yellow); width:100%; }
+.bsw .tbar { display:flex; align-items:center; gap:.6rem; background:var(--sf1); border:var(--px) solid var(--bd); box-shadow:var(--px) var(--px) 0 var(--ink); padding:.5rem 1rem; font-family:'Baloo 2',sans-serif; font-size:.5rem; color:var(--yellow); width:100%; }
 .bsw .tbar .em { font-size:1.5rem; line-height:1; }
 .bsw .tbar .ml { margin-left:auto; color:var(--accent); font-size:.45rem; }
 
@@ -996,7 +996,7 @@ const CSS = `
 .bsw .arena-char.dim { opacity:.45; filter:grayscale(.6); }
 .bsw .arena-char.active .csprite { filter:drop-shadow(0 0 7px rgba(65,106,163,.5)); }
 .bsw .arena-char.p2.active .csprite { filter:drop-shadow(0 0 7px rgba(190,149,92,.6)); }
-.bsw .arena-name { font-family:'Press Start 2P',monospace; font-size:.42rem; text-shadow:1px 1px 0 rgba(255,255,255,.5); text-align:center; }
+.bsw .arena-name { font-family:'Baloo 2',sans-serif; font-size:.42rem; text-shadow:1px 1px 0 rgba(255,255,255,.5); text-align:center; }
 .bsw .arena-char.p1 .arena-name { color:#3a5f96; }
 .bsw .arena-char.p2 .arena-name { color:#9a6a3f; }
 .bsw .result-center { flex:1 1 auto; max-width:360px; display:flex; flex-direction:column; align-items:center; gap:1rem; }
@@ -1005,22 +1005,22 @@ const CSS = `
 .bsw .battle-action { width:100%; min-height:340px; display:flex; flex-direction:column; align-items:center; }
 
 .bsw .tbox { background:var(--sf1); border:var(--px) solid var(--bd); box-shadow:var(--px) var(--px) 0 var(--ink), inset 0 0 0 2px rgba(57,48,74,.12); padding:1.25rem; width:100%; display:flex; flex-direction:column; gap:.75rem; }
-.bsw .tq { font-family:'VT323',monospace; font-size:1.35rem; line-height:1.55; color:var(--text); text-align:center; }
+.bsw .tq { font-family:'Baloo 2',sans-serif; font-size:1.35rem; line-height:1.55; color:var(--text); text-align:center; }
 .bsw .opts { display:grid; grid-template-columns:1fr 1fr; gap:.55rem; }
-.bsw .opt { padding:.6rem .8rem; background:#f4d6de; border:2px solid var(--rose); box-shadow:2px 2px 0 var(--ink); color:var(--text); font-family:'VT323',monospace; font-size:1.1rem; cursor:pointer; text-align:left; line-height:1.4; position:relative; min-height:44px; }
+.bsw .opt { padding:.6rem .8rem; background:#f4d6de; border:2px solid var(--rose); box-shadow:2px 2px 0 var(--ink); color:var(--text); font-family:'Baloo 2',sans-serif; font-size:1.1rem; cursor:pointer; text-align:left; line-height:1.4; position:relative; min-height:44px; }
 .bsw .opt::before { content:'\\25BA  '; color:#a84e63; visibility:hidden; }
 .bsw .opt:hover:not(:disabled) { border-color:#a84e63; background:#eec2cd; }
 .bsw .opt:hover:not(:disabled)::before { visibility:visible; animation:bs-blink .5s step-start infinite; }
 .bsw .opt.rev { border-color:var(--ok-br); background:#dfeede; }
 .bsw .opt:disabled { cursor:not-allowed; }
-.bsw .hint { font-family:'VT323',monospace; font-size:1rem; color:var(--dim); background:var(--sf2); border:2px solid var(--bd); padding:.45rem .8rem; text-align:center; }
-.bsw .expl { font-family:'VT323',monospace; font-size:1.05rem; color:var(--dim); background:var(--sf2); border:2px solid var(--bd); padding:.55rem .9rem; text-align:center; line-height:1.5; }
-.bsw .rbanner { font-family:'Press Start 2P',monospace; font-size:.75rem; text-align:center; padding:.55rem; text-shadow:2px 2px 0 var(--ink); }
+.bsw .hint { font-family:'Baloo 2',sans-serif; font-size:1rem; color:var(--dim); background:var(--sf2); border:2px solid var(--bd); padding:.45rem .8rem; text-align:center; }
+.bsw .expl { font-family:'Baloo 2',sans-serif; font-size:1.05rem; color:var(--dim); background:var(--sf2); border:2px solid var(--bd); padding:.55rem .9rem; text-align:center; line-height:1.5; }
+.bsw .rbanner { font-family:'Baloo 2',sans-serif; font-size:.75rem; text-align:center; padding:.55rem; text-shadow:2px 2px 0 var(--ink); }
 .bsw .rbanner.ok { color:var(--ok-br); }
 .bsw .rbanner.bad { color:var(--bad); animation:bs-blink .8s step-start infinite; }
 
-.bsw .sunk-note { font-family:'Press Start 2P',monospace; font-size:.52rem; color:var(--hit); text-align:center; text-shadow:1px 1px 0 rgba(255,255,255,.4); padding:.4rem .6rem; border:2px solid var(--hit); background:#f1dede; animation:bs-blink .4s step-start infinite; }
-.bsw .target-hint { font-family:'Press Start 2P',monospace; font-size:.48rem; color:var(--accent); text-align:center; text-shadow:1px 1px 0 rgba(255,255,255,.5); padding:.5rem; animation:bs-blink .8s step-start infinite; }
+.bsw .sunk-note { font-family:'Baloo 2',sans-serif; font-size:.52rem; color:var(--hit); text-align:center; text-shadow:1px 1px 0 rgba(255,255,255,.4); padding:.4rem .6rem; border:2px solid var(--hit); background:#f1dede; animation:bs-blink .4s step-start infinite; }
+.bsw .target-hint { font-family:'Baloo 2',sans-serif; font-size:.48rem; color:var(--accent); text-align:center; text-shadow:1px 1px 0 rgba(255,255,255,.5); padding:.5rem; animation:bs-blink .8s step-start infinite; }
 
 /* ════════════════ CHARACTER SPECIAL SKILLS ════════════════
    The plum accent (--plum) marks everything skill-related: the result-card skill
@@ -1030,15 +1030,15 @@ const CSS = `
 .bsw .btn.skill { background:var(--plum); border-color:var(--ink); color:#fff; box-shadow:var(--px) var(--px) 0 var(--ink), inset calc(-1 * var(--px)) calc(-1 * var(--px)) 0 rgba(0,0,0,.22), inset var(--px) var(--px) 0 rgba(255,255,255,.22); }
 .bsw .btn.skill:hover:not(:disabled) { background:#9d6592; color:#fff; }
 .bsw .skill-box { gap:.7rem; align-items:center; text-align:center; }
-.bsw .skill-title { font-family:'Press Start 2P',monospace; font-size:.6rem; color:var(--plum); text-shadow:1px 1px 0 var(--ink); }
+.bsw .skill-title { font-family:'Baloo 2',sans-serif; font-size:.6rem; color:var(--plum); text-shadow:1px 1px 0 var(--ink); }
 .bsw .revive-list { display:flex; flex-direction:column; gap:.5rem; width:100%; }
 .bsw .cell.skprv { background:rgba(139,85,128,.6); box-shadow:inset 0 0 0 2px var(--plum); }
 .bsw .cell.skbad { background:rgba(154,79,80,.5); box-shadow:inset 0 0 0 2px var(--bad); }
-.bsw .skill-chip { font-family:'Press Start 2P',monospace; font-size:.4rem; line-height:1.4; color:#fff; background:var(--plum); border:2px solid var(--ink); padding:.3rem .45rem; margin-left:.6rem; }
+.bsw .skill-chip { font-family:'Baloo 2',sans-serif; font-size:.4rem; line-height:1.4; color:#fff; background:var(--plum); border:2px solid var(--ink); padding:.3rem .45rem; margin-left:.6rem; }
 .bsw .skill-chip.used { background:var(--sf2); color:var(--dim); border-color:var(--bd); }
 .bsw .cs-skill { display:flex; flex-direction:column; align-items:center; gap:.15rem; min-height:3.1em; }
-.bsw .cs-skill-name { font-family:'Press Start 2P',monospace; font-size:.4rem; color:var(--plum); text-shadow:1px 1px 0 rgba(255,255,255,.5); }
-.bsw .cs-skill-desc { font-family:'VT323',monospace; font-size:.85rem; color:var(--dim); text-align:center; line-height:1.1; max-width:170px; }
+.bsw .cs-skill-name { font-family:'Baloo 2',sans-serif; font-size:.4rem; color:var(--plum); text-shadow:1px 1px 0 rgba(255,255,255,.5); }
+.bsw .cs-skill-desc { font-family:'Baloo 2',sans-serif; font-size:.85rem; color:var(--dim); text-align:center; line-height:1.1; max-width:170px; }
 
 .bsw .splash { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:50vh; gap:1.75rem; text-align:center; }
 .bsw .spav { font-size:5rem; line-height:1; }
@@ -1047,8 +1047,8 @@ const CSS = `
 .bsw .winner-em { font-size:5rem; line-height:1; }
 .bsw .stat-row { display:grid; grid-template-columns:1fr 1fr; gap:.9rem; width:100%; max-width:380px; }
 .bsw .stat-box { background:var(--sf1); border:var(--px) solid var(--bd); box-shadow:var(--px) var(--px) 0 var(--ink); padding:.9rem; text-align:center; }
-.bsw .stat-box .v { font-family:'Press Start 2P',monospace; font-size:1.5rem; color:var(--accent); text-shadow:2px 2px 0 var(--ink); }
-.bsw .stat-box .l { font-family:'VT323',monospace; font-size:1rem; color:var(--dim); margin-top:.3rem; }
+.bsw .stat-box .v { font-family:'Baloo 2',sans-serif; font-size:1.5rem; color:var(--accent); text-shadow:2px 2px 0 var(--ink); }
+.bsw .stat-box .l { font-family:'Baloo 2',sans-serif; font-size:1rem; color:var(--dim); margin-top:.3rem; }
 
 @media (max-width:600px) {
   .bsw .cell { width:40px; height:40px; font-size:.48rem; }
@@ -1064,5 +1064,46 @@ const CSS = `
   .bsw .pl-row { flex-direction:column; }
   .bsw .px-title { font-size:.9rem; }
   .bsw .tbox { padding:.85rem; }
+}
+
+/* ════════════════ READABILITY OVERRIDES ════════════════
+   Pixel fonts were swapped for the rounded, Vietnamese-capable "Baloo 2".
+   These rules (later in source → win at equal specificity) make every label
+   bigger and bolder than the old pixel sizing so the text is easy to read. */
+.bsw .px-title    { font-size:1.9rem;  font-weight:800; line-height:1.3; }
+.bsw .px-head     { font-size:1.25rem; font-weight:800; line-height:1.45; }
+.bsw .px-label    { font-size:.9rem;   font-weight:700; }
+.bsw .cs-title    { font-size:1.65rem; font-weight:800; line-height:1.3; }
+.bsw .cs-banner   { font-size:1.1rem;  font-weight:800; }
+.bsw .cs-charname { font-size:1.05rem; font-weight:700; }
+.bsw .vs-badge span { font-size:1.4rem; font-weight:800; }
+.bsw .btn         { font-size:1.05rem; font-weight:800; line-height:1.4; letter-spacing:0; }
+.bsw .ob          { font-size:.95rem;  font-weight:700; }
+.bsw .glbl        { font-size:1rem;    font-weight:700; }
+.bsw .tbar        { font-size:1.05rem; font-weight:700; }
+.bsw .tbar .ml    { font-size:1rem;    font-weight:800; }
+.bsw .arena-name  { font-size:.95rem;  font-weight:800; }
+.bsw .rbanner     { font-size:1.35rem; font-weight:800; }
+.bsw .sunk-note   { font-size:1.05rem; font-weight:800; }
+.bsw .target-hint { font-size:1.05rem; font-weight:800; }
+.bsw .skill-title { font-size:1.2rem;  font-weight:800; }
+.bsw .skill-chip  { font-size:.85rem;  font-weight:700; line-height:1.2; }
+.bsw .cs-skill-name { font-size:.95rem; font-weight:800; }
+.bsw .cs-skill-desc { font-size:1rem;  font-weight:700; }
+.bsw .vt-text     { font-size:1.2rem;  font-weight:700; }
+.bsw .tq          { font-size:1.5rem;  font-weight:700; line-height:1.4; }
+.bsw .opt         { font-size:1.18rem; font-weight:700; }
+.bsw .hint        { font-size:1.1rem;  font-weight:700; }
+.bsw .expl        { font-size:1.12rem; font-weight:700; }
+.bsw .ship-row    { font-size:1.1rem;  font-weight:700; }
+.bsw .av-btn      { font-size:1rem;    font-weight:700; }
+.bsw .stat-box .v { font-size:1.85rem; font-weight:800; }
+.bsw .stat-box .l { font-size:1.05rem; font-weight:700; }
+.bsw .cell        { font-size:1rem; }
+.bsw .cell.hit::after, .bsw .cell.snk::after { font-size:1rem; font-weight:800; }
+@media (max-width:600px) {
+  .bsw .px-title { font-size:1.45rem; }
+  .bsw .cs-title { font-size:1.3rem; }
+  .bsw .cell { font-size:.85rem; }
 }
 `

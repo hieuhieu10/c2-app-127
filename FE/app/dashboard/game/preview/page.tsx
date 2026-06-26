@@ -62,14 +62,14 @@ interface ShareSettings {
  *   - beat_forge                   → uses lanes (not a Q&A list; returns [] here)
  */
 function extractQuestions(content: GameContent): RawQuestion[] {
-  if (Array.isArray(content.challenges) && content.challenges.length > 0) {
-    return (content.challenges as Array<{ target_area?: number; hint?: string; explanation?: string; objective_id?: string }>).map(
-      (ch) => ({
-        question: `Quây đúng ${ch.target_area ?? '?'} ô vuông`,
-        correct_answer: String(ch.target_area ?? ''),
-        hint: ch.hint,
-        explanation: ch.explanation,
-        objective_id: ch.objective_id,
+  if (Array.isArray(content.problems) && content.problems.length > 0) {
+    return (content.problems as Array<{ shape_type?: string; constraint?: string; value?: number; hint?: string; explanation?: string; objective_id?: string }>).map(
+      (p) => ({
+        question: `Xây trang trại ${p.shape_type ?? '?'} với ${p.constraint ?? '?'} = ${p.value ?? '?'}`,
+        correct_answer: `${p.shape_type}|${p.constraint}|${p.value}`,
+        hint: p.hint,
+        explanation: p.explanation,
+        objective_id: p.objective_id,
       })
     )
   }
