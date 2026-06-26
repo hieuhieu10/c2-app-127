@@ -17,3 +17,12 @@ build/
 
 # AI logs — tracked structure, ignored content
 .ai-log/*.jsonl
+
+# SQLite runtime DB (auto-created by Base.metadata.create_all on startup)
+*.db
+
+# TypeScript incremental build cache
+*.tsbuildinfo
+
+# Runtime user uploads (BE_Web)
+BE_Web/uploads/
