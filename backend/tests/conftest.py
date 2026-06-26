@@ -95,6 +95,101 @@ def valid_content(template_id: str) -> dict:
             "objective_id": OBJ,
             "questions": [q] * 4,
         }
+    if template_id == "feed_the_cats":
+        def treat(question: str, answer: str) -> dict:
+            return {
+                "question": question,
+                "correct_answer": answer,
+                "hint": "Tính tổng rồi tìm chú mèo có số đó.",
+                "explanation": f"{question} = {answer}.",
+                "objective_id": OBJ,
+            }
+
+        return {
+            "title": "Cho mèo ăn — Phép cộng",
+            "objective_id": OBJ,
+            "instructions": "Kéo mỗi miếng cá đến chú mèo có số khớp với đáp án.",
+            "items": [
+                treat("3 + 4", "7"),
+                treat("5 + 2", "7"),
+                treat("6 + 4", "10"),
+                treat("8 + 2", "10"),
+                treat("4 + 5", "9"),
+                treat("7 + 2", "9"),
+            ],
+        }
+    if template_id == "cat_jump":
+        def level(name: str, seq: str) -> dict:
+            return {
+                "question": name,
+                "correct_answer": seq,
+                "hint": "Tìm quy luật của dãy số.",
+                "explanation": f"Dãy {name.lower()} giúp học sinh nhận biết quy luật số học.",
+                "objective_id": OBJ,
+            }
+
+        return {
+            "title": "Cat Jump — Dãy số",
+            "objective_id": OBJ,
+            "instructions": "Giúp chú mèo nhảy đúng tảng đá — chọn số tiếp theo trong dãy!",
+            "questions": [
+                level("Đếm thêm 3", "3,6,9,12,15,18,21,24"),
+                level("Đếm thêm 5", "5,10,15,20,25,30,35,40"),
+                level("Số bình phương", "1,4,9,16,25,36,49,64"),
+                level("Dãy Fibonacci", "1,1,2,3,5,8,13,21"),
+            ],
+        }
+    if template_id == "beat_forge":
+        def lane(notes: str) -> dict:
+            return {
+                "correct_answer": notes,
+                "hint": "Thêm các nốt nhạc sao cho tổng bằng đúng độ dài của nhịp.",
+                "explanation": "Nhịp điệu này thể hiện phép cộng phân số trong âm nhạc.",
+                "objective_id": OBJ,
+            }
+
+        return {
+            "title": "Beat Forge — Phân số âm nhạc",
+            "objective_id": OBJ,
+            "time_signature": "4/4",
+            "half_notes": 0,
+            "quarter_notes": 8,
+            "eighth_notes": 0,
+            "dotted_half_notes": 0,
+            "dotted_quarter_notes": 0,
+            "triplet_eighth_notes": 0,
+            "lanes": [
+                lane("1/4,1/4,1/4,1/4"),   # 6+6+6+6 = 24 ✓
+                lane("1/4,1/4,1/4,1/4"),   # 6+6+6+6 = 24 ✓
+            ],
+        }
+    if template_id == "farm_builder":
+        def problem(shape: str, con: str, val: int, hint: str, explanation: str) -> dict:
+            return {
+                "shape_type": shape,
+                "constraint": con,
+                "value": val,
+                "hint": hint,
+                "explanation": explanation,
+                "objective_id": OBJ,
+            }
+
+        return {
+            "title": "Xây Dựng Trang Trại — Hình học",
+            "objective_id": OBJ,
+            "instructions": "Đặt hàng rào để tạo đúng hình theo yêu cầu!",
+            "problems": [
+                problem("hình vuông", "diện tích", 9,
+                        "Hình vuông có 4 cạnh bằng nhau. 3 × 3 = 9.",
+                        "Diện tích = cạnh × cạnh = 3 × 3 = 9 ô vuông."),
+                problem("hình chữ nhật", "diện tích", 12,
+                        "Hãy thử cạnh 3 và 4. 3 × 4 = 12.",
+                        "Diện tích = chiều dài × chiều rộng = 3 × 4 = 12 ô vuông."),
+                problem("hình chữ nhật", "chu vi", 14,
+                        "Nhớ công thức: chu vi = 2 × (dài + rộng). Thử dài=4, rộng=3.",
+                        "Chu vi = 2 × (4 + 3) = 14 đoạn rào."),
+            ],
+        }
     raise ValueError(template_id)
 
 
@@ -113,6 +208,14 @@ def invalid_content(template_id: str) -> dict:
         c["questions"] = c["questions"][:1]          # below min_length=4
         for q in c["questions"]:
             q["distractors"] = q["distractors"][:2]  # below min_length=3
+    elif template_id == "feed_the_cats":
+        c["items"] = c["items"][:1]                  # below min_length=4
+    elif template_id == "cat_jump":
+        c["questions"] = c["questions"][:2]          # below min_length=4
+    elif template_id == "beat_forge":
+        c["lanes"] = c["lanes"][:1]                  # below min_length=2
+    elif template_id == "farm_builder":
+        c["problems"] = c["problems"][:2]            # below min_length=3
     return c
 
 

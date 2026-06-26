@@ -14,7 +14,7 @@ import type { Game, GameItem, GameTemplateType } from '@/types/app'
 interface RawQuestion {
   question: string
   correct_answer: string
-  distractors: string[]
+  distractors?: string[]
   hint?: string
   explanation?: string
   objective_id?: string
@@ -22,6 +22,7 @@ interface RawQuestion {
 
 interface GameContent {
   questions?: RawQuestion[]
+  items?: RawQuestion[]
   title?: string
   [key: string]: unknown
 }
@@ -51,6 +52,81 @@ interface ShareSettings {
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
+
+/** Normalise the raw AI content dict into a flat RawQuestion array.
+ *
+ * Different templates use different top-level keys:
+ *   - quiz / battleship / cat_jump → content.questions
+ *   - feed_the_cats                → content.items
+ *   - farm_builder                 → content.challenges (target_area → correct_answer)
+ *   - beat_forge                   → uses lanes (not a Q&A list; returns [] here)
+ */
+function extractQuestions(content: GameContent): RawQuestion[] {
+  if (Array.isArray(content.problems) && content.problems.length > 0) {
+    return (content.problems as Array<{ shape_type?: string; constraint?: string; value?: number; hint?: string; explanation?: string; objective_id?: string }>).map(
+      (p) => ({
+        question: `Xây trang trại ${p.shape_type ?? '?'} với ${p.constraint ?? '?'} = ${p.value ?? '?'}`,
+        correct_answer: `${p.shape_type}|${p.constraint}|${p.value}`,
+        hint: p.hint,
+        explanation: p.explanation,
+        objective_id: p.objective_id,
+      })
+    )
+  }
+  if (Array.isArray(content.items) && content.items.length > 0) return content.items
+  return content.questions ?? []
+}
+
+interface BeatForgeLaneRaw {
+  correct_answer: string
+  hint?: string
+  explanation?: string
+}
+
+function beatForgeContentToGame(content: GameContent): Game {
+  const timeSig = String(content.time_signature ?? '4/4')
+  const lanes = (content.lanes as BeatForgeLaneRaw[] | undefined) ?? []
+
+  // options_json[0..5]: half, quarter, eighth, dotted_half, dotted_quarter, triplet_eighth
+  const configItem: GameItem = {
+    id: '0',
+    type: 'beat-forge',
+    question: String(content.title ?? 'Beat Forge'),
+    correctAnswer: timeSig,
+    options: [
+      String(Number(content.half_notes           ?? 0)),
+      String(Number(content.quarter_notes        ?? 0)),
+      String(Number(content.eighth_notes         ?? 0)),
+      String(Number(content.dotted_half_notes    ?? 0)),
+      String(Number(content.dotted_quarter_notes ?? 0)),
+      String(Number(content.triplet_eighth_notes ?? 0)),
+    ],
+    explanation: '',
+    validationStatus: 'valid',
+  }
+
+  const laneItems: GameItem[] = lanes.map((lane, i) => ({
+    id: String(i + 1),
+    type: 'beat-forge' as GameTemplateType,
+    question: `Lane ${i + 1}`,
+    correctAnswer: lane.correct_answer ?? '',
+    options: [],
+    explanation: lane.explanation ?? '',
+    hint: lane.hint || undefined,
+    validationStatus: 'valid' as const,
+  }))
+
+  return {
+    id: 'preview',
+    lessonId: 'preview',
+    templateType: 'beat-forge',
+    items: [configItem, ...laneItems],
+    settings: { numItems: lanes.length },
+    status: 'draft',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }
+}
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr]
@@ -143,7 +219,7 @@ export default function PreviewPage() {
     try {
       const parsed: PreviewData = JSON.parse(raw)
       setData(parsed)
-      setQuestions(parsed.content.questions ?? [])
+      setQuestions(extractQuestions(parsed.content))
       if (parsed.localId) { setLocalId(parsed.localId); setPublishState('published') }
     } catch {
       router.push('/dashboard/game/new')
@@ -155,8 +231,17 @@ export default function PreviewPage() {
   // Some games can only be summarised in-app (full play needs a BE_Web game id).
   const previewOnly = gameDef?.previewOnly ?? false
 
-  // Rebuild the Game (and reshuffle options) whenever the question set changes.
-  const game = useMemo(() => questionsToGame(questions, templateType), [questions, templateType])
+  const isBeatForge = data?.templateId === 'beat_forge'
+
+  // Rebuild the Game whenever question set or raw content changes.
+  const game = useMemo(
+    () => isBeatForge && data ? beatForgeContentToGame(data.content) : questionsToGame(questions, templateType),
+    [isBeatForge, data, questions, templateType],
+  )
+
+  const numQuestions = isBeatForge
+    ? ((data?.content.lanes as unknown[] | undefined)?.length ?? 0)
+    : questions.length
 
   if (!data) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', fontFamily: "'Be Vietnam Pro', sans-serif", color: '#9aa2b2' }}>
@@ -166,7 +251,6 @@ export default function PreviewPage() {
 
   const { safetyReport, metadata, templateName } = data
   const hasWarning = safetyReport.overall === 'warning'
-  const numQuestions = questions.length
 
   const handleSaveEdit = () => {
     if (!editing) return
@@ -186,11 +270,17 @@ export default function PreviewPage() {
   const persist = (status: 'draft' | 'published') => {
     if (!data) return
     const id = localId ?? newLocalGameId()
+    // beat_forge and farm_builder use structured content not reducible to a flat Q&A list — preserve as-is.
+    // For other templates, write back the (possibly edited) questions under the original key.
+    const isFarmBuilder = data.templateId === 'farm_builder'
+    const persistContent = (isBeatForge || isFarmBuilder)
+      ? data.content
+      : { ...data.content, [Array.isArray(data.content.items) ? 'items' : 'questions']: questions }
     saveLocalGame({
       id,
       templateId: data.templateId,
       templateName: data.templateName,
-      content: { ...data.content, questions },
+      content: persistContent,
       safetyReport: data.safetyReport,
       metadata: data.metadata,
       status,
@@ -283,8 +373,8 @@ export default function PreviewPage() {
                       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }} onClick={e => e.stopPropagation()}>
                         <textarea value={editing.question} onChange={e => setEditing(p => p ? { ...p, question: e.target.value } : p)} rows={2} placeholder="Câu hỏi" style={{ fontSize: 13, fontFamily: 'inherit', border: '1px solid #e3e6ee', borderRadius: 6, padding: '5px 7px', outline: 'none', resize: 'vertical' }} />
                         <input value={editing.correct_answer} onChange={e => setEditing(p => p ? { ...p, correct_answer: e.target.value } : p)} placeholder="Đáp án đúng" style={{ fontSize: 13, fontFamily: 'inherit', border: '1.5px solid #c4ecd9', background: '#f3fbf7', borderRadius: 6, padding: '4px 7px', outline: 'none' }} />
-                        {editing.distractors.map((d, di) => (
-                          <input key={di} value={d} onChange={e => setEditing(p => { if (!p) return p; const ds = [...p.distractors]; ds[di] = e.target.value; return { ...p, distractors: ds } })} placeholder={`Phương án nhiễu ${di + 1}`} style={{ fontSize: 13, fontFamily: 'inherit', border: '1px solid #e3e6ee', borderRadius: 6, padding: '4px 7px', outline: 'none' }} />
+                        {(editing.distractors ?? []).map((d, di) => (
+                          <input key={di} value={d} onChange={e => setEditing(p => { if (!p) return p; const ds = [...(p.distractors ?? [])]; ds[di] = e.target.value; return { ...p, distractors: ds } })} placeholder={`Phương án nhiễu ${di + 1}`} style={{ fontSize: 13, fontFamily: 'inherit', border: '1px solid #e3e6ee', borderRadius: 6, padding: '4px 7px', outline: 'none' }} />
                         ))}
                         <button onClick={handleSaveEdit} style={{ alignSelf: 'flex-end', fontSize: 12, fontWeight: 600, color: '#fff', background: '#4f46e5', border: 'none', borderRadius: 6, padding: '5px 12px', cursor: 'pointer', fontFamily: 'inherit' }}>Lưu</button>
                       </div>
@@ -328,7 +418,7 @@ export default function PreviewPage() {
 
           <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '6px 26px 30px' }}>
             <div style={{ width: '100%', maxWidth: 760 }}>
-              {numQuestions === 0 ? (
+              {game.items.length === 0 ? (
                 <div style={{ textAlign: 'center', color: '#9aa2b2', padding: 60 }}>Chưa có câu hỏi nào.</div>
               ) : (
                 <GameShell key={`${templateType}-${previewMode}`} game={game} previewMode={previewOnly ? true : previewMode === 'preview'} />
