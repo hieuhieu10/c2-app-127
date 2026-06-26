@@ -39,6 +39,12 @@ async def test_supported_subject_grade_passes_scope(monkeypatch):
     assert report.code == "ok"
 
 
+def test_llm_screen_prompt_disambiguates_vietnamese_language_from_subject():
+    assert "does NOT mean the subject is Vietnamese Language" in guardrail._SCREEN_SYSTEM
+    assert "subject authority" in guardrail._SCREEN_SYSTEM
+    assert "Môn: Toán" in guardrail._SCREEN_SYSTEM
+
+
 # ── Case 2: irrelevant / above grade (LLM screen) ────────────────────────────
 
 
@@ -54,6 +60,36 @@ async def test_above_grade_prompt_blocked(monkeypatch):
     report = await run_guardrails(subject="Toán", grade=2, prompt="giải phương trình bậc hai")
     assert not report.allowed
     assert report.code == "above_grade"
+
+
+async def test_primary_decimal_request_below_grade_5_blocked(monkeypatch):
+    _patch_llm(monkeypatch, verdict="ok")
+    report = await run_guardrails(subject="Toán học", grade=3, prompt="Tạo câu hỏi so sánh số thập phân 0,5 và 1,25")
+    assert not report.allowed
+    assert report.code == "above_grade"
+    assert "lớp 5" in report.message
+
+
+async def test_decimal_place_value_wording_for_grade_3_is_allowed(monkeypatch):
+    _patch_llm(monkeypatch, verdict="ok")
+    report = await run_guardrails(subject="Toán học", grade=3, prompt="Tạo game về cấu tạo thập phân của số tự nhiên")
+    assert report.allowed
+
+
+async def test_fraction_request_below_grade_4_blocked(monkeypatch):
+    _patch_llm(monkeypatch, verdict="ok")
+    report = await run_guardrails(subject="Toán", grade=3, prompt="Tạo quiz về phân số 3/5, tử số và mẫu số")
+    assert not report.allowed
+    assert report.code == "above_grade"
+    assert "lớp 4" in report.message
+
+
+async def test_percent_request_below_grade_5_blocked(monkeypatch):
+    _patch_llm(monkeypatch, verdict="ok")
+    report = await run_guardrails(subject="Toán", grade=4, prompt="Tạo câu hỏi về tỉ số phần trăm và 25%")
+    assert not report.allowed
+    assert report.code == "above_grade"
+    assert "lớp 5" in report.message
 
 
 # ── Case 3: not child-friendly ───────────────────────────────────────────────
@@ -90,7 +126,7 @@ async def test_llm_error_fails_open(monkeypatch):
 # ── HTTP surface ─────────────────────────────────────────────────────────────
 
 
-def test_http_block_returns_422(monkeypatch):
+def test_recommend_games_block_returns_inline_payload(monkeypatch):
     from fastapi.testclient import TestClient
 
     from app.main import app
@@ -100,7 +136,8 @@ def test_http_block_returns_422(monkeypatch):
         "/recommend/games",
         json={"subject": "Hóa học", "grade": 11, "difficulty": "medium", "prompt": "oxi hóa khử"},
     )
-    assert resp.status_code == 422
-    detail = resp.json()["detail"]
-    assert detail["code"] == "out_of_scope_subject"
-    assert detail["message"] and detail["suggestion"]
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["blocked"] is True
+    assert body["message"] and body["suggestion"]
+    assert body["recommendations"] == []

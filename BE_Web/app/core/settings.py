@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     database_url: str = "sqlite:///./be_web.db"
     be_ai_base_url: str = "http://localhost:8000"
     be_ai_timeout_seconds: float = 30.0
+    api_debug: bool = False
     cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:3000"])
     jwt_secret_key: str = "change-me"
     jwt_algorithm: str = "HS256"

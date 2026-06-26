@@ -16,14 +16,11 @@ from app.db.session import get_db
 from app.db.models import User
 from app.schemas.games import (
     GameSummaryResponse,
-    GenerateGameRequest,
     GameItemResponse,
     GameResponse,
     StatusResponse,
     UpdateGameItemRequest,
 )
-from app.services.ai_client import AIClient, get_ai_client
-from app.services.game_generation import generate_game
 from app.services.game_mapper import game_to_response, game_to_summary_response
 from app.services.game_review import get_game_or_404, recheck_item, set_status, update_item
 
@@ -43,16 +40,6 @@ def list_games(
         .order_by(Game.updated_at.desc(), Game.created_at.desc(), Game.id.desc())
     ).all()
     return [game_to_summary_response(game) for game in games]
-
-
-@router.post("/generate", response_model=GameResponse)
-async def generate(
-    request: GenerateGameRequest,
-    db: Session = Depends(get_db),
-    ai_client: AIClient = Depends(get_ai_client),
-    current_user: User = Depends(get_current_user),
-) -> GameResponse:
-    return await generate_game(db, request, ai_client, current_user)
 
 
 @router.get("/{game_id}", response_model=GameResponse)

@@ -23,6 +23,7 @@ export interface ShellProps {
   previewMode?: boolean
   /** Review-harness only: jump straight to a named screen (e.g. 'battle'). Ignored in the app. */
   scene?: string
+  fullscreen?: boolean
 }
 
 export interface GameDefinition {

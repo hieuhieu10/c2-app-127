@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-from fastapi import HTTPException
+from typing import Any
+
 from sqlalchemy.orm import Session
 
-from app.db.models import Game, GameItem, GameReviewEvent, GameStatus, Lesson, ReviewEventType, User
-from app.schemas.ai import LessonRequest
-from app.schemas.games import GenerateGameRequest, GameResponse
-from app.services.ai_client import AIClient, AIClientError
+from app.db.models import ChatSession, Game, GameItem, GameReviewEvent, GameStatus, Lesson, ReviewEventType, User
 from app.services.game_mapper import (
     GameMappingError,
     battleship_content_to_items,
@@ -14,105 +12,127 @@ from app.services.game_mapper import (
     cat_jump_content_to_items,
     farm_builder_content_to_items,
     feed_cats_content_to_items,
-    game_to_response,
     quiz_content_to_items,
 )
 
-PRODUCT_TEMPLATE_TO_AI_TEMPLATE = {
-    "treasure_hunt": "quiz",
-    "battleship": "battleship",
-    "cat_jump": "cat_jump",
-    "feed_the_cats": "feed_the_cats",
-    "beat_forge": "beat_forge",
-    "farm_builder": "farm_builder",
-}
 
-_CONTENT_MAPPERS = {
-    "quiz": quiz_content_to_items,
-    "battleship": battleship_content_to_items,
-    "cat_jump": cat_jump_content_to_items,
-    "feed_the_cats": feed_cats_content_to_items,
-    "beat_forge": beat_forge_content_to_items,
-    "farm_builder": farm_builder_content_to_items,
-}
-
-_DEFAULT_SETTINGS: dict[str, dict] = {
-    "treasure_hunt": {"playerCount": 2, "mapTheme": "treasure-hunt"},
-    "battleship": {},
-    "cat_jump": {},
-    "feed_the_cats": {},
-    "beat_forge": {},
-    "farm_builder": {},
-}
-
-
-async def generate_game(db: Session, request: GenerateGameRequest, ai_client: AIClient, current_user: User) -> GameResponse:
-    ai_template_id = PRODUCT_TEMPLATE_TO_AI_TEMPLATE.get(request.product_template_id)
-    if not ai_template_id:
-        raise HTTPException(400, f"Unknown product_template_id '{request.product_template_id}'")
-
-    ai_grade = max(request.grade, 6)
-
+def create_game_from_generation(
+    db: Session,
+    *,
+    current_user: User,
+    session: ChatSession,
+    template_id: str,
+    content: dict[str, Any],
+    safety_report: dict[str, Any] | None,
+    elapsed_ms: int | None,
+) -> tuple[Lesson, Game]:
     lesson = Lesson(
         user_id=current_user.id,
-        title=request.title,
-        input_text=request.input,
-        subject=request.subject or "General",
-        grade=request.grade,
-        difficulty=request.difficulty,
-        objective_id=request.objective_id,
+        title=session.title or "Trò chơi mới",
+        input_text=_latest_user_prompt(session),
+        subject=session.subject or "General",
+        grade=session.grade or 6,
+        difficulty=session.difficulty or "medium",
+        objective_id=_extract_objective_id(content),
     )
     db.add(lesson)
     db.flush()
 
     game = Game(
         lesson_id=lesson.id,
-        product_template_id=request.product_template_id,
-        ai_template_id=ai_template_id,
+        product_template_id=template_id,
+        ai_template_id=template_id,
         status=GameStatus.draft,
-        settings_json={"numItems": request.num_items, **_DEFAULT_SETTINGS.get(request.product_template_id, {})},
+        settings_json={
+            "numItems": session.num_items or _infer_num_items(content),
+            "playerCount": 2,
+            "mapTheme": "treasure-hunt" if template_id == "treasure_hunt" else None,
+        },
+        ai_raw_response_json={
+            "content": content,
+            "safety_report": safety_report,
+            "elapsed_ms": elapsed_ms,
+        },
     )
     db.add(game)
     db.flush()
 
-    # BE_AI currently exposes active content templates only for grades 6-12.
-    # Persist the lesson's real grade in BE_Web, but clamp the AI request upward for compatibility.
-    ai_request = LessonRequest(
-        subject=lesson.subject,
-        grade=ai_grade,
-        difficulty=lesson.difficulty,  # type: ignore[arg-type]
-        prompt=lesson.input_text,
-        objective_id=lesson.objective_id,
-        source_text=lesson.input_text,
-        num_items=request.num_items,
-        override_template=ai_template_id,
+    item_rows = map_content_to_items(template_id, content)
+    for row in item_rows:
+        db.add(GameItem(game_id=game.id, **row))
+
+    db.flush()
+    db.add(
+        GameReviewEvent(
+            game_id=game.id,
+            event_type=ReviewEventType.generate,
+            payload_json={
+                "template_id": template_id,
+                "elapsed_ms": elapsed_ms,
+                "item_count": len(item_rows),
+            },
+        )
     )
+    db.commit()
+    db.refresh(lesson)
+    db.refresh(game)
+    return lesson, game
 
-    try:
-        ai_response = await ai_client.generate(ai_request)
-        game.ai_raw_response_json = ai_response.model_dump()
-        if not ai_response.ok or not ai_response.content:
-            game.status = GameStatus.generation_failed
-            db.add(GameReviewEvent(game_id=game.id, event_type=ReviewEventType.generate, payload_json=game.ai_raw_response_json))
-            db.commit()
-            raise HTTPException(502, ai_response.error or "BE_AI failed to generate content")
-        if ai_response.template_id != ai_template_id:
-            raise GameMappingError(f"BE_AI returned template '{ai_response.template_id}', expected '{ai_template_id}'")
 
-        content_mapper = _CONTENT_MAPPERS[ai_template_id]
-        for item_data in content_mapper(ai_response.content):
-            db.add(GameItem(game_id=game.id, **item_data))
-        db.add(GameReviewEvent(game_id=game.id, event_type=ReviewEventType.generate, payload_json=game.ai_raw_response_json))
-        db.commit()
-        db.refresh(game)
-        return game_to_response(game)
-    except AIClientError as exc:
-        game.status = GameStatus.generation_failed
-        db.add(GameReviewEvent(game_id=game.id, event_type=ReviewEventType.generate, payload_json={"error": str(exc)}))
-        db.commit()
-        raise HTTPException(502, str(exc)) from exc
-    except GameMappingError as exc:
-        game.status = GameStatus.generation_failed
-        db.add(GameReviewEvent(game_id=game.id, event_type=ReviewEventType.generate, payload_json={"error": str(exc)}))
-        db.commit()
-        raise HTTPException(502, str(exc)) from exc
+def map_content_to_items(template_id: str, content: dict[str, Any]) -> list[dict[str, Any]]:
+    if template_id in {"treasure_hunt", "battleship"}:
+        question_pool = content.get("questions")
+        if not isinstance(question_pool, list) or not question_pool:
+            raise GameMappingError(f"BE_AI {template_id} content must include a non-empty questions list")
+        synthetic_quiz_content = {"items": question_pool}
+        if template_id == "battleship":
+            return battleship_content_to_items(content)
+        return quiz_content_to_items(synthetic_quiz_content)
+
+    if template_id == "quiz":
+        return quiz_content_to_items(content)
+
+    if template_id == "cat_jump":
+        return cat_jump_content_to_items(content)
+
+    if template_id == "feed_the_cats":
+        return feed_cats_content_to_items(content)
+
+    if template_id == "beat_forge":
+        return beat_forge_content_to_items(content)
+
+    if template_id == "farm_builder":
+        return farm_builder_content_to_items(content)
+
+    raise GameMappingError(f"Unsupported template '{template_id}' for BE_Web persistence")
+
+
+def _latest_user_prompt(session: ChatSession) -> str:
+    for message in reversed(session.messages):
+        if message.role.value == "user" and message.content.strip():
+            return message.content
+    return session.title or "Trò chơi mới"
+
+
+def _infer_num_items(content: dict[str, Any]) -> int | None:
+    if isinstance(content.get("questions"), list):
+        return len(content["questions"])
+    if isinstance(content.get("items"), list):
+        return len(content["items"])
+    return None
+
+
+def _extract_objective_id(content: dict[str, Any]) -> str | None:
+    if isinstance(content.get("objective_id"), str):
+        return content["objective_id"]
+    questions = content.get("questions")
+    if isinstance(questions, list):
+        for item in questions:
+            if isinstance(item, dict) and isinstance(item.get("objective_id"), str):
+                return item["objective_id"]
+    items = content.get("items")
+    if isinstance(items, list):
+        for item in items:
+            if isinstance(item, dict) and isinstance(item.get("objective_id"), str):
+                return item["objective_id"]
+    return None

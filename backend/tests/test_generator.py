@@ -58,3 +58,78 @@ def test_retrieve_adopts_objective():
     state = _base_state()
     assert state["context"].objective_id == "ls8-phongtrao-canvuong"
     assert state["context"].misconceptions  # fixtures provide them
+
+
+def test_validate_rejects_generated_fake_objective_id():
+    state = {
+        "subject": "Toán học",
+        "grade": 3,
+        "difficulty": "medium",
+        "prompt": "Tạo câu hỏi phép nhân",
+        "objective_id": "math_3_multiplication_repeated_addition",
+        "num_items": 1,
+        "template_id": "quiz",
+        "content": {
+            "title": "Bài quiz",
+            "objective_id": "MATH_3_DECIMALS",
+            "items": [
+                {
+                    "question": "Có 3 nhóm, mỗi nhóm 4 quả. Có bao nhiêu quả?",
+                    "correct_answer": "12",
+                    "distractors": ["7", "9"],
+                    "hint": "Dùng phép nhân.",
+                    "explanation": "3 x 4 = 12.",
+                    "objective_id": "MATH_3_DECIMALS",
+                }
+            ],
+        },
+    }
+
+    state.update(validate_node(state))
+    assert not state["ok"]
+    assert any("objective_id" in error for error in state["validation_errors"])
+
+
+def test_validate_rejects_decimal_content_below_grade_5():
+    state = {
+        "subject": "Toán học",
+        "grade": 3,
+        "difficulty": "medium",
+        "prompt": "Tạo câu hỏi phép nhân",
+        "objective_id": "math_3_multiplication_repeated_addition",
+        "num_items": 1,
+        "template_id": "quiz",
+        "content": {
+            "title": "Số thập phân",
+            "objective_id": "math_3_multiplication_repeated_addition",
+            "items": [
+                {
+                    "question": "Số nào lớn hơn 0,5?",
+                    "correct_answer": "0,6",
+                    "distractors": ["0,4", "0,3"],
+                    "hint": "So sánh phần thập phân.",
+                    "explanation": "0,6 lớn hơn 0,5.",
+                    "objective_id": "math_3_multiplication_repeated_addition",
+                }
+            ],
+        },
+    }
+
+    state.update(validate_node(state))
+    assert not state["ok"]
+    assert any("lớp 3" in error for error in state["validation_errors"])
+
+
+def test_retrieve_does_not_keep_placeholder_objective_id():
+    state = {
+        "subject": "Toán học",
+        "grade": 3,
+        "difficulty": "medium",
+        "prompt": "Tạo câu hỏi về phép nhân trong phạm vi 100",
+        "objective_id": "string",
+        "num_items": 1,
+        "template_id": "quiz",
+    }
+    state.update(retrieve_node(state))
+    assert state["objective_id"] != "string"
+    assert state["objective_id"]

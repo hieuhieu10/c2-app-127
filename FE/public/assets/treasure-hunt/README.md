@@ -1,10 +1,10 @@
 # Treasure Hunt Asset Pack
 
-Drop real production assets into these folders when they are ready. The game shell currently works without them by falling back to CSS/SVG/emoji prototype visuals.
+Đặt production assets thật vào các thư mục dưới đây khi đã sẵn sàng. Game shell hiện vẫn chạy được nếu chưa có asset, bằng cách fallback sang CSS/SVG/emoji prototype visuals.
 
-## Characters
+## Nhân Vật
 
-Place character sprites in `characters/`:
+Đặt character sprites trong `characters/`:
 
 - `player-1-idle.png`
 - `player-1-run.png`
@@ -19,32 +19,32 @@ Place character sprites in `characters/`:
 - `player-3-win.png`
 - `player-3-lose.png`
 
-Recommended size: transparent PNG, square canvas, 256x256 or 512x512.
+Kích thước khuyến nghị: transparent PNG, canvas vuông, `256x256` hoặc `512x512`.
 
-## Map
+## Bản Đồ
 
-Place map assets in `map/`:
+Đặt map assets trong `map/`:
 
 - `background.png`
 - `path-overlay.png`
 
-Recommended size: 16:9 background, at least 1600x900.
+Kích thước khuyến nghị: background tỷ lệ `16:9`, tối thiểu `1600x900`.
 
-## Objects
+## Vật Thể
 
-Place game objects in `objects/`:
+Đặt game objects trong `objects/`:
 
 - `cave-closed.png`
 - `cave-open.png`
 - `treasure-chest.png`
 
-Recommended size: transparent PNG.
+Kích thước khuyến nghị: transparent PNG.
 
-## Effects
+## Hiệu Ứng
 
-Place feedback effects in `effects/`:
+Đặt feedback effects trong `effects/`:
 
 - `correct-sparkle.png`
 - `wrong-shake.png`
 
-Recommended size: transparent PNG or lightweight animated GIF/WebP.
+Kích thước khuyến nghị: transparent PNG hoặc animated GIF/WebP nhẹ.

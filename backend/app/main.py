@@ -9,6 +9,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.api.routes_generate import router as generate_router
+from app.config import settings
+from app.debug import install_api_debug_middleware
 
 app = FastAPI(
     title="AI Learning-Game Generator — Agent Workflow",
@@ -23,6 +25,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+install_api_debug_middleware(app, enabled=settings.api_debug)
 
 app.include_router(generate_router)
 

@@ -5,6 +5,7 @@ from __future__ import annotations
 import app.agents.generator as gen
 import app.agents.recommender as rec
 from app.agents.graph import run_workflow
+from app.retrieval.context import RetrievedContext
 from tests.conftest import invalid_content, valid_content
 
 
@@ -62,6 +63,28 @@ async def test_full_workflow_gives_up_on_persistent_invalid(monkeypatch):
     assert not state["ok"]
     assert state["error"]
     assert "schema validation" in state["error"]
+
+
+async def test_full_workflow_stops_when_objective_missing(monkeypatch):
+    class MissingObjectiveProvider:
+        def retrieve(self, **kwargs):
+            return RetrievedContext(objective_id="", matched_confidence=0.0)
+
+    async def boom(*a, **k):
+        raise AssertionError("LLM should not be called when retrieval cannot resolve an objective")
+
+    monkeypatch.setattr(gen, "default_provider", MissingObjectiveProvider())
+    monkeypatch.setattr(rec, "call_tool", boom)
+    monkeypatch.setattr(gen, "call_tool", boom)
+
+    state = await run_workflow(
+        subject="Toán", grade=3, difficulty="medium",
+        prompt="Tạo một game thật vui cho lớp học",
+    )
+    assert not state["ok"]
+    assert state["error"]
+    assert "Không tìm thấy yêu cầu cần đạt" in state["error"]
+    assert state["content"] is None
 
 
 def test_http_endpoints(monkeypatch):

@@ -1,100 +1,336 @@
-# Starter Code Template — Cohort 2
+# LearnGame - hệ thống tạo trò chơi học tập bám GDPT 2018
 
-Empty starter template for AI20K Build Cohort 2 team repositories. Includes pre-configured AI usage logging hooks for Claude Code, Cursor, Codex, Gemini CLI, Antigravity, and GitHub Copilot.
+LearnGame là hệ thống hỗ trợ giáo viên tạo trò chơi học tập từ yêu cầu tự nhiên, có kiểm tra theo chương trình GDPT 2018. Giáo viên nhập yêu cầu bài học, xem nội dung AI sinh ra, chỉnh sửa câu hỏi, duyệt và đưa vào game shell để chơi trên lớp.
 
-## Structure
+MVP hiện tập trung vào:
 
-```
-├── scripts/
-│   ├── _pyrun.sh             # Cross-platform Python launcher (bash)
-│   ├── _pyrun.cmd            # Cross-platform Python launcher (Windows)
-│   ├── setup_hooks.sh        # One-time pre-push hook installer (POSIX)
-│   ├── setup_hooks.ps1       # One-time pre-push hook installer (Windows)
-│   ├── log_hook.py           # AI tool hook handler (Claude / Cursor / Codex / Gemini / Copilot)
-│   ├── log_antigravity.py    # Auto-log hook for Antigravity
-│   ├── log_manual.py         # Manual log for ChatGPT / web tools
-│   └── submit_log.py         # Submits logs on git push
-├── .agents/                  # Antigravity rules + workflows
-├── .claude/  .codex/  .cursor/  .gemini/  .github/hooks/   # Per-tool hook configs
-├── .env.example
-├── JOURNAL.md                # Weekly journal — product journey & learnings
-└── WORKLOG.md                # Technical decisions, task assignments, brainstorming
-```
+- Chuẩn chương trình GDPT 2018.
+- Knowledge base môn Toán cấp tiểu học, lớp 1-5.
+- Quy trình giáo viên review trước khi sử dụng.
+- Game shell Treasure Hunt và Trivia Battleship.
+- Luồng tạo game hiện tại đi qua BE_Web để lưu chat history, sau đó BE_Web gọi BE_AI để đề xuất game và stream quá trình sinh nội dung.
 
-## Getting Started
+## Kiến Trúc
 
-### 1. Clone and install pre-push hook
+Tài liệu chi tiết nằm ở [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-**Linux / macOS / Git Bash:**
-```bash
-git clone <repo-url>
-cd <repo>
-bash scripts/setup_hooks.sh
+```text
+FE Next.js
+  -> BE_Web FastAPI + DB cho auth, chat history, saved games, review APIs
+  -> BE_AI FastAPI agent workflow cho recommend/generate stream
+  -> GDPT 2018 JSON KB + LLM provider tùy chọn
 ```
 
-**Windows PowerShell:**
+BE_Web phụ trách authentication, chat session/history, persistence, saved-game APIs và teacher review workflow. BE_AI phụ trách curriculum retrieval, game recommendation, content generation, schema validation, repair và streaming pipeline events.
+
+## Cấu Trúc Repository
+
+```text
+FE/                         Frontend Next.js
+BE_Web/                     Backend web-facing cho auth, saved games, review
+backend/                    Backend AI agent workflow
+backend/data/gdpt_2018/     Runtime GDPT 2018 KB dùng bởi BE_AI
+knowledge_base/gdpt_2018/   Canonical KB để review và chỉnh sửa
+docs/                       Tài liệu kiến trúc và eval evidence
+scripts/                    AI logging / course utility scripts
+```
+
+## Yêu Cầu Môi Trường
+
+- Python 3.11+
+- `uv` để quản lý môi trường Python backend
+- Node.js 20+
+- `npm`
+- PostgreSQL là tùy chọn. Local development của BE_Web mặc định dùng SQLite.
+- Docker là tùy chọn nếu muốn chạy Weaviate cho hybrid RAG.
+- Một LLM API key nếu muốn chạy generation thật: OpenAI, DeepSeek hoặc Anthropic.
+
+Các unit test cho retrieval, schema, validation và BE_Web API có thể chạy không cần LLM key.
+
+## Biến Môi Trường
+
+Tạo file `.env` ở repo root từ `.env.example`:
+
 ```powershell
-git clone <repo-url>
-cd <repo>
-powershell -ExecutionPolicy Bypass -File scripts\setup_hooks.ps1
+Copy-Item .env.example .env
 ```
 
-### 2. Configure environment
+### BE_AI
 
-```bash
-cp .env.example .env       # macOS / Linux / Git Bash
-# copy .env.example .env   # Windows cmd
+BE_AI đọc `.env` từ repo root qua `backend/app/config.py`.
+
+| Biến | Bắt buộc | Ghi chú |
+|---|---:|---|
+| `LLM_PROVIDER` | Không | `auto`, `openai`, `deepseek` hoặc `anthropic`; mặc định `auto`. |
+| `OPENAI_API_KEY` | Khi dùng OpenAI | Dùng khi `LLM_PROVIDER=openai` hoặc `auto` chọn OpenAI. |
+| `DEEPSEEK_API_KEY` | Khi dùng DeepSeek | Dùng khi `LLM_PROVIDER=deepseek` hoặc `auto` chọn DeepSeek. |
+| `DEEPSEEK_BASE_URL` | Không | Mặc định `https://api.deepseek.com`. |
+| `ANTHROPIC_API_KEY` | Khi dùng Anthropic | Dùng khi `LLM_PROVIDER=anthropic` hoặc `auto` fallback. |
+| `DEFAULT_MODEL` | Không | Nếu để trống, hệ thống dùng default model của provider. |
+| `MAX_REPAIRS` | Không | Mặc định `2`. |
+| `MAX_TOKENS` | Không | Mặc định `4096`. |
+
+Thứ tự ưu tiên khi `LLM_PROVIDER=auto`:
+
+```text
+OpenAI -> DeepSeek -> Anthropic
 ```
 
-Fill in `AI_LOG_SERVER` and `AI_LOG_API_KEY` (provided by the course).
+### BE_Web
 
-### 3. Build your project
+BE_Web đọc `BE_Web/.env` nếu có, nếu không sẽ dùng `BE_Web/.env.example`.
 
-This is an empty starter — pick any language/framework. The hooks are language-agnostic; they only need Python on the host (any of `python3`, `python`, or `py` works).
+| Biến | Bắt buộc | Mặc định |
+|---|---:|---|
+| `DATABASE_URL` | Không | `sqlite:///./be_web.db` |
+| `BE_AI_BASE_URL` | Không | `http://localhost:8000` |
+| `BE_AI_TIMEOUT_SECONDS` | Không | `30.0` |
+| `CORS_ORIGINS` | Không | `["http://localhost:3000"]` |
+| `JWT_SECRET_KEY` | Nên có | `change-me` |
+| `ACCESS_TOKEN_EXPIRE_MINUTES` | Không | `10080` |
 
-## Weekly Journal
+SQLite local tự tạo file `BE_Web/be_web.db` khi chạy app. Nếu schema local bị lệch sau khi pull code mới, có thể tạo DB mới bằng cách backup file cũ rồi tạo schema lại:
 
-Update **[JOURNAL.md](./JOURNAL.md)** at the end of every week:
+```powershell
+cd BE_Web
+Move-Item .\be_web.db .\be_web.db.bak
+$env:PYTHONPATH='.'
+uv run python -c "from app.db import models; from app.db.session import Base, engine; Base.metadata.create_all(bind=engine)"
+```
 
-- Features shipped
-- AI tools used and how they helped
-- Hardest problem of the week and how you solved it
-- What you'd do differently
-- Plan for next week
+DB mới sẽ trắng, nên cần đăng ký/đăng nhập lại user. Nếu cần giữ dữ liệu thật, dùng Alembic/PostgreSQL thay vì xóa SQLite local.
 
-> JOURNAL.md **must be updated** before each PR — it is your learning record for the course.
+### FE
 
-## Worklog
+| Biến | Bắt buộc | Mặc định |
+|---|---:|---|
+| `NEXT_PUBLIC_BE_WEB_URL` | Không | `http://localhost:8001` |
+| `NEXT_PUBLIC_AI_URL` | Không | `http://localhost:8000`; chủ yếu dùng cho các client/debug cũ, luồng chat mới đi qua BE_Web. |
+| `NEXT_PUBLIC_API_DEBUG` | Không | `false` |
 
-Update **[WORKLOG.md](./WORKLOG.md)** whenever your team makes a technical decision or changes direction:
+## Cài Đặt
 
-- **Technical decisions** — why this approach over alternatives?
-- **Task assignments** — who does what, by when
-- **Brainstorming** — options considered, pros / cons, conclusion
-- **Important bugs** — root cause and fix
+Nếu chưa có `uv`:
+
+```powershell
+python -m pip install uv
+```
+
+Hai backend Python đều giữ `requirements.txt` để fallback/export runtime, nhưng local development nên dùng `uv sync --extra dev`.
+
+### 1. Cài BE_AI
+
+```powershell
+cd backend
+uv sync --extra dev
+```
+
+### 2. Cài BE_Web
+
+```powershell
+cd BE_Web
+Copy-Item .env.example .env
+uv sync --extra dev
+```
+
+SQLite local chạy được ngay. Nếu dùng PostgreSQL, đặt:
+
+```text
+DATABASE_URL=postgresql+psycopg://user:password@localhost:5432/be_web
+```
+
+### 3. Cài FE
+
+```powershell
+cd FE
+npm install
+```
+
+Nếu cần cấu hình URL khác mặc định, tạo `FE/.env.local`:
+
+```env
+NEXT_PUBLIC_BE_WEB_URL=http://localhost:8001
+NEXT_PUBLIC_AI_URL=http://localhost:8000
+NEXT_PUBLIC_API_DEBUG=false
+```
+
+## Chạy Local
+
+Mở ba terminal.
+
+### Terminal 1 - BE_AI
+
+```powershell
+cd backend
+uv run uvicorn app.main:app --reload --port 8000
+```
+
+Swagger UI:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+### Terminal 2 - BE_Web
+
+```powershell
+cd BE_Web
+uv run uvicorn app.main:app --reload --port 8001
+```
+
+Swagger UI:
+
+```text
+http://127.0.0.1:8001/docs
+```
+
+### Terminal 3 - FE
+
+```powershell
+cd FE
+npm run dev
+```
+
+App:
+
+```text
+http://localhost:3000
+```
+
+## Ví Dụ Gọi API
+
+### BE_AI full generation
+
+Dùng khi muốn BE_AI tự retrieve GDPT context, recommend template, generate, validate và repair.
+
+```powershell
+$body = @{
+  subject = "Toan"
+  grade = 5
+  difficulty = "medium"
+  prompt = "Tao game ve ti so phan tram va giam gia"
+  objective_id = ""
+  source_text = ""
+  uploaded_file_id = ""
+  upload_type = "none"
+  num_items = 5
+  override_template = ""
+} | ConvertTo-Json -Depth 10
+
+Invoke-RestMethod `
+  -Method Post `
+  -Uri "http://127.0.0.1:8000/generate/full" `
+  -ContentType "application/json; charset=utf-8" `
+  -Body $body
+```
+
+### BE_AI explicit template generation
+
+Dùng `/generate` khi caller đã chọn content template.
+
+```json
+{
+  "subject": "Toan",
+  "grade": 3,
+  "difficulty": "medium",
+  "prompt": "Tao game matching ve phep nhan la phep cong lap",
+  "objective_id": "",
+  "source_text": "Vi du: 3 gio tao, moi gio 4 qua. Hoat dong 10 phut cuoi gio.",
+  "uploaded_file_id": "slide_001",
+  "upload_type": "slide",
+  "num_items": 8,
+  "override_template": "matching"
+}
+```
+
+### Luồng FE hiện tại
+
+Trang `/dashboard/game/new` gọi BE_Web chat API trước để lưu history. BE_Web sẽ gọi BE_AI ở phía sau.
+
+Luồng chính:
+
+```text
+FE /dashboard/game/new
+-> BE_Web POST /api/chat/sessions
+-> BE_Web POST /api/chat/sessions/{session_id}/recommend
+-> BE_AI POST /recommend/games
+-> FE chọn game
+-> BE_Web POST /api/chat/sessions/{session_id}/generate
+-> BE_AI POST /generate/stream
+-> BE_Web lưu assistant message + Lesson/Game khi complete
+```
+
+Nếu muốn gọi BE_AI trực tiếp để debug, có thể dùng `/recommend/games`:
+
+```powershell
+$recommendBody = @{
+  subject = "Toan"
+  grade = 3
+  difficulty = "medium"
+  prompt = "Tao game matching ve phep nhan la phep cong lap"
+  source_text = "Vi du: 3 gio tao, moi gio 4 qua"
+} | ConvertTo-Json
+
+Invoke-RestMethod `
+  -Method Post `
+  -Uri "http://127.0.0.1:8000/recommend/games" `
+  -ContentType "application/json" `
+  -Body $recommendBody
+```
+
+### BE_Web auth và saved game APIs
+
+```powershell
+$signup = Invoke-RestMethod `
+  -Method Post `
+  -Uri "http://127.0.0.1:8001/api/auth/signup" `
+  -ContentType "application/json" `
+  -Body (@{
+    email = "teacher@example.com"
+    password = "secret123"
+    name = "Teacher"
+  } | ConvertTo-Json)
+
+$token = $signup.accessToken
+
+Invoke-RestMethod `
+  -Method Get `
+  -Uri "http://127.0.0.1:8001/api/games" `
+  -Headers @{ Authorization = "Bearer $token" }
+```
+
+BE_Web hiện phụ trách auth, chat history, saved-game listing, review/edit, approve/publish, avatar upload và battleship play serving. Game creation trên FE đi qua BE_Web chat endpoints, còn BE_Web gọi BE_AI.
+
+## Test
+
+```powershell
+cd backend
+uv run pytest
+```
+
+```powershell
+cd BE_Web
+$env:PYTHONPATH='.'
+uv run pytest
+```
+
+```powershell
+cd FE
+npm run build
+```
+
+Eval evidence mới nhất nằm ở [docs/EVAL_EVIDENCE.md](docs/EVAL_EVIDENCE.md).
 
 ## AI Logging
 
-Prompts and tool calls are **automatically logged** when you use any supported AI tool (Claude Code, Cursor, Codex, Gemini, Antigravity, Copilot). No manual steps needed after running `setup_hooks`.
+Course AI logging hooks nằm trong `scripts/`. Trên Windows:
 
-For ChatGPT or other web tools, log manually:
-
-```bash
-# POSIX
-bash scripts/_pyrun.sh scripts/log_manual.py --tool chatgpt --prompt "<what you did>"
-
-# Windows
-scripts\_pyrun.cmd scripts\log_manual.py --tool chatgpt --prompt "<what you did>"
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\setup_hooks.ps1
 ```
 
-### Python requirements
+Log thủ công cho ChatGPT/web:
 
-The hook system needs **one** of: `python3`, `python`, or `py` on PATH.
-
-| OS | Recommended install |
-|---|---|
-| Windows | Python 3 from [python.org](https://www.python.org/downloads/) — installer adds both `python` and `py` to PATH |
-| Ubuntu / Debian | `sudo apt install python3` (already preinstalled on most distros) |
-| macOS | `brew install python3` or use system Python 3 |
-
-The `scripts/_pyrun.*` wrappers detect whichever is available — students do not need to alias `python3` → `python`.
+```powershell
+scripts\_pyrun.cmd scripts\log_manual.py --tool chatgpt --prompt "<noi dung da lam>"
+```

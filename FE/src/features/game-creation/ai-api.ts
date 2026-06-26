@@ -1,4 +1,5 @@
 const AI_BASE = process.env.NEXT_PUBLIC_AI_URL || 'http://localhost:8000'
+const API_DEBUG = process.env.NEXT_PUBLIC_API_DEBUG === 'true'
 
 export type StageStatus = 'pending' | 'running' | 'done' | 'warning' | 'error'
 
@@ -91,6 +92,7 @@ export class GuardrailError extends Error {
 }
 
 export async function recommendGames(input: RecommendGamesInput): Promise<GameRecommendation[]> {
+  debugLog('BE_AI -> POST /recommend/games', input)
   const res = await fetch(`${AI_BASE}/recommend/games`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -102,6 +104,7 @@ export async function recommendGames(input: RecommendGamesInput): Promise<GameRe
     throw new Error(detail)
   }
   const data = (await res.json()) as RecommendGamesResponse
+  debugLog('BE_AI <- POST /recommend/games', data)
   if (data.blocked) {
     throw new GuardrailError(
       data.message || 'Yêu cầu không hợp lệ.',
@@ -112,6 +115,7 @@ export async function recommendGames(input: RecommendGamesInput): Promise<GameRe
 }
 
 export async function* streamGenerate(input: GenerateStreamInput): AsyncGenerator<StreamEvent> {
+  debugLog('BE_AI -> POST /generate/stream', input)
   const res = await fetch(`${AI_BASE}/generate/stream`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -135,8 +139,31 @@ export async function* streamGenerate(input: GenerateStreamInput): AsyncGenerato
     for (const part of parts) {
       const line = part.trim()
       if (line.startsWith('data: ')) {
-        try { yield JSON.parse(line.slice(6)) as StreamEvent } catch { /* skip */ }
+        try {
+          const event = JSON.parse(line.slice(6)) as StreamEvent
+          debugLog('BE_AI <- SSE /generate/stream', event)
+          yield event
+        } catch { /* skip */ }
       }
     }
   }
+}
+
+function debugLog(label: string, payload: unknown) {
+  if (!API_DEBUG) return
+  console.debug(`[API DEBUG] ${label}`, redact(payload))
+}
+
+function redact(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(redact)
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(Object.entries(value as Record<string, unknown>).map(([key, item]) => {
+      const normalized = key.toLowerCase().replaceAll('-', '_')
+      if (['authorization', 'cookie', 'password', 'token', 'api_key', 'secret'].some(s => normalized.includes(s))) {
+        return [key, '<redacted>']
+      }
+      return [key, redact(item)]
+    }))
+  }
+  return value
 }

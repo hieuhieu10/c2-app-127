@@ -7,24 +7,6 @@ from datetime import datetime
 from pydantic import BaseModel, Field
 
 
-class ProductTemplate(BaseModel):
-    id: str
-    name: str
-    description: str
-    ai_template_id: str
-
-
-class GenerateGameRequest(BaseModel):
-    title: str = Field(..., min_length=1)
-    input: str = Field(..., min_length=1)
-    product_template_id: str = "treasure_hunt"
-    num_items: int = Field(10, ge=1, le=20)
-    subject: str = "General"
-    grade: int = Field(6, ge=1, le=12)
-    difficulty: Literal["easy", "medium", "hard"] = "medium"
-    objective_id: str | None = None
-
-
 class GameItemResponse(BaseModel):
     id: int
     orderIndex: int
