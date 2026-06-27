@@ -8,6 +8,10 @@ from app.db.models import ChatSession, Game, GameItem, GameReviewEvent, GameStat
 from app.services.game_mapper import (
     GameMappingError,
     battleship_content_to_items,
+    beat_forge_content_to_items,
+    cat_jump_content_to_items,
+    farm_builder_content_to_items,
+    feed_cats_content_to_items,
     quiz_content_to_items,
 )
 
@@ -87,6 +91,18 @@ def map_content_to_items(template_id: str, content: dict[str, Any]) -> list[dict
 
     if template_id == "quiz":
         return quiz_content_to_items(content)
+
+    if template_id == "cat_jump":
+        return cat_jump_content_to_items(content)
+
+    if template_id == "feed_the_cats":
+        return feed_cats_content_to_items(content)
+
+    if template_id == "beat_forge":
+        return beat_forge_content_to_items(content)
+
+    if template_id == "farm_builder":
+        return farm_builder_content_to_items(content)
 
     raise GameMappingError(f"Unsupported template '{template_id}' for BE_Web persistence")
 

@@ -70,11 +70,6 @@ class WeaviateObjectiveStore:
             self._client = None
 
     def _connect(self):
-        if not self.url:
-            raise RuntimeError("WEAVIATE_URL is required when RETRIEVAL_PROVIDER uses Weaviate.")
-        if not self.collection_name:
-            raise RuntimeError("WEAVIATE_COLLECTION is required when RETRIEVAL_PROVIDER uses Weaviate.")
-
         try:
             import weaviate
         except ImportError as exc:
@@ -86,12 +81,9 @@ class WeaviateObjectiveStore:
         parsed = urlparse(self.url)
         host = parsed.hostname or "localhost"
         port = parsed.port or (443 if parsed.scheme == "https" else 8080)
-        allowed_hosts = {"localhost", "127.0.0.1", "weaviate"}
-        if host not in allowed_hosts:
+        if host not in {"localhost", "127.0.0.1"}:
             raise RuntimeError(
-                "Only local or Docker Compose Weaviate is configured in this project. "
-                "Use WEAVIATE_URL=http://localhost:8080 for local dev or "
-                "WEAVIATE_URL=http://weaviate:8080 for Docker/VPS deploy."
+                "Only local Weaviate is configured in this project. Use WEAVIATE_URL=http://localhost:8080."
             )
         return weaviate.connect_to_local(host=host, port=port)
 

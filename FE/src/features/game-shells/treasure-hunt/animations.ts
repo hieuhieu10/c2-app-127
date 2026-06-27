@@ -5,15 +5,15 @@ export type FeedbackState = 'idle' | 'correct' | 'wrong'
 export function getFeedbackCopy(feedback: FeedbackState, correctAnswer: string) {
   if (feedback === 'correct') {
     return {
-      title: 'Correct!',
-      message: 'The character moves closer to the treasure cave.',
+      title: 'Chính xác!',
+      message: 'Nhân vật tiến gần hơn tới hang kho báu.',
     }
   }
 
   if (feedback === 'wrong') {
     return {
-      title: 'Not quite',
-      message: `The correct answer is ${correctAnswer}.`,
+      title: 'Chưa đúng',
+      message: `Đáp án đúng là ${correctAnswer}.`,
     }
   }
 
