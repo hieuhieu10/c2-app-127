@@ -116,6 +116,7 @@ def rank_lesson_chunks(
     prompt_norm = _norm(prompt)
     prompt_tokens = set(_tokens(prompt))
     requested_lessons = set(_extract_lesson_numbers(prompt))
+    requested_sessions = set(_extract_session_numbers(prompt))
     requested_pages = set(_extract_page_numbers(prompt))
 
     ranked = [
@@ -124,6 +125,7 @@ def rank_lesson_chunks(
             prompt_norm=prompt_norm,
             prompt_tokens=prompt_tokens,
             requested_lessons=requested_lessons,
+            requested_sessions=requested_sessions,
             requested_pages=requested_pages,
         )
         for chunk in chunks
@@ -162,6 +164,7 @@ def rank_source_text_chunks(
     prompt_norm = _norm(prompt)
     prompt_tokens = set(_tokens(prompt))
     requested_lessons = set(_extract_lesson_numbers(prompt))
+    requested_sessions = set(_extract_session_numbers(prompt))
     requested_pages = set(_extract_page_numbers(prompt))
 
     ranked = [
@@ -170,6 +173,7 @@ def rank_source_text_chunks(
             prompt_norm=prompt_norm,
             prompt_tokens=prompt_tokens,
             requested_lessons=requested_lessons,
+            requested_sessions=requested_sessions,
             requested_pages=requested_pages,
         )
         for draft in drafts
@@ -384,6 +388,7 @@ def _score_chunk(
     prompt_norm: str,
     prompt_tokens: set[str],
     requested_lessons: set[str],
+    requested_sessions: set[str],
     requested_pages: set[int],
 ) -> RankedLessonChunk:
     score = 0.0
@@ -396,6 +401,13 @@ def _score_chunk(
         if normalized_lesson_no in requested_lessons or chunk.lesson_no in requested_lessons:
             score += 8.0
             reasons.append(f"Khớp bài {chunk.lesson_no}")
+
+    session_score = _session_match_score(chunk_norm, requested_sessions)
+    if session_score > 0:
+        score += session_score
+        reasons.append("Khop tiet hoc")
+    elif session_score < 0:
+        score += session_score
 
     if requested_pages and chunk.page_start and chunk.page_start in requested_pages:
         score += 8.0
@@ -433,6 +445,7 @@ def _score_draft_chunk(
     prompt_norm: str,
     prompt_tokens: set[str],
     requested_lessons: set[str],
+    requested_sessions: set[str],
     requested_pages: set[int],
 ) -> RankedSourceTextChunk:
     score = 0.0
@@ -445,6 +458,13 @@ def _score_draft_chunk(
         if normalized_lesson_no in requested_lessons or draft.lesson_no in requested_lessons:
             score += 8.0
             reasons.append(f"Khớp bài {draft.lesson_no}")
+
+    session_score = _session_match_score(chunk_norm, requested_sessions)
+    if session_score > 0:
+        score += session_score
+        reasons.append("Khop tiet hoc")
+    elif session_score < 0:
+        score += session_score
 
     if requested_pages and draft.page_start and draft.page_start in requested_pages:
         score += 8.0
@@ -518,3 +538,32 @@ def _parse_int(value: str | int | None) -> int | None:
         return int(value)
     except ValueError:
         return None
+
+
+def _extract_lesson_numbers(text: str) -> list[str]:
+    normalized = _norm(text)
+    numbers = []
+    for match in re.finditer(r"\bbai\s*([0-9]{1,3}|[ivxlcdm]+)\b", normalized):
+        value = match.group(1).lower()
+        numbers.append(value.lstrip("0") or value)
+    return numbers
+
+
+def _extract_session_numbers(text: str) -> list[str]:
+    normalized = _norm(text)
+    numbers = []
+    for match in re.finditer(r"\b(?:tiet|t)\s*([0-9]{1,3}|[ivxlcdm]+)\b", normalized):
+        value = match.group(1).lower()
+        numbers.append(value.lstrip("0") or value)
+    return numbers
+
+
+def _session_match_score(chunk_norm: str, requested_sessions: set[str]) -> float:
+    if not requested_sessions:
+        return 0.0
+    known_sessions = set(_extract_session_numbers(chunk_norm))
+    if not known_sessions:
+        return 0.0
+    if known_sessions & requested_sessions:
+        return 4.0
+    return -4.0
