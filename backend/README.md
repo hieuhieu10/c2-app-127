@@ -279,6 +279,14 @@ WEAVIATE_COLLECTION=CurriculumObjective
 EMBEDDING_MODEL=BAAI/bge-m3
 ```
 
+Khi deploy online bằng Docker Compose, không dùng `localhost` cho Weaviate vì AI chạy trong container riêng. Dùng service name nội bộ:
+
+```env
+RETRIEVAL_PROVIDER=hybrid
+WEAVIATE_URL=http://weaviate:8080
+WEAVIATE_COLLECTION=CurriculumObjective
+```
+
 Ý nghĩa mode:
 
 | Mode | Hành vi |
@@ -287,10 +295,10 @@ EMBEDDING_MODEL=BAAI/bge-m3
 | `hybrid` | Dùng BGE-M3 + Weaviate nếu sẵn sàng; nếu lỗi thì fallback về JSON local. |
 | `weaviate` | Bắt buộc dùng BGE-M3 + Weaviate; lỗi nếu DB/model chưa sẵn sàng. |
 
-Chạy Weaviate bằng Docker:
+Weaviate đã được merge vào `docker-compose.yml`. Chạy full stack online kèm Weaviate/RAG:
 
 ```powershell
-docker compose -f docker-compose.rag.yml up -d
+docker compose --env-file .env.production up --build -d
 ```
 
 Ingest GDPT 2018 objectives vào Weaviate:
@@ -299,6 +307,12 @@ Ingest GDPT 2018 objectives vào Weaviate:
 cd backend
 uv sync --extra dev
 uv run python scripts/ingest_gdpt_to_weaviate.py
+```
+
+Nếu ingest trong container deploy:
+
+```powershell
+docker compose --env-file .env.production exec be-ai python scripts/ingest_gdpt_to_weaviate.py
 ```
 
 Lần đầu cài BGE-M3 sẽ kéo `sentence-transformers` và `torch`, có thể khá nặng. Nếu `uv` timeout khi tải `torch`, tăng timeout rồi chạy lại:

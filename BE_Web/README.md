@@ -8,7 +8,7 @@ Trong luồng tạo game hiện tại, FE gọi BE_Web trước để tạo/lưu
 
 - Python 3.11+
 - `uv`
-- SQLite cho local development, hoặc PostgreSQL nếu muốn chạy DB riêng
+- PostgreSQL cho database runtime của BE_Web
 - BE_AI đang chạy ở `http://localhost:8000` khi dùng luồng recommend/generate thật
 
 Nếu chưa có `uv`:
@@ -33,39 +33,37 @@ File cấu hình local là `BE_Web/.env`.
 
 ```env
 APP_NAME=BE_Web
-DATABASE_URL=sqlite:///./be_web.db
+DATABASE_URL=postgresql+psycopg://user:password@localhost:5432/learngame_AI
 BE_AI_BASE_URL=http://localhost:8000
 BE_AI_TIMEOUT_SECONDS=30
 API_DEBUG=false
 CORS_ORIGINS=["http://localhost:3000"]
 ```
 
-Nếu dùng PostgreSQL:
-
-```env
-DATABASE_URL=postgresql+psycopg://user:password@localhost:5432/be_web
-```
+`BE_AI_BASE_URL` là bắt buộc. Khi chạy bằng Docker Compose, đặt giá trị này theo tên service nội bộ, ví dụ `http://be-ai:8000`.
 
 Không bật `API_DEBUG=true` ở môi trường production vì middleware sẽ log request/response body.
 
-## Database Local
+## Database
 
-Mặc định BE_Web dùng SQLite tại:
+BE_Web yêu cầu `DATABASE_URL` trỏ tới PostgreSQL. Nếu thiếu biến này, app sẽ lỗi cấu hình thay vì fallback sang SQLite.
 
-```text
-BE_Web/be_web.db
+Ví dụ:
+
+```env
+DATABASE_URL=postgresql+psycopg://user:password@localhost:5432/learngame_AI
 ```
 
-Khi app startup, BE_Web sẽ tự tạo các bảng còn thiếu bằng SQLAlchemy metadata. Với SQLite local bị lệch schema sau khi pull code mới, cách nhanh nhất là tạo DB mới:
+Khi thay đổi model DB, dùng Alembic để tạo và áp migration:
 
 ```powershell
 cd BE_Web
-Move-Item .\be_web.db .\be_web.db.bak
 $env:PYTHONPATH='.'
-uv run python -c "from app.db import models; from app.db.session import Base, engine; Base.metadata.create_all(bind=engine)"
+uv run alembic revision --autogenerate -m "describe schema change"
+uv run alembic upgrade head
 ```
 
-DB mới sẽ trắng, nên cần đăng ký/đăng nhập lại user. Không dùng cách này cho dữ liệu thật cần giữ lại; khi đó hãy dùng Alembic migration hoặc PostgreSQL.
+SQLite chỉ còn được dùng trong test in-memory để chạy nhanh và không cần PostgreSQL thật.
 
 ## Chạy Server
 
@@ -145,3 +143,4 @@ cd BE_Web
 $env:PYTHONPATH='.'
 uv run pytest
 ```
+aloalo
