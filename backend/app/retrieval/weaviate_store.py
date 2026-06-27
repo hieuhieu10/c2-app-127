@@ -81,10 +81,6 @@ class WeaviateObjectiveStore:
         parsed = urlparse(self.url)
         host = parsed.hostname or "localhost"
         port = parsed.port or (443 if parsed.scheme == "https" else 8080)
-        if host not in {"localhost", "127.0.0.1"}:
-            raise RuntimeError(
-                "Only local Weaviate is configured in this project. Use WEAVIATE_URL=http://localhost:8080."
-            )
         return weaviate.connect_to_local(host=host, port=port)
 
     def ensure_schema(self) -> None:
