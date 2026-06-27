@@ -10,6 +10,8 @@ import {
   type StageStatus,
 } from '@/features/game-creation/ai-api'
 import { getTemplateByBackendId } from '@/features/game-creation/template-registry'
+import type { GameDefinition } from '@/features/game-shells/registry'
+import { GuideModal } from '@/features/game-library/components/GuideModal'
 import {
   beWebApi,
   type BeWebChatMessage,
@@ -366,6 +368,7 @@ function NewGamePageContent() {
   const [isRunning, setIsRunning] = useState(false)
   const [elapsedSec, setElapsedSec] = useState(0)
   const [activeGenerationMessageId, setActiveGenerationMessageId] = useState<string | null>(null)
+  const [guideGame, setGuideGame] = useState<GameDefinition | null>(null)
 
   const threadRef = useRef<HTMLDivElement>(null)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -781,38 +784,65 @@ function NewGamePageContent() {
                         {message.recommendations.map((recommendation) => {
                           const meta = getTemplateByBackendId(recommendation.template_id)
                           return (
-                            <button
+                            <div
                               key={`${message.id}-${recommendation.template_id}`}
-                              onClick={() => void handleChooseGame(recommendation, message.promptMessageId, message.backendId)}
                               style={{
-                                display: 'flex', alignItems: 'flex-start', gap: 14, textAlign: 'left', width: '100%',
-                                background: '#fff', cursor: isRunning ? 'not-allowed' : 'pointer', fontFamily: 'inherit',
+                                display: 'flex', flexDirection: 'column', gap: 13, width: '100%',
+                                background: '#fff',
                                 border: `1.5px solid ${recommendation.recommended ? '#c7c5f7' : '#e9ebf1'}`,
                                 borderRadius: 16, padding: '16px 18px',
                                 boxShadow: recommendation.recommended ? '0 6px 20px rgba(79,70,229,.1)' : '0 1px 2px rgba(16,24,40,.04)',
                                 opacity: isRunning ? 0.7 : 1,
                               }}
-                              disabled={isRunning}
                             >
-                              <div style={{ width: 42, height: 42, borderRadius: 12, background: '#eef0fe', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>
-                                {meta?.icon ?? '🎮'}
-                              </div>
-                              <div style={{ flex: 1, minWidth: 0 }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
-                                  <span style={{ fontSize: 15.5, fontWeight: 700, color: '#1b2333' }}>{recommendation.name}</span>
-                                  {recommendation.recommended ? (
-                                    <span style={{ fontSize: 11.5, fontWeight: 600, color: '#4f46e5', background: '#eef0fe', border: '1px solid #dfe1fc', borderRadius: 7, padding: '2px 8px' }}>
-                                      Đề xuất
-                                    </span>
-                                  ) : null}
+                              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
+                                <div style={{ width: 42, height: 42, borderRadius: 12, background: '#eef0fe', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>
+                                  {meta?.icon ?? '🎮'}
                                 </div>
-                                <div style={{ fontSize: 13.5, color: '#5b6577', lineHeight: 1.5 }}>{recommendation.intro}</div>
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
+                                    <span style={{ fontSize: 15.5, fontWeight: 700, color: '#1b2333' }}>{recommendation.name}</span>
+                                    {recommendation.recommended ? (
+                                      <span style={{ fontSize: 11.5, fontWeight: 600, color: '#4f46e5', background: '#eef0fe', border: '1px solid #dfe1fc', borderRadius: 7, padding: '2px 8px' }}>
+                                        Đề xuất
+                                      </span>
+                                    ) : null}
+                                  </div>
+                                  <div style={{ fontSize: 13.5, color: '#5b6577', lineHeight: 1.5 }}>{recommendation.intro}</div>
+                                </div>
                               </div>
-                              <span style={{ flexShrink: 0, alignSelf: 'center', display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13.5, fontWeight: 600, color: '#4f46e5' }}>
-                                Chọn
-                                <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 10h11M11 5l5 5-5 5"/></svg>
-                              </span>
-                            </button>
+                              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 9 }}>
+                                {meta ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => setGuideGame(meta)}
+                                    style={{
+                                      display: 'inline-flex', alignItems: 'center', gap: 6, border: '1px solid #e3e6ee',
+                                      background: '#fff', color: '#5b6577', fontFamily: 'inherit', fontWeight: 600,
+                                      fontSize: 13, padding: '8px 13px', borderRadius: 9, cursor: 'pointer',
+                                    }}
+                                  >
+                                    <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="10" cy="10" r="7.5"/><path d="M10 9v4.5M10 6.5v.2"/></svg>
+                                    Hướng dẫn
+                                  </button>
+                                ) : null}
+                                <button
+                                  type="button"
+                                  onClick={() => void handleChooseGame(recommendation, message.promptMessageId, message.backendId)}
+                                  disabled={isRunning}
+                                  style={{
+                                    display: 'inline-flex', alignItems: 'center', gap: 6, border: 'none',
+                                    background: isRunning ? '#c7c5f7' : '#4f46e5', color: '#fff', fontFamily: 'inherit', fontWeight: 600,
+                                    fontSize: 13, padding: '8px 15px', borderRadius: 9,
+                                    cursor: isRunning ? 'not-allowed' : 'pointer',
+                                    boxShadow: isRunning ? 'none' : '0 4px 12px rgba(79,70,229,.22)',
+                                  }}
+                                >
+                                  Chọn
+                                  <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 10h11M11 5l5 5-5 5"/></svg>
+                                </button>
+                              </div>
+                            </div>
                           )
                         })}
                       </div>
@@ -1041,6 +1071,10 @@ function NewGamePageContent() {
           </div>
         </div>
       </main>
+
+      {guideGame ? (
+        <GuideModal game={guideGame} onClose={() => setGuideGame(null)} />
+      ) : null}
     </div>
   )
 }

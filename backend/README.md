@@ -287,10 +287,10 @@ EMBEDDING_MODEL=BAAI/bge-m3
 | `hybrid` | Dùng BGE-M3 + Weaviate nếu sẵn sàng; nếu lỗi thì fallback về JSON local. |
 | `weaviate` | Bắt buộc dùng BGE-M3 + Weaviate; lỗi nếu DB/model chưa sẵn sàng. |
 
-Chạy Weaviate bằng Docker:
+Chạy Weaviate bằng Docker (service `weaviate` trong `docker-compose.yml`):
 
 ```powershell
-docker compose -f docker-compose.rag.yml up -d
+docker compose up -d weaviate
 ```
 
 Ingest GDPT 2018 objectives vào Weaviate:
