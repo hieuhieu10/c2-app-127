@@ -37,18 +37,3 @@ Tuần này không code, tập trung định hình lại bài toán sau review c
 
 
 **Week 2**: Đổi đề tài -> game học đường
-
-## TL;DR
-
-Hợp nhất nhánh `dang` (slice recommend + generate + các game shell) vào `develop`. Bổ sung **4 game mới** — `cat_jump`, `feed_the_cats`, `beat_forge`, `farm_builder` — nối đầy đủ qua cả 3 tầng (schema backend → mapper BE_Web → registry + React shell FE). Dọn repo và xử lý xung đột khi merge với nhánh RAG của team.
-
-## Việc đã làm
-
-- **4 game mới**, mỗi game wiring đủ 3 tầng: `SPEC` (playable) ở `backend/app/templates/schemas/`, mapper + đăng ký ở `BE_Web/app/services/`, entry + shell ở `FE/src/features/game-shells/`. Làm lại lớn phần Battleship (âm thanh, nhân vật, UI).
-- **Dọn repo:** bỏ track `be_web.db` (tự sinh bởi `create_all` khi khởi động) và `tsconfig.tsbuildinfo`; xóa thư mục `assets/` trùng lặp (~6MB, app thực tế phục vụ từ `FE/public`); thêm các mục `.gitignore`.
-- **Hợp nhất với develop:** develop đã đổi kiến trúc persist game sang `create_game_from_generation` / `map_content_to_items` dùng `ChatSession`. Gỡ các dict điều phối cũ (`PRODUCT_TEMPLATE_TO_AI_TEMPLATE`…), port 4 game mới sang `map_content_to_items` mới; giữ bản treasure-hunt V2 của develop.
-
-## Ghi chú kỹ thuật
-
-- Bài học: thêm game mới phải nhớ tầng BE_Web (mapper + đăng ký), nếu không sẽ HTTP 400 khi generate. Khi merge, lớp điều phối có thể bị thay kiến trúc — cần **port lại logic** chứ không chọn một phía của xung đột.
-- Chạy test sau merge: **backend 84 passed, BE_Web 26 passed**; cả hai app compile sạch.

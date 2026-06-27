@@ -108,35 +108,12 @@ Backend — one file, auto-discovered (no registry/JSON edits):
 1. Create `backend/app/templates/schemas/<game>.py` with a Pydantic content model **and** a module-level `SPEC = GameSpec(...)` (id, name, description, `content_type_fit`, `grade_range`, `content_model`, plus optional `active`/`playable`/`min_items`/`sort_order`).
 2. That's it — `registry.py` discovers the `SPEC` automatically. No pipeline changes.
 
-BE_Web — wire the new template into the web backend (**easy to miss; skipping this blocks all content injection**):
-
-3. Add a content mapper function `<game>_content_to_items(content: dict) -> list[dict]` in `BE_Web/app/services/game_mapper.py`. The mapper pulls items from the AI response dict (e.g. `content["questions"]` or `content["items"]`) and returns a list of dicts with keys `order_index`, `question`, `correct_answer`, `options_json`, `explanation`, `hint`, `validation_status`, `validation_errors_json`. Set `options_json = []` for games that don't need pre-generated distractors (shells generate choices dynamically).
-4. Register the template in `BE_Web/app/services/game_generation.py`:
-   - Add `"<game_id>": "<game_id>"` to `PRODUCT_TEMPLATE_TO_AI_TEMPLATE`
-   - Add `"<game_id>": <game>_content_to_items` to `_CONTENT_MAPPERS`
-   - Add `"<game_id>": {}` to `_DEFAULT_SETTINGS`
-   - Import the new mapper at the top of the file
-
 Frontend — one manifest entry (only needed for `playable` games that teachers can pick/play):
 
-5. Write the game's React shell under `FE/src/features/game-shells/<game>/`.
-6. Add one entry to `GAMES` in `FE/src/features/game-shells/registry.tsx` (ties `backendId` ↔ `type` ↔ metadata ↔ `Shell`). `GameShell` and the chat game-picker both read from this list.
-7. The FE preview page (`app/dashboard/game/preview/page.tsx`) uses `extractQuestions(content)` which already handles **both** `content.questions` and `content.items` — no change needed for most games. Only update it if a new template uses a different top-level key.
+3. Write the game's React shell under `FE/src/features/game-shells/<game>/`.
+4. Add one entry to `GAMES` in `FE/src/features/game-shells/registry.tsx` (ties `backendId` ↔ `type` ↔ metadata ↔ `Shell`). `GameShell` and the chat game-picker both read from this list.
 
 A game is offered in the chat picker only when its backend `SPEC.playable` is true **and** it has a frontend manifest entry.
-
-### Content-key contract (FE ↔ BE_AI)
-
-The FE chat flow streams raw AI JSON and stores it in `sessionStorage`/`localStorage`. The shape that matters is the **top-level list key** in the AI content dict:
-
-| Template | Top-level list key | Notes |
-|---|---|---|
-| `quiz`, `battleship`, `cat_jump` | `questions` | Each item has `question`, `correct_answer`, optional `distractors` |
-| `feed_the_cats` | `items` | Each item has `question` (expression), `correct_answer` (numeric result) — no distractors |
-
-`distractors` is optional on `RawQuestion` in the FE. Games without distractors (drag-and-drop, dynamic-choice) just get an empty `options` array — shells that need options generate them internally.
-
-**Bug history:** `feed_the_cats` shipped with 0 items on the preview page because `page.tsx` read `content.questions ?? []` unconditionally. Fixed by adding `extractQuestions()` which checks `content.items` first. Similarly, BE_Web's `game_generation.py` had no mapper for `feed_the_cats` or `cat_jump`, causing HTTP 400 on every generate call for those templates.
 
 ### Retrieval seam
 
