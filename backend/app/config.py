@@ -51,10 +51,10 @@ class Settings(BaseSettings):
         configured = self.llm_provider.strip().lower()
         if configured != "auto":
             return configured
-        if self.openai_api_key:
-            return "openai"
         if self.deepseek_api_key:
             return "deepseek"
+        if self.openai_api_key:
+            return "openai"
         if self.anthropic_api_key:
             return "anthropic"
         return "anthropic"

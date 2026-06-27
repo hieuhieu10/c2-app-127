@@ -80,6 +80,94 @@ def _openai_tool_schema(
     ]
 
 
+def _get_attr_or_key(value: Any, name: str, default: Any = None) -> Any:
+    if isinstance(value, dict):
+        return value.get(name, default)
+    return getattr(value, name, default)
+
+
+def _strip_markdown_json_fence(text: str) -> str:
+    cleaned = text.strip()
+    if not cleaned.startswith("```"):
+        return cleaned
+
+    lines = cleaned.splitlines()
+    if len(lines) >= 2 and lines[0].strip().startswith("```"):
+        if lines[-1].strip() == "```":
+            lines = lines[1:-1]
+        else:
+            lines = lines[1:]
+    return "\n".join(lines).strip()
+
+
+def _parse_json_object(raw: Any, *, tool_name: str) -> dict[str, Any]:
+    if isinstance(raw, dict):
+        return raw
+    if raw is None:
+        raise RuntimeError(f"Model returned empty tool arguments for '{tool_name}'.")
+    if not isinstance(raw, str):
+        raise RuntimeError(f"Model returned unsupported tool arguments for '{tool_name}'.")
+
+    text = _strip_markdown_json_fence(raw)
+    try:
+        parsed = json.loads(text)
+    except json.JSONDecodeError:
+        # DeepSeek can occasionally append explanatory text after a valid JSON
+        # object. raw_decode stops after the first JSON value and ignores the
+        # trailing text, while still rejecting a non-JSON prefix.
+        try:
+            parsed, _ = json.JSONDecoder().raw_decode(text)
+        except json.JSONDecodeError as exc:
+            raise RuntimeError(f"Model returned invalid tool arguments for '{tool_name}'.") from exc
+
+    if not isinstance(parsed, dict):
+        raise RuntimeError(f"Model returned non-object tool arguments for '{tool_name}'.")
+    return parsed
+
+
+def _message_content_text(message: Any) -> str:
+    content = _get_attr_or_key(message, "content", "")
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        parts: list[str] = []
+        for item in content:
+            if isinstance(item, str):
+                parts.append(item)
+            elif isinstance(item, dict) and isinstance(item.get("text"), str):
+                parts.append(item["text"])
+            elif hasattr(item, "text") and isinstance(getattr(item, "text"), str):
+                parts.append(getattr(item, "text"))
+        return "\n".join(parts)
+    return ""
+
+
+def _extract_openai_compatible_tool_args(message: Any, *, tool_name: str, provider: str) -> dict[str, Any]:
+    tool_calls = _get_attr_or_key(message, "tool_calls", None) or []
+    if tool_calls:
+        for tool_call in tool_calls:
+            function = _get_attr_or_key(tool_call, "function", None)
+            call_name = _get_attr_or_key(function, "name", None)
+            if call_name and call_name != tool_name:
+                continue
+            return _parse_json_object(_get_attr_or_key(function, "arguments", None), tool_name=tool_name)
+
+    # DeepSeek is OpenAI-compatible but may occasionally return the JSON object
+    # in message.content instead of emitting a formal tool call, especially when
+    # prompts are long. Keep OpenAI strict, but accept this fallback for DeepSeek.
+    if provider == "deepseek":
+        content = _message_content_text(message)
+        if content:
+            return _parse_json_object(content, tool_name=tool_name)
+
+    raise RuntimeError(f"Model returned no tool call for tool '{tool_name}'.")
+
+
+def _is_deepseek_tool_choice_error(exc: Exception) -> bool:
+    text = str(exc).lower()
+    return "tool_choice" in text and ("thinking mode" in text or "not support" in text or "does not support" in text)
+
+
 async def _call_anthropic_tool(
     *,
     system: str,
@@ -149,26 +237,22 @@ async def _call_openai_compatible_tool(
     else:
         request["max_tokens"] = max_tokens or settings.max_tokens
 
-    resp = await client.chat.completions.create(**request)
-    message = resp.choices[0].message
-    tool_calls = getattr(message, "tool_calls", None) or []
-    if not tool_calls:
-        raise RuntimeError(f"Model returned no tool call for tool '{tool_name}'.")
-    args = tool_calls[0].function.arguments
-    if isinstance(args, dict):
-        return args
     try:
-        return json.loads(args)
-    except json.JSONDecodeError:
-        # Some providers (e.g. DeepSeek) append trailing text after the JSON object.
-        # raw_decode stops at the end of the first valid object and ignores the rest.
-        try:
-            obj, _ = json.JSONDecoder().raw_decode(args.strip())
-            if isinstance(obj, dict):
-                return obj
-        except json.JSONDecodeError:
-            pass
-        raise RuntimeError(f"Model returned invalid tool arguments for '{tool_name}'.")
+        resp = await client.chat.completions.create(**request)
+    except Exception as exc:
+        # Some DeepSeek models / modes reject forced tool_choice with:
+        # "Thinking mode does not support this tool_choice". In that case we
+        # retry with tools still provided but let the model decide whether to
+        # emit a tool call. If it returns JSON in content instead, the parser
+        # below handles that DeepSeek-only fallback.
+        if provider == "deepseek" and _is_deepseek_tool_choice_error(exc):
+            retry_request = dict(request)
+            retry_request.pop("tool_choice", None)
+            resp = await client.chat.completions.create(**retry_request)
+        else:
+            raise
+    message = resp.choices[0].message
+    return _extract_openai_compatible_tool_args(message, tool_name=tool_name, provider=provider)
 
 
 async def call_tool(
