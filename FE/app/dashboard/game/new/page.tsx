@@ -41,6 +41,8 @@ interface SentForm {
   prompt: string
   numItems: number | null
   sourceText: string | null
+  uploadedFileId?: string | null
+  uploadType?: 'none' | 'lesson_plan' | 'slide'
   attachedFileName?: string | null
 }
 
@@ -86,7 +88,7 @@ const DIFFICULTIES: { label: string; value: 'easy' | 'medium' | 'hard' }[] = [
 ]
 
 const PIPELINE_STAGE_DEFS: PipelineStage[] = [
-  { id: 'parse_pdf', label: 'Phân tích tài liệu', subtitle: '...', tag: 'PyMuPDF · OCR', tagType: 'neutral', status: 'pending' },
+  { id: 'parse_pdf', label: 'Phân tích yêu cầu', subtitle: '...', tag: 'Prompt · Giáo án', tagType: 'neutral', status: 'pending' },
   { id: 'rag', label: 'Tra cứu khung chương trình GDPT 2018', subtitle: '...', tag: 'RAG', tagType: 'neutral', status: 'pending' },
   { id: 'recommend', label: 'Đề xuất mẫu trò chơi', subtitle: '...', tag: 'Bộ điều phối', tagType: 'indigo', status: 'pending' },
   { id: 'generate', label: 'Sinh nội dung trò chơi', subtitle: '...', tag: 'Bộ sinh nội dung', tagType: 'indigo', status: 'pending' },
@@ -200,6 +202,8 @@ function buildSentForm(promptText: string, payload: Record<string, unknown>): Se
     prompt: promptText,
     numItems: typeof payload.numItems === 'number' ? payload.numItems : null,
     sourceText: typeof payload.sourceText === 'string' ? payload.sourceText : null,
+    uploadedFileId: typeof payload.uploadedFileId === 'string' ? payload.uploadedFileId : null,
+    uploadType: payload.uploadType === 'lesson_plan' || payload.uploadType === 'slide' ? payload.uploadType : 'none',
     attachedFileName: typeof payload.attachedFileName === 'string' ? payload.attachedFileName : null,
   }
 }
@@ -357,8 +361,12 @@ function NewGamePageContent() {
   const [prompt, setPrompt] = useState('')
   const [numItems, setNumItems] = useState<number | null>(null)
   const [sourceText, setSourceText] = useState<string | null>(null)
+  const [uploadedFileId, setUploadedFileId] = useState<string | null>(null)
+  const [uploadType, setUploadType] = useState<'none' | 'lesson_plan' | 'slide'>('none')
   const [attachedFileName, setAttachedFileName] = useState<string | null>(null)
+  const [attachedPreview, setAttachedPreview] = useState<string | null>(null)
   const [attachError, setAttachError] = useState<string | null>(null)
+  const [uploadingAttachment, setUploadingAttachment] = useState(false)
 
   const [sessionId, setSessionId] = useState<number | null>(null)
   const [sessionTitle, setSessionTitle] = useState<string | null>(null)
@@ -375,7 +383,8 @@ function NewGamePageContent() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const skipHydrationRef = useRef<number | null>(null)
 
-  const SUPPORTED_TYPES = ['.txt', '.md', '.csv', '.json']
+  const SUPPORTED_TYPES = ['.pdf', '.txt', '.docx']
+  const MAX_CLIENT_UPLOAD_BYTES = 10 * 1024 * 1024
   const hasMessages = chatMessages.length > 0
   const sessionParam = searchParams.get('session')
   const firstPrompt = chatMessages.find((message) => message.role === 'user')?.form.prompt ?? null
@@ -432,6 +441,9 @@ function NewGamePageContent() {
         setDifficulty((session.difficulty ?? 'medium') as 'easy' | 'medium' | 'hard')
         setNumItems(session.numItems)
         setSourceText(session.sourceText ?? null)
+        setUploadedFileId(session.uploadedFileId ?? null)
+        setUploadType(session.uploadType === 'lesson_plan' || session.uploadType === 'slide' ? session.uploadType : 'none')
+        setAttachedFileName(session.attachedFileName ?? null)
       })
       .catch(() => {
         setSessionId(null)
@@ -444,7 +456,7 @@ function NewGamePageContent() {
       })
   }, [sessionParam])
 
-  const handleFileAttach = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileAttach = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!fileInputRef.current) return
     fileInputRef.current.value = ''
@@ -456,24 +468,35 @@ function NewGamePageContent() {
       setTimeout(() => setAttachError(null), 4000)
       return
     }
-
-    const reader = new FileReader()
-    reader.onload = (ev) => {
-      const text = ev.target?.result as string
-      setSourceText(text)
-      setAttachedFileName(file.name)
-      setAttachError(null)
-    }
-    reader.onerror = () => {
-      setAttachError('Không đọc được tệp. Vui lòng thử lại.')
+    if (file.size > MAX_CLIENT_UPLOAD_BYTES) {
+      setAttachError('File giáo án phải nhỏ hơn hoặc bằng 10MB.')
       setTimeout(() => setAttachError(null), 4000)
+      return
     }
-    reader.readAsText(file, 'utf-8')
+
+    setUploadingAttachment(true)
+    setAttachError(null)
+    try {
+      const upload = await beWebApi.uploadLessonFile(file)
+      setSourceText(upload.sourceText)
+      setUploadedFileId(upload.uploadedFileId)
+      setUploadType(upload.uploadType)
+      setAttachedFileName(upload.originalFilename)
+      setAttachedPreview(upload.previewText)
+    } catch (error) {
+      setAttachError(error instanceof Error ? error.message : 'Không đọc được file giáo án. Vui lòng thử lại.')
+      setTimeout(() => setAttachError(null), 6000)
+    } finally {
+      setUploadingAttachment(false)
+    }
   }
 
   const removeAttachment = () => {
     setSourceText(null)
+    setUploadedFileId(null)
+    setUploadType('none')
     setAttachedFileName(null)
+    setAttachedPreview(null)
   }
 
   const ensureSession = async () => {
@@ -493,12 +516,22 @@ function NewGamePageContent() {
   }
 
   const handleSubmit = async () => {
-    if (isRunning || loadingRecs) return
+    if (isRunning || loadingRecs || uploadingAttachment) return
     const promptText = prompt.trim()
     if (!promptText) return
 
     const resolvedNumItems = numItems ?? extractNumItemsFromPrompt(promptText)
-    const form: SentForm = { subject, grade, difficulty, prompt: promptText, numItems: resolvedNumItems, sourceText, attachedFileName }
+    const form: SentForm = {
+      subject,
+      grade,
+      difficulty,
+      prompt: promptText,
+      numItems: resolvedNumItems,
+      sourceText,
+      uploadedFileId,
+      uploadType,
+      attachedFileName,
+    }
     const tempUserId = makeTempId('user')
     const tempAssistantId = makeTempId('recommend')
     const recommendPayload = {
@@ -506,7 +539,10 @@ function NewGamePageContent() {
       grade,
       difficulty,
       prompt: promptText,
+      numItems: resolvedNumItems,
       sourceText,
+      uploadedFileId,
+      uploadType,
       attachedFileName,
     }
 
@@ -1008,7 +1044,7 @@ function NewGamePageContent() {
                 }
               }}
               placeholder="Mô tả trò chơi bạn muốn tạo, hoặc yêu cầu chỉnh sửa…"
-              disabled={isRunning || loadingRecs}
+              disabled={isRunning || loadingRecs || uploadingAttachment}
               rows={2}
               style={{
                 width: '100%', border: 'none', outline: 'none', resize: 'none',
@@ -1019,10 +1055,18 @@ function NewGamePageContent() {
             />
 
             {attachedFileName ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#fef3c7', border: '1px solid #fde68a', borderRadius: 8, padding: '5px 10px', fontSize: 13, color: '#92400e', marginBottom: 8 }}>
-                <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 9l-4.5 4.5a2.5 2.5 0 01-3.5-3.5l5-5a1.6 1.6 0 012.3 2.3l-5 5"/></svg>
-                <span style={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{attachedFileName}</span>
-                <button onClick={removeAttachment} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#b45309', padding: '0 2px', lineHeight: 1, fontSize: 15, fontWeight: 700 }} title="Gỡ tệp">×</button>
+              <div style={{ background: '#fef9ee', border: '1px solid #fde68a', borderRadius: 10, padding: '7px 10px', fontSize: 13, color: '#92400e', marginBottom: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 9l-4.5 4.5a2.5 2.5 0 01-3.5-3.5l5-5a1.6 1.6 0 012.3 2.3l-5 5"/></svg>
+                  <span style={{ maxWidth: 260, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 600 }}>{attachedFileName}</span>
+                  <span style={{ color: '#a16207' }}>· Giáo án</span>
+                  <button onClick={removeAttachment} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', color: '#b45309', padding: '0 2px', lineHeight: 1, fontSize: 15, fontWeight: 700 }} title="Gỡ tệp">×</button>
+                </div>
+                {attachedPreview ? (
+                  <div style={{ marginTop: 4, color: '#a16207', fontSize: 12.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {attachedPreview}
+                  </div>
+                ) : null}
               </div>
             ) : null}
             {attachError ? (
@@ -1033,13 +1077,13 @@ function NewGamePageContent() {
               <input
                 ref={fileInputRef}
                 type="file"
-                accept=".txt,.md,.csv,.json"
+                accept=".pdf,.txt,.docx"
                 style={{ display: 'none' }}
                 onChange={handleFileAttach}
               />
               <button
                 onClick={() => fileInputRef.current?.click()}
-                disabled={isRunning || loadingRecs}
+                disabled={isRunning || loadingRecs || uploadingAttachment}
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: 6,
                   border: attachedFileName ? '1px solid #fcd34d' : '1px solid #e3e6ee',
@@ -1047,20 +1091,20 @@ function NewGamePageContent() {
                   color: attachedFileName ? '#92400e' : '#5b6577',
                   fontFamily: 'inherit', fontSize: 13, fontWeight: 500,
                   padding: '7px 12px', borderRadius: 9,
-                  cursor: isRunning || loadingRecs ? 'not-allowed' : 'pointer',
-                  opacity: isRunning || loadingRecs ? 0.5 : 1,
+                  cursor: isRunning || loadingRecs || uploadingAttachment ? 'not-allowed' : 'pointer',
+                  opacity: isRunning || loadingRecs || uploadingAttachment ? 0.5 : 1,
                 }}
               >
                 <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M14 9l-4.5 4.5a2.5 2.5 0 01-3.5-3.5l5-5a1.6 1.6 0 012.3 2.3l-5 5"/></svg>
-                {attachedFileName ? 'Thay tệp' : 'Đính kèm'}
+                {uploadingAttachment ? 'Đang đọc giáo án...' : attachedFileName ? 'Thay giáo án' : 'Tải giáo án'}
               </button>
               <div
                 style={{
                   marginLeft: 'auto', width: 42, height: 42, borderRadius: '50%',
-                  background: isRunning || loadingRecs || !prompt.trim() ? '#c7c5f7' : '#4f46e5',
+                  background: isRunning || loadingRecs || uploadingAttachment || !prompt.trim() ? '#c7c5f7' : '#4f46e5',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  cursor: isRunning || loadingRecs || !prompt.trim() ? 'not-allowed' : 'pointer',
-                  boxShadow: isRunning || loadingRecs || !prompt.trim() ? 'none' : '0 5px 14px rgba(79,70,229,.3)',
+                  cursor: isRunning || loadingRecs || uploadingAttachment || !prompt.trim() ? 'not-allowed' : 'pointer',
+                  boxShadow: isRunning || loadingRecs || uploadingAttachment || !prompt.trim() ? 'none' : '0 5px 14px rgba(79,70,229,.3)',
                   transition: 'all .15s ease',
                 }}
                 onClick={() => void handleSubmit()}

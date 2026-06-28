@@ -120,6 +120,57 @@ def test_validate_rejects_decimal_content_below_grade_5():
     assert any("lớp 3" in error for error in state["validation_errors"])
 
 
+def test_validate_allows_cat_jump_integer_csv_sequences_below_grade_5():
+    state = {
+        "subject": "Toan",
+        "grade": 3,
+        "difficulty": "medium",
+        "prompt": "Tao game day so",
+        "objective_id": "math_3_numbers_100000_rounding_roman",
+        "num_items": 4,
+        "template_id": "cat_jump",
+        "content": {
+            "title": "Day so",
+            "objective_id": "math_3_numbers_100000_rounding_roman",
+            "template_id": "cat_jump",
+            "instructions": "Chon so tiep theo.",
+            "questions": [
+                {
+                    "question": "Dem them 3",
+                    "correct_answer": "3,6,9,12,15,18,21,24",
+                    "hint": "Cong them 3 moi lan.",
+                    "explanation": "Day so dung quy tac cong them 3.",
+                    "objective_id": "math_3_numbers_100000_rounding_roman",
+                },
+                {
+                    "question": "Dem them 5",
+                    "correct_answer": "5,10,15,20,25,30,35,40",
+                    "hint": "Cong them 5 moi lan.",
+                    "explanation": "Day so dung quy tac cong them 5.",
+                    "objective_id": "math_3_numbers_100000_rounding_roman",
+                },
+                {
+                    "question": "Tang dan",
+                    "correct_answer": "1,3,6,10,15,21,28,36",
+                    "hint": "Khoang cach tang dan.",
+                    "explanation": "Day so co khoang cach tang dan.",
+                    "objective_id": "math_3_numbers_100000_rounding_roman",
+                },
+                {
+                    "question": "Gap doi",
+                    "correct_answer": "1,2,4,8,16,32,64,128",
+                    "hint": "Nhan doi moi lan.",
+                    "explanation": "Day so dung quy tac gap doi.",
+                    "objective_id": "math_3_numbers_100000_rounding_roman",
+                },
+            ],
+        },
+    }
+
+    state.update(validate_node(state))
+    assert state["ok"]
+
+
 def test_retrieve_does_not_keep_placeholder_objective_id():
     state = {
         "subject": "Toán học",

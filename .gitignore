@@ -12,18 +12,15 @@ build/
 *.egg-info/
 .pytest_cache/
 .mypy_cache/
-
+.env.production
 # OS
 .DS_Store
+.ai-log/session.jsonl
 
 # AI logs — tracked structure, ignored content
 .ai-log/*.jsonl
 
-# SQLite runtime DB (auto-created by Base.metadata.create_all on startup)
-*.db
+.ai-log/
 
-# TypeScript incremental build cache
-*.tsbuildinfo
-
-# Runtime user uploads (BE_Web)
+# Runtime uploads
 BE_Web/uploads/

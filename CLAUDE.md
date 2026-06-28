@@ -116,12 +116,14 @@ BE_Web — wire the new template into the web backend (**easy to miss; skipping 
    - Add `"<game_id>": <game>_content_to_items` to `_CONTENT_MAPPERS`
    - Add `"<game_id>": {}` to `_DEFAULT_SETTINGS`
    - Import the new mapper at the top of the file
-
+   - 
 Frontend — one manifest entry (only needed for `playable` games that teachers can pick/play):
 
 5. Write the game's React shell under `FE/src/features/game-shells/<game>/`.
 6. Add one entry to `GAMES` in `FE/src/features/game-shells/registry.tsx` (ties `backendId` ↔ `type` ↔ metadata ↔ `Shell`). `GameShell` and the chat game-picker both read from this list.
 7. The FE preview page (`app/dashboard/game/preview/page.tsx`) uses `extractQuestions(content)` which already handles **both** `content.questions` and `content.items` — no change needed for most games. Only update it if a new template uses a different top-level key.
+3. Write the game's React shell under `FE/src/features/game-shells/<game>/`.
+4. Add one entry to `GAMES` in `FE/src/features/game-shells/registry.tsx` (ties `backendId` ↔ `type` ↔ metadata ↔ `Shell`). `GameShell` and the chat game-picker both read from this list.
 
 A game is offered in the chat picker only when its backend `SPEC.playable` is true **and** it has a frontend manifest entry.
 

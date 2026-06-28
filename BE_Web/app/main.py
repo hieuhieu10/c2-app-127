@@ -7,18 +7,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.core.debug import install_api_debug_middleware
-from app.api import auth, chat, games
+from app.api import auth, chat, games, uploads
 from app.core.settings import settings
-from app.db.schema_compat import ensure_schema_compatibility
-from app.db.session import engine
-
-# Bring local SQLite/dev DBs up to the current model schema (creates missing
-# tables, adds columns like users.avatar_url) before any request is served.
-ensure_schema_compatibility(engine)
 
 uploads_dir = Path(settings.upload_dir)
 uploads_dir.mkdir(parents=True, exist_ok=True)
 (uploads_dir / "avatars").mkdir(parents=True, exist_ok=True)
+(uploads_dir / "lesson_files").mkdir(parents=True, exist_ok=True)
 
 app = FastAPI(title=settings.app_name, version="0.1.0")
 
@@ -36,6 +31,7 @@ app.mount("/uploads", StaticFiles(directory=str(uploads_dir)), name="uploads")
 app.include_router(auth.router)
 app.include_router(chat.router)
 app.include_router(games.router)
+app.include_router(uploads.router)
 
 
 @app.get("/health")

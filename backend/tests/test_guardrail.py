@@ -84,6 +84,20 @@ async def test_fraction_request_below_grade_4_blocked(monkeypatch):
     assert "lớp 4" in report.message
 
 
+async def test_grade_3_order_numbers_does_not_trigger_fraction_tu_so(monkeypatch):
+    _patch_llm(monkeypatch, verdict="ok")
+    report = await run_guardrails(
+        subject="Toan",
+        grade=3,
+        prompt="Bai 01: On tap cac so den 1000 T1 trang 6 tao game",
+        source_text=(
+            "Doc, viet, xep duoc thu tu cac so den 1000. "
+            "Nhan biet cau tao va phan tich so cua so co ba chu so."
+        ),
+    )
+    assert report.allowed
+
+
 async def test_percent_request_below_grade_5_blocked(monkeypatch):
     _patch_llm(monkeypatch, verdict="ok")
     report = await run_guardrails(subject="Toán", grade=4, prompt="Tạo câu hỏi về tỉ số phần trăm và 25%")
@@ -99,6 +113,36 @@ async def test_unsafe_keyword_blocked_without_llm(monkeypatch):
     # Keyword screen must fire even if the LLM would allow.
     _patch_llm(monkeypatch, verdict="ok")
     report = await run_guardrails(subject="Toán", grade=4, prompt="bài toán về ma túy và cá độ")
+    assert not report.allowed
+    assert report.code == "unsafe"
+
+
+async def test_uploaded_lesson_ambiguous_ma_tuy_is_not_blocked(monkeypatch):
+    _patch_llm(monkeypatch, verdict="ok")
+    report = await run_guardrails(
+        subject="Toan",
+        grade=4,
+        prompt="Tao game ve don vi do do dai",
+        source_text="Giao an co ma tuy chon cho hoat dong nhom va bai tap ve do do dai.",
+    )
+    assert report.allowed
+
+
+async def test_prompt_unaccented_unsafe_keyword_still_blocked(monkeypatch):
+    _patch_llm(monkeypatch, verdict="ok")
+    report = await run_guardrails(subject="Toan", grade=4, prompt="tao bai toan ve ma tuy")
+    assert not report.allowed
+    assert report.code == "unsafe"
+
+
+async def test_uploaded_lesson_explicit_unsafe_keyword_blocked(monkeypatch):
+    _patch_llm(monkeypatch, verdict="ok")
+    report = await run_guardrails(
+        subject="Toan",
+        grade=4,
+        prompt="Tao game ve phep tinh",
+        source_text="Giao an co vi du khong phu hop ve ma t\u00fay.",
+    )
     assert not report.allowed
     assert report.code == "unsafe"
 

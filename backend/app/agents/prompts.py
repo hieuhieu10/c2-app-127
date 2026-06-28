@@ -33,6 +33,47 @@ teacher explicitly supplied image descriptions.
 Return content ONLY through the provided tool, matching its schema exactly."""
 
 
+def _difficulty_guidance(difficulty: str, grade: int, template_id: str, ctx: RetrievedContext) -> str:
+    final = (ctx.difficulty_assessment.final_difficulty if ctx.difficulty_assessment else difficulty).lower()
+    requested = (ctx.difficulty_assessment.teacher_requested_difficulty if ctx.difficulty_assessment else difficulty).lower()
+    required_skills = ctx.curriculum_context.required_skills if ctx.curriculum_context else []
+    lines = [
+        "\nDifficulty-specific generation rules:",
+        f"- Teacher selected: {requested}; curriculum-safe final level: {final}.",
+        "- Respect the final level. If teacher selected hard but curriculum caps it lower, use the upper end of the allowed GDPT range without exceeding grade scope.",
+    ]
+    if required_skills:
+        lines.append("- Use these objective skills as the difficulty source: " + ", ".join(required_skills[:6]) + ".")
+
+    if final == "easy":
+        lines.extend(
+            [
+                "- Use direct recall or one-step tasks with friendly numbers.",
+                "- Avoid multi-condition prompts and avoid hidden intermediate steps.",
+            ]
+        )
+    elif final == "medium":
+        lines.extend(
+            [
+                "- Use at-grade tasks that require one meaningful reasoning step, not just recall.",
+                "- Prefer mixed representations when the objective allows it, such as concept-to-example, representation-to-expression, or short application.",
+                "- Avoid generating a set where every item has the same shallow pattern.",
+            ]
+        )
+    else:
+        lines.extend(
+            [
+                "- Use the hardest grade-appropriate version of the objective.",
+                "- Combine two allowed skills from the objective when possible, but do not introduce above-grade content.",
+                "- Prefer non-obvious values/examples over purely round, repetitive, or recall-only items.",
+                "- Include plausible near-miss values that reveal misconceptions.",
+                "- Keep visible game text short, but make the reasoning in hint/explanation clearly harder than easy/medium.",
+            ]
+        )
+
+    return "\n".join(lines)
+
+
 def _format_context(ctx: RetrievedContext) -> str:
     lines = []
     if ctx.curriculum_context:
@@ -164,6 +205,7 @@ def build_generator_user(
         f"Target number of items/pairs: about {num_items}.",
         "",
         _format_context(ctx),
+        _difficulty_guidance(difficulty, grade, template.id, ctx),
     ]
     if template.id == "matching":
         parts.append(
@@ -173,6 +215,16 @@ def build_generator_user(
             "- If teacher context provides an example such as '3 giỏ táo, mỗi giỏ 4 quả', make the first pair use that exact context.\n"
             "- Distractors should be short wrong right-side cards, e.g. '3 + 4 = 7' or '3 quả', not long explanations.\n"
             "- The rationale should describe the actual text matching mechanic; do not call it picture matching unless images are present."
+        )
+    if template.id == "feed_the_cats":
+        parts.append(
+            "\nFeed the Hungry Cats-specific output rules — CRITICAL:\n"
+            "- This game accepts ONLY short arithmetic expressions on fish treats, such as '8 + 7', '45 - 18', '6 x 4', '56 / 7'.\n"
+            "- `correct_answer` MUST be a plain numeric string only, such as '15' or '24'. Do NOT include units like 'cm', 'm', 'kg', 'l'.\n"
+            "- If the teacher topic is measurement or unit conversion, convert it into numeric arithmetic practice and keep unit context in `hint`/`explanation`, not in `correct_answer`.\n"
+            "- Create 2-5 distinct numeric cat labels. Every distinct `correct_answer` MUST appear in at least 2 items.\n"
+            "- Example valid grouping: answers 12, 24, 36 with two or three expressions for each answer.\n"
+            "- Do NOT create word problems, definitions, matching cards, or multiple-choice questions for this template."
         )
     if template.id == "beat_forge":
         parts.append(
@@ -190,6 +242,14 @@ def build_generator_user(
             "The ONLY thing that must be exactly right is each lane's token sum = bar capacity."
         )
     if repair_errors:
+        parts.append(
+            "\nSchema repair strategy:\n"
+            "- Treat validation errors as hard constraints, not suggestions.\n"
+            "- If an error location is `<root>` or describes a collection/model-level invariant, rebuild the affected collection from scratch instead of patching one item.\n"
+            "- Re-check the selected template schema: required fields, min/max counts, enum values, const ids, uniqueness, grouping, and numeric/text format constraints.\n"
+            "- Before returning, run a manual consistency check against the exact validation errors and the curriculum scope.\n"
+            "- Do not introduce a new template, above-grade concept, or unsupported content type while repairing."
+        )
         parts.append(
             "\nYour previous output FAILED schema validation. Fix exactly these problems "
             "and return valid content:\n- " + "\n- ".join(repair_errors)
