@@ -26,9 +26,10 @@ python -m pip install uv
 Tạo file `.env` ở repo root, ví dụ:
 
 ```env
-LLM_PROVIDER=auto
-OPENAI_API_KEY=sk-...
-DEFAULT_MODEL=gpt-4.1-mini
+LLM_PROVIDER=deepseek
+DEEPSEEK_API_KEY=sk-...
+DEEPSEEK_BASE_URL=https://api.deepseek.com
+DEFAULT_MODEL=deepseek-chat
 API_DEBUG=false
 ```
 
@@ -40,7 +41,14 @@ Provider hỗ trợ:
 | `deepseek` | `DEEPSEEK_API_KEY` | `deepseek-chat` |
 | `anthropic` | `ANTHROPIC_API_KEY` | `claude-sonnet-4-6` |
 
-`LLM_PROVIDER=auto` ưu tiên OpenAI, sau đó DeepSeek, sau đó Anthropic. Nếu muốn ép provider, đặt `LLM_PROVIDER=openai`, `deepseek` hoặc `anthropic`.
+`LLM_PROVIDER=auto` ưu tiên DeepSeek, sau đó OpenAI, sau đó Anthropic. Vì project đang dùng DeepSeek làm provider chính, nên đặt rõ `LLM_PROVIDER=deepseek` để tránh môi trường còn `OPENAI_API_KEY` cũ làm backend chọn nhầm model.
+
+Lưu ý tool-call:
+
+- OpenAI dùng `max_completion_tokens`.
+- DeepSeek dùng `max_tokens` theo Chat Completions compatible API.
+- Adapter vẫn ép tool/function call, nhưng với DeepSeek có thêm fallback parse JSON từ `message.content` nếu model không trả `tool_calls` đúng chuẩn.
+- Nếu DeepSeek trả arguments kèm markdown fence hoặc trailing text sau JSON, adapter sẽ parse object JSON đầu tiên.
 
 Để xem request/response API trong terminal backend khi debug local, đặt:
 
@@ -182,6 +190,22 @@ Invoke-RestMethod `
 ```
 
 Trong case này, GDPT KB vẫn quyết định objective, scope và difficulty. `source_text` chỉ dùng để ưu tiên bối cảnh, ví dụ, thời lượng và ghi chú sư phạm.
+
+## Guardrail Và Teacher Context
+
+BE_AI chạy guardrail trước retrieval/generation:
+
+```text
+subject + grade + prompt + source_text
+-> scope check
+-> keyword safety check
+-> curriculum scope check
+-> optional LLM screen
+```
+
+`source_text` nên là teacher context đã được BE_Web lọc theo chunk giáo án, không nên là toàn bộ file dài nếu file có nhiều bài khác nhau. BE_Web chịu trách nhiệm chọn relevant chunks trước khi gọi BE_AI.
+
+Lưu ý với tiếng Việt: guardrail normalize bỏ dấu để bắt cả prompt không dấu. Vì vậy rule keyword phải tránh false positive. Ví dụ `"thứ tự số"` sau normalize có chứa `"tu so"` nhưng không phải `"tử số"`, nên guardrail không được block như nội dung phân số.
 
 ### Ví Dụ Recommend Only
 

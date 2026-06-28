@@ -57,6 +57,8 @@ export interface GenerateStreamInput {
   num_items?: number
   objective_id?: string
   source_text?: string
+  uploaded_file_id?: string
+  upload_type?: 'none' | 'lesson_plan' | 'slide'
   override_template?: string
 }
 
@@ -80,6 +82,8 @@ export interface RecommendGamesInput {
   difficulty: 'easy' | 'medium' | 'hard'
   prompt: string
   source_text?: string
+  uploaded_file_id?: string
+  upload_type?: 'none' | 'lesson_plan' | 'slide'
 }
 
 export class GuardrailError extends Error {

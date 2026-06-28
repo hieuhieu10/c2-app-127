@@ -7,6 +7,7 @@ Thư mục này chứa tài liệu review cho LearnGame, hệ thống tạo game
 | File | Mục đích |
 |---|---|
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Mô tả architecture, runtime components và hai luồng data flow hiện tại. |
+| [EVALUATION_METRICS.md](EVALUATION_METRICS.md) | Kế hoạch evaluation metrics, baseline numbers, G-Eval rubric và cách trace evidence. |
 | [EVAL_EVIDENCE.md](EVAL_EVIDENCE.md) | Manual test cases và output kiểm chứng local. |
 | [statics/learngame_architecture_diagram.svg](statics/learngame_architecture_diagram.svg) | Sơ đồ architecture mới. |
 | [statics/dataflow_diagram.png](statics/dataflow_diagram.png) | Sơ đồ data flow mới. |

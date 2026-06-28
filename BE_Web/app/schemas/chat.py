@@ -14,6 +14,9 @@ class ChatSessionCreateResponse(BaseModel):
     difficulty: Literal["easy", "medium", "hard"] | None = None
     numItems: int | None
     sourceText: str | None
+    uploadedFileId: str | None = None
+    uploadType: str | None = None
+    attachedFileName: str | None = None
     createdAt: datetime
     updatedAt: datetime
 
@@ -46,6 +49,8 @@ class ChatRecommendRequest(BaseModel):
     prompt: str = Field(..., min_length=1)
     numItems: int | None = Field(None, ge=1, le=20)
     sourceText: str | None = None
+    uploadedFileId: str | None = None
+    uploadType: Literal["none", "lesson_plan", "slide"] = "none"
     attachedFileName: str | None = None
 
 

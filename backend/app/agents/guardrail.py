@@ -61,6 +61,11 @@ _BLOCKED_TERMS = (
     "tu tu", "tu sat", "che tao bom", "che tao thuoc no",
     "porn", "sex video", "nude", "heroin", "cocaine", "make a bomb", "suicide",
 )
+_SOURCE_TEXT_BLOCKED_TERMS_RAW = (
+    "khiêu dâm", "phim sex", "khỏa thân", "khoả thân", "ma túy", "ma tuý",
+    "thuốc lắc", "cá độ", "tự tử", "tự sát", "chế tạo bom", "chế tạo thuốc nổ",
+    "porn", "sex video", "nude", "heroin", "cocaine", "make a bomb", "suicide",
+)
 
 _DECIMAL_NUMBER_RE = re.compile(r"(?<!\d)\d+,\d+(?!\d)")
 _DECIMAL_SCOPE_TERMS = (
@@ -72,13 +77,13 @@ _DECIMAL_SCOPE_TERMS = (
 _FRACTION_NUMBER_RE = re.compile(r"(?<!\d)\d+/\d+(?!\d)")
 _FRACTION_SCOPE_TERMS = (
     "phan so",
-    "tu so",
     "mau so",
     "rut gon phan so",
     "so sanh phan so",
     "cong phan so",
     "tru phan so",
 )
+_FRACTION_TU_SO_RE = re.compile(r"(?<![a-z0-9])(?<!thu )tu so(?![a-z0-9])")
 _PERCENT_SCOPE_TERMS = (
     "phan tram",
     "ti so phan tram",
@@ -139,10 +144,40 @@ def _check_scope(subject: str, grade: int) -> GuardrailReport | None:
     return None
 
 
+def _contains_normalized_blocked_term(text: str, terms: tuple[str, ...]) -> bool:
+    haystack = _norm(text)
+    return any(re.search(rf"(?<![a-z0-9]){re.escape(term)}(?![a-z0-9])", haystack) for term in terms)
+
+
+def _contains_normalized_scope_term(haystack: str, terms: tuple[str, ...]) -> bool:
+    return any(re.search(rf"(?<![a-z0-9]){re.escape(term)}(?![a-z0-9])", haystack) for term in terms)
+
+
+def _has_fraction_scope_concept(haystack: str) -> bool:
+    return _contains_normalized_scope_term(haystack, _FRACTION_SCOPE_TERMS) or bool(_FRACTION_TU_SO_RE.search(haystack))
+
+
+def _contains_raw_blocked_term(text: str, terms: tuple[str, ...]) -> bool:
+    haystack = text.casefold()
+    for term in terms:
+        needle = term.casefold()
+        if needle.isascii() and re.fullmatch(r"[a-z0-9 ]+", needle):
+            if re.search(rf"(?<![a-z0-9]){re.escape(needle)}(?![a-z0-9])", haystack):
+                return True
+            continue
+        if needle in haystack:
+            return True
+    return False
+
+
 def _keyword_safety(prompt: str, source_text: str | None) -> GuardrailReport | None:
     """Fast block for unambiguous non-child-friendly terms (case 3). ``None`` if clean."""
-    haystack = _norm(f"{prompt} {source_text or ''}")
-    if any(term in haystack for term in _BLOCKED_TERMS):
+    prompt_blocked = _contains_normalized_blocked_term(prompt, _BLOCKED_TERMS)
+    source_blocked = bool(source_text) and _contains_raw_blocked_term(
+        source_text or "",
+        _SOURCE_TEXT_BLOCKED_TERMS_RAW,
+    )
+    if prompt_blocked or source_blocked:
         return GuardrailReport(
             allowed=False,
             code="unsafe",
@@ -161,7 +196,7 @@ def _keyword_curriculum_scope(subject: str, grade: int, prompt: str, source_text
     haystack = _norm(haystack_raw)
 
     if grade < 4:
-        has_fraction_concept = any(term in haystack for term in _FRACTION_SCOPE_TERMS)
+        has_fraction_concept = _has_fraction_scope_concept(haystack)
         has_fraction_notation = bool(_FRACTION_NUMBER_RE.search(haystack_raw))
         if has_fraction_concept or has_fraction_notation:
             return GuardrailReport(
@@ -218,7 +253,10 @@ subject, grade, and request, return exactly one verdict via the tool:
 - "unsafe": the request is violent, sexual, hateful, dangerous, or otherwise not child-friendly.
 - "unclear": the request is too vague to generate a meaningful learning game.
 Educational topics that mention conflict, war, or the human body in an age-appropriate, curricular \
-way are "ok" — only flag "unsafe" for genuinely inappropriate content. Write `reason` and \
+way are "ok" — only flag "unsafe" for genuinely inappropriate content. Uploaded teacher documents \
+are supporting context; do not block solely because of parser noise, isolated ambiguous words, or \
+unrelated administrative text unless the teacher request or lesson material clearly asks to generate \
+unsafe classroom content. Write `reason` and \
 `suggestion` in Vietnamese, friendly and concrete, telling the teacher how to re-prompt."""
 
 

@@ -83,6 +83,9 @@ export interface BeWebChatSession {
   difficulty: 'easy' | 'medium' | 'hard' | null
   numItems: number | null
   sourceText: string | null
+  uploadedFileId?: string | null
+  uploadType?: 'none' | 'lesson_plan' | 'slide' | null
+  attachedFileName?: string | null
   createdAt: string
   updatedAt: string
 }
@@ -115,8 +118,29 @@ export interface RecommendChatInput {
   grade: number
   difficulty: 'easy' | 'medium' | 'hard'
   prompt: string
+  numItems?: number | null
   sourceText?: string | null
+  uploadedFileId?: string | null
+  uploadType?: 'none' | 'lesson_plan' | 'slide'
   attachedFileName?: string | null
+}
+
+export interface LessonUploadResponse {
+  ok: boolean
+  uploadedFileId: string
+  originalFilename: string
+  mimeType?: string | null
+  extension: string
+  sizeBytes: number
+  charCount: number
+  chunkCount: number
+  previewText: string
+  parseStatus: string
+  sourceText: string
+  uploadType: 'lesson_plan'
+  retentionPolicy: 'session' | string
+  sessionId?: number | null
+  createdAt: string
 }
 
 export interface RecommendChatResponse {
@@ -284,6 +308,15 @@ export const beWebApi = {
     const formData = new FormData()
     formData.append('file', file)
     return request<AuthUser>('/api/auth/me/avatar', {
+      method: 'POST',
+      body: formData,
+    })
+  },
+
+  uploadLessonFile(file: File) {
+    const formData = new FormData()
+    formData.append('file', file)
+    return request<LessonUploadResponse>('/api/uploads/lesson-file', {
       method: 'POST',
       body: formData,
     })

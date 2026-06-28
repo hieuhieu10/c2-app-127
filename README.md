@@ -73,7 +73,16 @@ BE_AI đọc `.env` từ repo root qua `backend/app/config.py`.
 Thứ tự ưu tiên khi `LLM_PROVIDER=auto`:
 
 ```text
-OpenAI -> DeepSeek -> Anthropic
+DeepSeek -> OpenAI -> Anthropic
+```
+
+Khuyến nghị cho project hiện tại là cấu hình rõ:
+
+```env
+LLM_PROVIDER=deepseek
+DEEPSEEK_API_KEY=sk-...
+DEEPSEEK_BASE_URL=https://api.deepseek.com
+DEFAULT_MODEL=deepseek-chat
 ```
 
 ### BE_Web
@@ -85,9 +94,12 @@ BE_Web đọc `BE_Web/.env` nếu có, nếu không sẽ dùng `BE_Web/.env.exam
 | `DATABASE_URL` | Có | Ví dụ `postgresql+psycopg://user:password@localhost:5432/learngame_AI` |
 | `BE_AI_BASE_URL` | Có | Local: `http://localhost:8000`; Docker: `http://be-ai:8000` |
 | `BE_AI_TIMEOUT_SECONDS` | Không | `30.0` |
-| `CORS_ORIGINS` | Không | `["http://localhost:3000"]` |
+| `CORS_ORIGINS` | Không | `http://localhost:3000` |
 | `JWT_SECRET_KEY` | Nên có | `change-me` |
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | Không | `10080` |
+| `MAX_LESSON_UPLOAD_SIZE_BYTES` | Không | `10485760` |
+| `MAX_LESSON_SOURCE_CHARS` | Không | `20000` |
+| `MIN_LESSON_SOURCE_CHARS` | Không | `20` |
 
 BE_Web không fallback sang SQLite. Khi thay đổi schema, tạo và áp migration bằng Alembic:
 
@@ -260,6 +272,19 @@ FE /dashboard/game/new
 -> BE_Web lưu assistant message + Lesson/Game khi complete
 ```
 
+Upload giáo án trong luồng này:
+
+```text
+FE upload PDF/TXT/DOCX -> BE_Web /api/uploads/lesson-file
+-> BE_Web lưu raw file, parse source_text và tạo lesson_upload_chunks
+-> Upload mặc định retentionPolicy="session", chưa phải knowledge base lâu dài
+-> Khi teacher submit prompt, BE_Web attach upload vào chat session
+-> BE_Web chọn top chunks liên quan nhất với prompt
+-> BE_Web gửi BE_AI source_text đã lọc, không gửi toàn bộ giáo án dài nếu có chunk phù hợp
+```
+
+Ví dụ giáo án dài có nhiều bài: prompt "Bài 01: Ôn tập các số đến 1000 - Trang 6" sẽ ưu tiên chunk khớp Bài 01/Trang 6. Các đoạn bài khác trong file không nên đi vào `source_text` gửi sang BE_AI nếu retrieval chọn được chunk đúng. BE_AI guardrail vẫn kiểm tra scope trên prompt + teacher context đã lọc; rule guardrail tránh nhầm cụm "thứ tự số" thành "tử số" sau bước bỏ dấu tiếng Việt.
+
 Nếu muốn gọi BE_AI trực tiếp để debug, có thể dùng `/recommend/games`:
 
 ```powershell
@@ -352,7 +377,7 @@ JWT_SECRET_KEY=change-this-to-a-long-random-secret
 
 OPENAI_API_KEY=...
 NEXT_PUBLIC_BE_WEB_URL=https://api-domain-cua-ban
-CORS_ORIGINS=["https://domain-fe-cua-ban"]
+CORS_ORIGINS=https://domain-fe-cua-ban
 ```
 
 Trong Docker Compose, không dùng `localhost` cho service nội bộ:
