@@ -55,14 +55,14 @@ const PLAYER_2_PATH: PathPoint[] = [
   { x: 10.3, y: 72.0 },
   { x: 14.8, y: 72.0 },
   { x: 21.6, y: 72.2 },
-  { x: 28.8, y: 75.5 },
-  { x: 35.7, y: 76.9 },
-  { x: 42.3, y: 73.6 },
-  { x: 47.3, y: 66.3 },
+  { x: 28.8, y: 74.4 },
+  { x: 38.8, y: 80.6 },
+  { x: 39.1, y: 86.1 },
+  { x: 50.4, y: 66.2 },
   { x: 51.2, y: 59.1 },
   { x: 56.2, y: 54.9 },
   { x: 62.4, y: 56.5 },
-  { x: 68.8, y: 60.5 },
+  { x: 68.8, y: 63.5 },
   { x: 74.9, y: 63.5 },
   { x: 80.8, y: 63.4 },
   { x: 85.8, y: 60.6 },
@@ -125,6 +125,10 @@ export function rankPlayers(players: TreasurePlayer[]): TreasurePlayer[] {
 
 export function getWinner(players: TreasurePlayer[]): TreasurePlayer {
   return rankPlayers(players)[0]
+}
+
+export function isPlayerTie(playerA: TreasurePlayer, playerB: TreasurePlayer): boolean {
+  return playerA.position === playerB.position && playerA.correctAnswers === playerB.correctAnswers && playerA.score === playerB.score
 }
 
 export function getPathPoint(progress: number, laneIndex: number, laneCount: number) {
