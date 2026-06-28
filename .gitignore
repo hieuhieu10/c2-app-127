@@ -1,5 +1,6 @@
 # Environment
 .env
+.env.production
 
 # Python
 __pycache__/
@@ -17,9 +18,8 @@ build/
 .ai-log/session.jsonl
 
 # AI logs — tracked structure, ignored content
-.ai-log/*.jsonl
-
-.ai-log/
-
+.ai-log
+.ai-log/archive
 # Runtime uploads
 BE_Web/uploads/
+.claude

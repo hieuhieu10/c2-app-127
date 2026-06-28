@@ -109,6 +109,11 @@ services:
       CLUSTER_HOSTNAME: "learngame-weaviate"
     volumes:
       - weaviate_data:/var/lib/weaviate
+    ports:
+      # Published so host-run tools (ingest script, direct uvicorn dev) can
+      # reach Weaviate at localhost. v4 client needs REST (8080) + gRPC (50051).
+      - "8080:8080"
+      - "50051:50051"
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8080/v1/.well-known/ready"]
       interval: 10s

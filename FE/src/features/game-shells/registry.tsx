@@ -38,6 +38,15 @@ export interface GameDefinition {
   interactionType: string
   bestFor: string
   example: string
+  /** Teacher-facing "how to play" explanation shown in the game-library guide modal. */
+  howToPlay: string
+  /**
+   * Optional short demo clip shown above the how-to-play text in the guide modal.
+   * Path is served from `public/`, by convention `/games/<backendId>/guide.webm`
+   * (a looping `.webm`/`.mp4` is rendered as muted autoplay video; a `.gif`/`.png`
+   * is rendered as an image). Omit until a clip exists — the guide stays text-only.
+   */
+  howToPlayMedia?: string
   /** The component that renders this game. */
   Shell: ComponentType<ShellProps>
   /**
@@ -58,6 +67,8 @@ export const GAMES: GameDefinition[] = [
     interactionType: 'Đua trên bản đồ theo lượt',
     bestFor: 'Bài học tiểu học, ôn nhanh, phép tính, từ vựng, khái niệm khoa học',
     example: 'Trả lời đúng câu hỏi nhân hoặc từ vựng để tiến gần hang kho báu thêm 10%.',
+    howToPlay: 'Hai người chơi (hoặc hai đội) lần lượt trả lời các câu hỏi bài học. Mỗi câu trả lời đúng giúp đoàn thám hiểm của em tiến thêm một bước trên bản đồ về phía hang kho báu. Trả lời sai không bị trừ điểm nhưng sẽ nhường lượt cho đối thủ. Ai đến hang kho báu trước sẽ chiến thắng.',
+    howToPlayMedia: '/games/treasure_hunt/guide.webm',
     Shell: TreasureHuntShell,
   },
   {
@@ -70,6 +81,8 @@ export const GAMES: GameDefinition[] = [
     interactionType: 'Đối kháng 2 người theo lượt',
     bestFor: 'Lớp 6-12, ôn tập thi đua, ghi nhớ kiến thức, từ vựng, nhân quả',
     example: 'Trả lời đúng câu hỏi lịch sử để dội bom hạm đội đối thủ. Bắn trúng = thêm lượt.',
+    howToPlay: 'Trò chơi đối kháng cho 2 người chơi. Đến lượt mình, em phải trả lời đúng một câu đố để giành quyền bắn vào một ô trên lưới của đối thủ. Bắn trúng tàu sẽ được bắn thêm một lượt nữa. Người bắn chìm toàn bộ hạm đội của đối phương trước sẽ giành chiến thắng.',
+    howToPlayMedia: '/games/battleship/guide.webm',
     Shell: BattleshipShell,
   },
   {
@@ -82,6 +95,8 @@ export const GAMES: GameDefinition[] = [
     interactionType: 'Kéo thả phân loại',
     bestFor: 'Lớp 1-5, phép tính, phân loại ví dụ theo nhóm, ghép cặp',
     example: 'Kéo miếng "3 + 4" tới chú mèo muốn số 7. Ghép hết mọi miếng cá để cho tất cả mèo ăn.',
+    howToPlay: 'Mỗi chú mèo cầm một tấm bảng ghi sẵn đáp án. Em hãy kéo từng miếng cá — mỗi miếng là một câu hỏi hoặc phép tính — tới đúng chú mèo có đáp án khớp với miếng đó. Ghép hết mọi miếng cá để cho tất cả các chú mèo ăn no là hoàn thành màn chơi.',
+    howToPlayMedia: '/games/feed_cats/guide.webm',
     Shell: FeedTheCatsShell,
   },
   {
@@ -94,6 +109,8 @@ export const GAMES: GameDefinition[] = [
     interactionType: 'Dãy số trắc nghiệm',
     bestFor: 'Lớp 1-7, quy luật số, đếm cách quãng, dãy số, Fibonacci, số chính phương',
     example: 'Thấy 2, 4, 6 trên đá — chạm 8 để mèo nhảy tiếp. Quy luật khó dần qua mỗi màn.',
+    howToPlay: 'Chú mèo cần nhảy qua các hòn đá để sang bờ bên kia. Trên hòn đá tiếp theo có vài con số để lựa chọn — em hãy chạm vào con số đúng theo quy luật của dãy số để mèo nhảy tiếp. Chọn sai mèo sẽ không nhảy được. Quy luật sẽ khó dần qua từng màn.',
+    howToPlayMedia: '/games/cat_jump/guide.webm',
     Shell: CatJumpShell,
   },
   {
@@ -106,6 +123,8 @@ export const GAMES: GameDefinition[] = [
     interactionType: 'Giải đố phân số kéo thả',
     bestFor: 'Lớp 2-8, cộng phân số, lý thuyết âm nhạc, tiết tấu, cảm nhận số',
     example: 'Bạn có 3 nốt trắng và 6 nốt đen — lấp đầy 3 ô nhịp 4/4 sao cho mọi phân số cộng lại vừa khít.',
+    howToPlay: 'Em có một số khối nốt nhạc với giá trị phân số khác nhau (ví dụ nốt trắng, nốt đen). Hãy kéo thả các khối nốt vào từng ô nhịp sao cho tổng giá trị phân số trong mỗi ô nhịp đúng bằng nhịp yêu cầu (ví dụ 4/4). Lấp đầy chính xác mọi ô nhịp để hoàn thành bản nhạc.',
+    howToPlayMedia: '/games/beat_forge/guide.webm',
     Shell: BeatForgeShell,
   },
   {
@@ -118,6 +137,8 @@ export const GAMES: GameDefinition[] = [
     interactionType: 'Vẽ tự do trên lưới',
     bestFor: 'Lớp 4-8, diện tích, chu vi, thừa số, tư duy không gian',
     example: 'Quây đúng 12 ô vuông bằng hàng rào. Hình 3×4 cần ít rào nhất — đó là bí quyết!',
+    howToPlay: 'Em hãy đặt các đoạn hàng rào trên lưới ô vuông để quây lại đúng diện tích được yêu cầu. Khu vực quây càng gọn — dùng càng ít hàng rào — thì em càng được nhiều sao. Hãy thử tìm hình chữ nhật tối ưu để tiết kiệm hàng rào nhất.',
+    howToPlayMedia: '/games/farm_builder/guide.webm',
     Shell: FarmBuilderShell,
   },
 ]

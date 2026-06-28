@@ -10,6 +10,15 @@ from app.schemas.games import GameItemResponse, StatusResponse, UpdateGameItemRe
 from app.services.game_mapper import item_to_response
 
 
+# Templates whose ``options_json`` is a genuine list of answer choices containing the
+# correct answer. The "answer must be among the options" + uniqueness checks only make
+# sense for these. Custom shells (farm_builder, feed_the_cats, cat_jump, beat_forge) leave
+# options_json empty or use it to encode a non-answer spec (e.g. farm_builder stores
+# [shape, constraint, value]), so applying the MCQ rule there marks every item invalid and
+# blocks approval.
+_OPTION_BASED_TEMPLATES = frozenset({"quiz", "treasure_hunt", "battleship"})
+
+
 def get_game_or_404(db: Session, game_id: int, current_user: User | None = None) -> Game:
     game = db.get(Game, game_id)
     if not game or (current_user and game.lesson.user_id != current_user.id):
@@ -49,10 +58,16 @@ def update_item(db: Session, game_id: int, item_id: int, request: UpdateGameItem
 def recheck_item(db: Session, game_id: int, item_id: int, current_user: User) -> GameItemResponse:
     item = get_item_or_404(db, game_id, item_id, current_user)
     errors: list[str] = []
-    if item.correct_answer not in (item.options_json or []):
-        errors.append("Correct answer must be included in options")
-    if len(set(item.options_json or [])) != len(item.options_json or []):
-        errors.append("Options must be unique")
+    if not (item.question or "").strip():
+        errors.append("Question cannot be empty")
+    if not (item.correct_answer or "").strip():
+        errors.append("Correct answer cannot be empty")
+    if item.game.product_template_id in _OPTION_BASED_TEMPLATES:
+        options = item.options_json or []
+        if item.correct_answer not in options:
+            errors.append("Correct answer must be included in options")
+        if len(set(options)) != len(options):
+            errors.append("Options must be unique")
     item.validation_status = "valid" if not errors else "invalid"
     item.validation_errors_json = errors
     db.add(GameReviewEvent(game_id=game_id, item_id=item_id, event_type=ReviewEventType.recheck, payload_json={"errors": errors}))

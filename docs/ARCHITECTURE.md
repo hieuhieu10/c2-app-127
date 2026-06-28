@@ -29,33 +29,54 @@ Data flow hiện tại có hai luồng chính.
 
 ## Flow A - Luồng Tạo Game Mới
 
-Luồng tạo game mới đi trực tiếp từ FE sang BE_AI.
+Luồng tạo game mới hiện đi qua BE_Web chat endpoints. BE_Web giữ lịch sử hội thoại, lưu game sinh ra vào DB, còn BE_AI chịu trách nhiệm guardrail, retrieval, recommendation và generation.
 
 ```text
-Giáo viên -> FE -> BE_AI -> GDPT KB / LLM -> FE -> Game Library -> Browser Storage
+Giáo viên -> FE -> BE_Web -> BE_AI -> GDPT KB / RAG / LLM -> BE_Web DB -> FE -> Game Library
+```
+
+Flow A có hai biến thể chung một contract:
+
+```text
+A1. Prompt-only
+Giáo viên nhập subject/grade/difficulty/prompt
+-> FE gọi BE_Web POST /api/chat/sessions/{id}/recommend
+-> BE_Web gọi BE_AI POST /recommend/games với upload_type="none"
+-> Giáo viên chọn game
+-> FE gọi BE_Web POST /api/chat/sessions/{id}/generate
+-> BE_Web gọi BE_AI POST /generate/stream
+-> BE_Web lưu lesson/game/items vào DB
+
+A2. Prompt + giáo án upload
+Giáo viên chọn file PDF/TXT/DOCX
+-> FE upload file lên BE_Web POST /api/uploads/lesson-file
+-> BE_Web parse file thành source_text và trả uploaded_file_id
+-> FE gửi prompt kèm source_text/uploaded_file_id/upload_type="lesson_plan"
+-> BE_AI dùng source_text như teacher context, nhưng GDPT/RAG vẫn là curriculum authority
+-> Các bước recommend/generate/lưu DB giống A1
 ```
 
 Các bước chính:
 
-1. Giáo viên nhập `subject`, `grade`, `difficulty`, `prompt` và `source_text` nếu có giáo án/slide.
-2. FE gửi `POST /recommend/games` đến BE_AI.
-3. BE_AI chạy guardrail, GDPT objective retrieval, teacher context extraction, scope check, difficulty assessment và game recommendation.
-4. Nếu guardrail block hoặc scope không phù hợp, BE_AI trả thông tin để FE hiển thị cảnh báo/chỉnh prompt.
-5. Nếu hợp lệ, BE_AI trả danh sách game recommendation gồm `template_id`, `game name`, `intro` và `recommended flag`.
-6. Giáo viên chọn game.
-7. FE gửi `POST /generate/stream` đến BE_AI với `override_template`.
-8. BE_AI stream SSE events gồm parse/teacher context, retrieval, recommend, generate, schema validation, safety report và complete.
-9. FE hiển thị pipeline động theo từng stage.
-10. FE đưa generated content sang preview bằng `sessionStorage`.
-11. FE dùng `template_id` để chọn game shell trong Game Library.
-12. Giáo viên preview, chơi thử, chỉnh sửa và publish.
-13. Với chat-flow hiện tại, game publish được lưu trong browser `localStorage`.
+1. Giáo viên nhập `subject`, `grade`, `difficulty`, `prompt`.
+2. Nếu có giáo án, FE upload file `PDF`, `TXT` hoặc `DOCX` lên BE_Web để parse thành `source_text`.
+3. FE gửi recommend request đến BE_Web. Với prompt-only, `upload_type="none"` và `source_text=null`. Với giáo án, gửi thêm `uploaded_file_id`, `upload_type="lesson_plan"`, `source_text`.
+4. BE_Web lưu user prompt vào chat history rồi gọi BE_AI `/recommend/games`.
+5. BE_AI chạy guardrail, GDPT objective retrieval, teacher context extraction nếu có `source_text`, scope check, difficulty assessment và game recommendation.
+6. Nếu guardrail block hoặc scope không phù hợp, BE_AI trả thông tin để FE hiển thị cảnh báo/chỉnh prompt.
+7. Nếu hợp lệ, BE_AI trả danh sách game recommendation gồm `template_id`, `game name`, `intro` và `recommended flag`.
+8. Giáo viên chọn game.
+9. FE gọi BE_Web `/api/chat/sessions/{id}/generate`; BE_Web gọi BE_AI `/generate/stream` với `override_template`.
+10. BE_AI stream SSE events gồm teacher context/retrieval/recommend/generate/schema validation/safety/complete.
+11. BE_Web lưu generated lesson/game/items vào DB và trả final event cho FE.
+12. FE mở preview/review theo `lessonId/gameId`, dùng `template_id` để chọn game shell trong Game Library.
 
 Ghi chú quan trọng:
 
-- Chat-flow generated games hiện **chưa sync vào BE_Web DB**.
-- BE_Web **không tạo game mới** trong Flow A.
-- Teacher uploaded lesson/slide chỉ là teaching context, không thay thế GDPT 2018.
+- Prompt-only không đi qua parser upload.
+- Teacher uploaded lesson file chỉ là teaching context, không thay thế GDPT 2018.
+- BE_AI không nhận binary file; chỉ nhận text đã parse và metadata upload.
+- `.doc` legacy chưa parse ổn định trong phase này; giáo viên nên lưu thành `.docx`, `.pdf` hoặc `.txt`.
 
 ## Flow B - Luồng Saved Game / Review Qua BE_Web
 
@@ -156,5 +177,5 @@ Khi production, nên ưu tiên:
 - PostgreSQL cho BE_Web.
 - `JWT_SECRET_KEY` mạnh.
 - Backend-only storage cho giáo án/slide upload.
-- Parser pipeline thật cho PDF/DOCX/PPTX để tạo `source_text`.
+- Parser pipeline cho PDF/TXT/DOCX để tạo `source_text`; OCR/PPTX có thể là phase sau.
 - Đồng bộ chat-flow generated games vào BE_Web DB nếu muốn lưu lịch sử trên nhiều thiết bị.

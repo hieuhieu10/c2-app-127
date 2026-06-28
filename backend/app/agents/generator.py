@@ -80,12 +80,21 @@ async def _generate(state: GenerationState, repair_errors: list[str] | None) -> 
         ctx=ctx,
         repair_errors=repair_errors,
     )
+    # Scale the LLM budget with the requested item count. A large pool (e.g.
+    # Battleship's 25 MCQs) otherwise (a) trips the 30s default timeout and (b)
+    # overflows the 4096-token output cap, truncating the JSON into an unparseable
+    # tool call. Both scale with how many items we asked the model to emit.
+    num_items = state.get("num_items", 5)
+    timeout = min(180.0, max(30.0, num_items * 5.0))
+    max_tokens = min(8000, max(settings.max_tokens, num_items * 300))
     return await call_tool(
         system=GENERATOR_SYSTEM,
         user=user,
         tool_name=_TOOL_NAME,
         tool_description=f"Emit schema-valid content for the '{template_id}' game.",
         input_schema=json_schema_for(template_id),
+        max_tokens=max_tokens,
+        timeout=timeout,
     )
 
 

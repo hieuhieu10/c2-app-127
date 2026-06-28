@@ -15,6 +15,9 @@ from app.retrieval.context import GDPT2018RetrievalProvider, _domain_confidence_
 from app.retrieval.embeddings import BgeM3Embedder
 from app.retrieval.weaviate_store import WeaviateObjectiveStore, compact_query
 
+_STRONG_LEXICAL_CONFIDENCE = 0.85
+_LEXICAL_OVERRIDE_MARGIN = 0.08
+
 
 class HybridRAGRetrievalProvider(GDPT2018RetrievalProvider):
     def __init__(
@@ -41,6 +44,10 @@ class HybridRAGRetrievalProvider(GDPT2018RetrievalProvider):
         if objective_id:
             return super()._match_objective(subject, grade, objective_id, prompt, source_text)
 
+        lexical_objective, lexical_confidence = super()._match_objective(
+            subject, grade, objective_id, prompt, source_text
+        )
+
         try:
             query = compact_query(prompt, source_text)
             vector = self.embedder.embed_query(query)
@@ -51,9 +58,33 @@ class HybridRAGRetrievalProvider(GDPT2018RetrievalProvider):
                     key=lambda hit: hit.confidence + _domain_confidence_adjustment(hit.objective, prompt, source_text),
                 )
                 confidence = best.confidence + _domain_confidence_adjustment(best.objective, prompt, source_text)
-                return best.objective, max(min(confidence, 0.99), 0.6)
+                vector_confidence = max(min(confidence, 0.99), 0.6)
+                if _should_prefer_lexical_match(
+                    lexical_objective=lexical_objective,
+                    lexical_confidence=lexical_confidence,
+                    vector_objective=best.objective,
+                    vector_confidence=vector_confidence,
+                ):
+                    return lexical_objective, max(lexical_confidence, 0.88)
+                return best.objective, vector_confidence
         except Exception:
             if self.require_weaviate:
                 raise
 
-        return super()._match_objective(subject, grade, objective_id, prompt, source_text)
+        return lexical_objective, lexical_confidence
+
+
+def _should_prefer_lexical_match(
+    *,
+    lexical_objective: dict[str, Any] | None,
+    lexical_confidence: float,
+    vector_objective: dict[str, Any] | None,
+    vector_confidence: float,
+) -> bool:
+    if not lexical_objective or not vector_objective:
+        return False
+    if lexical_objective.get("objective_id") == vector_objective.get("objective_id"):
+        return False
+    if lexical_confidence >= _STRONG_LEXICAL_CONFIDENCE:
+        return True
+    return lexical_confidence >= vector_confidence + _LEXICAL_OVERRIDE_MARGIN

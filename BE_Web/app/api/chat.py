@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import AsyncGenerator
+from datetime import datetime, timezone
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -16,6 +17,7 @@ from app.db.models import (
     ChatMessageType,
     ChatRole,
     ChatSession,
+    LessonUpload,
     User,
 )
 from app.db.session import get_db
@@ -30,6 +32,14 @@ from app.schemas.chat import (
 )
 from app.services.ai_gateway import BeAiGatewayError, recommend_games, stream_generate
 from app.services.game_generation import GameMappingError, create_game_from_generation
+from app.services.lesson_chunking import (
+    format_ranked_chunks_for_source_text,
+    format_ranked_source_chunks_for_source_text,
+    rank_lesson_chunks,
+    rank_source_text_chunks,
+    selected_chunks_payload,
+    selected_source_chunks_payload,
+)
 
 router = APIRouter(prefix="/api/chat", tags=["chat"])
 
@@ -82,6 +92,27 @@ async def recommend_for_session(
     if not prompt_text:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Prompt is required")
 
+    ranked_chunks = rank_lesson_chunks(
+        db,
+        upload_id=request.uploadedFileId,
+        user_id=current_user.id,
+        prompt=prompt_text,
+    )
+    selected_source_text = format_ranked_chunks_for_source_text(ranked_chunks)
+    selected_chunks = selected_chunks_payload(ranked_chunks)
+    if not selected_source_text and request.sourceText:
+        fallback_chunks = rank_source_text_chunks(request.sourceText, prompt=prompt_text)
+        selected_source_text = format_ranked_source_chunks_for_source_text(fallback_chunks)
+        selected_chunks = selected_source_chunks_payload(fallback_chunks)
+    if not selected_source_text:
+        selected_source_text = request.sourceText
+    attached_upload = attach_lesson_upload_to_session(
+        db,
+        uploaded_file_id=request.uploadedFileId,
+        user_id=current_user.id,
+        session_id=session.id,
+    )
+
     user_message = ChatMessage(
         session_id=session.id,
         role=ChatRole.user,
@@ -92,8 +123,13 @@ async def recommend_for_session(
             "grade": request.grade,
             "difficulty": request.difficulty,
             "numItems": request.numItems,
-            "sourceText": request.sourceText,
+            "sourceText": selected_source_text,
+            "uploadedFileId": request.uploadedFileId,
+            "uploadType": request.uploadType,
             "attachedFileName": request.attachedFileName,
+            "uploadRetentionPolicy": attached_upload.retention_policy if attached_upload else None,
+            "uploadSessionId": attached_upload.session_id if attached_upload else None,
+            "selectedTeacherChunks": selected_chunks,
         },
         status=ChatMessageStatus.done,
     )
@@ -103,7 +139,10 @@ async def recommend_for_session(
     session.grade = request.grade
     session.difficulty = request.difficulty
     session.num_items = request.numItems
-    session.source_text = request.sourceText
+    session.source_text = selected_source_text
+    session.uploaded_file_id = request.uploadedFileId
+    session.upload_type = request.uploadType
+    session.attached_file_name = request.attachedFileName
     if not session.title:
         session.title = prompt_text[:255]
     db.add(session)
@@ -115,7 +154,9 @@ async def recommend_for_session(
             "grade": request.grade,
             "difficulty": request.difficulty,
             "prompt": prompt_text,
-            "source_text": request.sourceText,
+            "source_text": selected_source_text,
+            "uploaded_file_id": request.uploadedFileId or "",
+            "upload_type": request.uploadType or "none",
         }
         if request.numItems is not None:
             recommend_payload["num_items"] = request.numItems
@@ -128,6 +169,7 @@ async def recommend_for_session(
     assistant_payload: dict[str, Any] = {
         "promptMessageId": user_message.id,
         "blocked": blocked,
+        "selectedTeacherChunks": selected_chunks,
     }
     if blocked:
         assistant_payload.update(
@@ -139,7 +181,8 @@ async def recommend_for_session(
         assistant_content = assistant_payload["message"]
         message_type = ChatMessageType.guardrail
     else:
-        assistant_payload["recommendations"] = ai_response.get("recommendations") or []
+        # Recommendations come back best-first; show only the top 3 in chat.
+        assistant_payload["recommendations"] = (ai_response.get("recommendations") or [])[:3]
         assistant_content = "Đã đề xuất trò chơi phù hợp."
         message_type = ChatMessageType.recommendations
 
@@ -196,6 +239,8 @@ async def generate_for_session(
         "difficulty": session.difficulty,
         "prompt": prompt_message.content,
         "source_text": session.source_text,
+        "uploaded_file_id": session.uploaded_file_id or "",
+        "upload_type": session.upload_type or "none",
         "override_template": request.templateId,
     }
     if session.num_items is not None:
@@ -358,6 +403,43 @@ def resolve_prompt_message(session: ChatSession, prompt_message_id: int | None) 
     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Session has no user prompt to generate from")
 
 
+def attach_lesson_upload_to_session(
+    db: Session,
+    *,
+    uploaded_file_id: str | None,
+    user_id: int,
+    session_id: int,
+) -> LessonUpload | None:
+    upload_id = parse_int(uploaded_file_id)
+    if upload_id is None:
+        return None
+    upload = db.scalar(
+        select(LessonUpload).where(
+            LessonUpload.id == upload_id,
+            LessonUpload.user_id == user_id,
+            LessonUpload.deleted_at.is_(None),
+        )
+    )
+    if upload is None:
+        return None
+    upload.retention_policy = "session"
+    upload.session_id = session_id
+    upload.last_used_at = datetime.now(timezone.utc)
+    db.add(upload)
+    return upload
+
+
+def parse_int(value: str | int | None) -> int | None:
+    if isinstance(value, int):
+        return value
+    if not value:
+        return None
+    try:
+        return int(value)
+    except ValueError:
+        return None
+
+
 def session_to_detail_response(session: ChatSession) -> ChatSessionDetailResponse:
     base = session_to_response(session)
     return ChatSessionDetailResponse(
@@ -375,6 +457,9 @@ def session_to_response(session: ChatSession) -> ChatSessionCreateResponse:
         difficulty=session.difficulty,
         numItems=session.num_items,
         sourceText=session.source_text,
+        uploadedFileId=session.uploaded_file_id,
+        uploadType=session.upload_type,
+        attachedFileName=session.attached_file_name,
         createdAt=session.created_at,
         updatedAt=session.updated_at,
     )

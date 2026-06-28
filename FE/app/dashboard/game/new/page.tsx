@@ -10,6 +10,8 @@ import {
   type StageStatus,
 } from '@/features/game-creation/ai-api'
 import { getTemplateByBackendId } from '@/features/game-creation/template-registry'
+import type { GameDefinition } from '@/features/game-shells/registry'
+import { GuideModal } from '@/features/game-library/components/GuideModal'
 import {
   beWebApi,
   type BeWebChatMessage,
@@ -39,6 +41,8 @@ interface SentForm {
   prompt: string
   numItems: number | null
   sourceText: string | null
+  uploadedFileId?: string | null
+  uploadType?: 'none' | 'lesson_plan' | 'slide'
   attachedFileName?: string | null
 }
 
@@ -82,9 +86,10 @@ const DIFFICULTIES: { label: string; value: 'easy' | 'medium' | 'hard' }[] = [
   { label: 'Trung bình', value: 'medium' },
   { label: 'Khó', value: 'hard' },
 ]
+const FIXED_NUM_ITEMS = 10
 
 const PIPELINE_STAGE_DEFS: PipelineStage[] = [
-  { id: 'parse_pdf', label: 'Phân tích tài liệu', subtitle: '...', tag: 'PyMuPDF · OCR', tagType: 'neutral', status: 'pending' },
+  { id: 'parse_pdf', label: 'Phân tích yêu cầu', subtitle: '...', tag: 'Prompt · Giáo án', tagType: 'neutral', status: 'pending' },
   { id: 'rag', label: 'Tra cứu khung chương trình GDPT 2018', subtitle: '...', tag: 'RAG', tagType: 'neutral', status: 'pending' },
   { id: 'recommend', label: 'Đề xuất mẫu trò chơi', subtitle: '...', tag: 'Bộ điều phối', tagType: 'indigo', status: 'pending' },
   { id: 'generate', label: 'Sinh nội dung trò chơi', subtitle: '...', tag: 'Bộ sinh nội dung', tagType: 'indigo', status: 'pending' },
@@ -198,6 +203,8 @@ function buildSentForm(promptText: string, payload: Record<string, unknown>): Se
     prompt: promptText,
     numItems: typeof payload.numItems === 'number' ? payload.numItems : null,
     sourceText: typeof payload.sourceText === 'string' ? payload.sourceText : null,
+    uploadedFileId: typeof payload.uploadedFileId === 'string' ? payload.uploadedFileId : null,
+    uploadType: payload.uploadType === 'lesson_plan' || payload.uploadType === 'slide' ? payload.uploadType : 'none',
     attachedFileName: typeof payload.attachedFileName === 'string' ? payload.attachedFileName : null,
   }
 }
@@ -353,10 +360,13 @@ function NewGamePageContent() {
   const [grade, setGrade] = useState(4)
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium')
   const [prompt, setPrompt] = useState('')
-  const [numItems, setNumItems] = useState<number | null>(null)
   const [sourceText, setSourceText] = useState<string | null>(null)
+  const [uploadedFileId, setUploadedFileId] = useState<string | null>(null)
+  const [uploadType, setUploadType] = useState<'none' | 'lesson_plan' | 'slide'>('none')
   const [attachedFileName, setAttachedFileName] = useState<string | null>(null)
+  const [attachedPreview, setAttachedPreview] = useState<string | null>(null)
   const [attachError, setAttachError] = useState<string | null>(null)
+  const [uploadingAttachment, setUploadingAttachment] = useState(false)
 
   const [sessionId, setSessionId] = useState<number | null>(null)
   const [sessionTitle, setSessionTitle] = useState<string | null>(null)
@@ -366,13 +376,15 @@ function NewGamePageContent() {
   const [isRunning, setIsRunning] = useState(false)
   const [elapsedSec, setElapsedSec] = useState(0)
   const [activeGenerationMessageId, setActiveGenerationMessageId] = useState<string | null>(null)
+  const [guideGame, setGuideGame] = useState<GameDefinition | null>(null)
 
   const threadRef = useRef<HTMLDivElement>(null)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const skipHydrationRef = useRef<number | null>(null)
 
-  const SUPPORTED_TYPES = ['.txt', '.md', '.csv', '.json']
+  const SUPPORTED_TYPES = ['.pdf', '.txt', '.docx']
+  const MAX_CLIENT_UPLOAD_BYTES = 10 * 1024 * 1024
   const hasMessages = chatMessages.length > 0
   const sessionParam = searchParams.get('session')
   const firstPrompt = chatMessages.find((message) => message.role === 'user')?.form.prompt ?? null
@@ -427,8 +439,10 @@ function NewGamePageContent() {
         setSubject(session.subject ?? 'Toán')
         setGrade(session.grade ?? 4)
         setDifficulty((session.difficulty ?? 'medium') as 'easy' | 'medium' | 'hard')
-        setNumItems(session.numItems)
         setSourceText(session.sourceText ?? null)
+        setUploadedFileId(session.uploadedFileId ?? null)
+        setUploadType(session.uploadType === 'lesson_plan' || session.uploadType === 'slide' ? session.uploadType : 'none')
+        setAttachedFileName(session.attachedFileName ?? null)
       })
       .catch(() => {
         setSessionId(null)
@@ -441,7 +455,7 @@ function NewGamePageContent() {
       })
   }, [sessionParam])
 
-  const handleFileAttach = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileAttach = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!fileInputRef.current) return
     fileInputRef.current.value = ''
@@ -453,24 +467,35 @@ function NewGamePageContent() {
       setTimeout(() => setAttachError(null), 4000)
       return
     }
-
-    const reader = new FileReader()
-    reader.onload = (ev) => {
-      const text = ev.target?.result as string
-      setSourceText(text)
-      setAttachedFileName(file.name)
-      setAttachError(null)
-    }
-    reader.onerror = () => {
-      setAttachError('Không đọc được tệp. Vui lòng thử lại.')
+    if (file.size > MAX_CLIENT_UPLOAD_BYTES) {
+      setAttachError('File giáo án phải nhỏ hơn hoặc bằng 10MB.')
       setTimeout(() => setAttachError(null), 4000)
+      return
     }
-    reader.readAsText(file, 'utf-8')
+
+    setUploadingAttachment(true)
+    setAttachError(null)
+    try {
+      const upload = await beWebApi.uploadLessonFile(file)
+      setSourceText(upload.sourceText)
+      setUploadedFileId(upload.uploadedFileId)
+      setUploadType(upload.uploadType)
+      setAttachedFileName(upload.originalFilename)
+      setAttachedPreview(upload.previewText)
+    } catch (error) {
+      setAttachError(error instanceof Error ? error.message : 'Không đọc được file giáo án. Vui lòng thử lại.')
+      setTimeout(() => setAttachError(null), 6000)
+    } finally {
+      setUploadingAttachment(false)
+    }
   }
 
   const removeAttachment = () => {
     setSourceText(null)
+    setUploadedFileId(null)
+    setUploadType('none')
     setAttachedFileName(null)
+    setAttachedPreview(null)
   }
 
   const ensureSession = async () => {
@@ -490,12 +515,21 @@ function NewGamePageContent() {
   }
 
   const handleSubmit = async () => {
-    if (isRunning || loadingRecs) return
+    if (isRunning || loadingRecs || uploadingAttachment) return
     const promptText = prompt.trim()
     if (!promptText) return
 
-    const resolvedNumItems = numItems ?? extractNumItemsFromPrompt(promptText)
-    const form: SentForm = { subject, grade, difficulty, prompt: promptText, numItems: resolvedNumItems, sourceText, attachedFileName }
+    const form: SentForm = {
+      subject,
+      grade,
+      difficulty,
+      prompt: promptText,
+      numItems: FIXED_NUM_ITEMS,
+      sourceText,
+      uploadedFileId,
+      uploadType,
+      attachedFileName,
+    }
     const tempUserId = makeTempId('user')
     const tempAssistantId = makeTempId('recommend')
     const recommendPayload = {
@@ -503,7 +537,10 @@ function NewGamePageContent() {
       grade,
       difficulty,
       prompt: promptText,
+      numItems: FIXED_NUM_ITEMS,
       sourceText,
+      uploadedFileId,
+      uploadType,
       attachedFileName,
     }
 
@@ -781,38 +818,65 @@ function NewGamePageContent() {
                         {message.recommendations.map((recommendation) => {
                           const meta = getTemplateByBackendId(recommendation.template_id)
                           return (
-                            <button
+                            <div
                               key={`${message.id}-${recommendation.template_id}`}
-                              onClick={() => void handleChooseGame(recommendation, message.promptMessageId, message.backendId)}
                               style={{
-                                display: 'flex', alignItems: 'flex-start', gap: 14, textAlign: 'left', width: '100%',
-                                background: '#fff', cursor: isRunning ? 'not-allowed' : 'pointer', fontFamily: 'inherit',
+                                display: 'flex', flexDirection: 'column', gap: 13, width: '100%',
+                                background: '#fff',
                                 border: `1.5px solid ${recommendation.recommended ? '#c7c5f7' : '#e9ebf1'}`,
                                 borderRadius: 16, padding: '16px 18px',
                                 boxShadow: recommendation.recommended ? '0 6px 20px rgba(79,70,229,.1)' : '0 1px 2px rgba(16,24,40,.04)',
                                 opacity: isRunning ? 0.7 : 1,
                               }}
-                              disabled={isRunning}
                             >
-                              <div style={{ width: 42, height: 42, borderRadius: 12, background: '#eef0fe', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>
-                                {meta?.icon ?? '🎮'}
-                              </div>
-                              <div style={{ flex: 1, minWidth: 0 }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
-                                  <span style={{ fontSize: 15.5, fontWeight: 700, color: '#1b2333' }}>{recommendation.name}</span>
-                                  {recommendation.recommended ? (
-                                    <span style={{ fontSize: 11.5, fontWeight: 600, color: '#4f46e5', background: '#eef0fe', border: '1px solid #dfe1fc', borderRadius: 7, padding: '2px 8px' }}>
-                                      Đề xuất
-                                    </span>
-                                  ) : null}
+                              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
+                                <div style={{ width: 42, height: 42, borderRadius: 12, background: '#eef0fe', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>
+                                  {meta?.icon ?? '🎮'}
                                 </div>
-                                <div style={{ fontSize: 13.5, color: '#5b6577', lineHeight: 1.5 }}>{recommendation.intro}</div>
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
+                                    <span style={{ fontSize: 15.5, fontWeight: 700, color: '#1b2333' }}>{recommendation.name}</span>
+                                    {recommendation.recommended ? (
+                                      <span style={{ fontSize: 11.5, fontWeight: 600, color: '#4f46e5', background: '#eef0fe', border: '1px solid #dfe1fc', borderRadius: 7, padding: '2px 8px' }}>
+                                        Đề xuất
+                                      </span>
+                                    ) : null}
+                                  </div>
+                                  <div style={{ fontSize: 13.5, color: '#5b6577', lineHeight: 1.5 }}>{recommendation.intro}</div>
+                                </div>
                               </div>
-                              <span style={{ flexShrink: 0, alignSelf: 'center', display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13.5, fontWeight: 600, color: '#4f46e5' }}>
-                                Chọn
-                                <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 10h11M11 5l5 5-5 5"/></svg>
-                              </span>
-                            </button>
+                              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 9 }}>
+                                {meta ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => setGuideGame(meta)}
+                                    style={{
+                                      display: 'inline-flex', alignItems: 'center', gap: 6, border: '1px solid #e3e6ee',
+                                      background: '#fff', color: '#5b6577', fontFamily: 'inherit', fontWeight: 600,
+                                      fontSize: 13, padding: '8px 13px', borderRadius: 9, cursor: 'pointer',
+                                    }}
+                                  >
+                                    <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="10" cy="10" r="7.5"/><path d="M10 9v4.5M10 6.5v.2"/></svg>
+                                    Hướng dẫn
+                                  </button>
+                                ) : null}
+                                <button
+                                  type="button"
+                                  onClick={() => void handleChooseGame(recommendation, message.promptMessageId, message.backendId)}
+                                  disabled={isRunning}
+                                  style={{
+                                    display: 'inline-flex', alignItems: 'center', gap: 6, border: 'none',
+                                    background: isRunning ? '#c7c5f7' : '#4f46e5', color: '#fff', fontFamily: 'inherit', fontWeight: 600,
+                                    fontSize: 13, padding: '8px 15px', borderRadius: 9,
+                                    cursor: isRunning ? 'not-allowed' : 'pointer',
+                                    boxShadow: isRunning ? 'none' : '0 4px 12px rgba(79,70,229,.22)',
+                                  }}
+                                >
+                                  Chọn
+                                  <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 10h11M11 5l5 5-5 5"/></svg>
+                                </button>
+                              </div>
+                            </div>
                           )
                         })}
                       </div>
@@ -978,7 +1042,7 @@ function NewGamePageContent() {
                 }
               }}
               placeholder="Mô tả trò chơi bạn muốn tạo, hoặc yêu cầu chỉnh sửa…"
-              disabled={isRunning || loadingRecs}
+              disabled={isRunning || loadingRecs || uploadingAttachment}
               rows={2}
               style={{
                 width: '100%', border: 'none', outline: 'none', resize: 'none',
@@ -989,10 +1053,18 @@ function NewGamePageContent() {
             />
 
             {attachedFileName ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#fef3c7', border: '1px solid #fde68a', borderRadius: 8, padding: '5px 10px', fontSize: 13, color: '#92400e', marginBottom: 8 }}>
-                <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 9l-4.5 4.5a2.5 2.5 0 01-3.5-3.5l5-5a1.6 1.6 0 012.3 2.3l-5 5"/></svg>
-                <span style={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{attachedFileName}</span>
-                <button onClick={removeAttachment} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#b45309', padding: '0 2px', lineHeight: 1, fontSize: 15, fontWeight: 700 }} title="Gỡ tệp">×</button>
+              <div style={{ background: '#fef9ee', border: '1px solid #fde68a', borderRadius: 10, padding: '7px 10px', fontSize: 13, color: '#92400e', marginBottom: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 9l-4.5 4.5a2.5 2.5 0 01-3.5-3.5l5-5a1.6 1.6 0 012.3 2.3l-5 5"/></svg>
+                  <span style={{ maxWidth: 260, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 600 }}>{attachedFileName}</span>
+                  <span style={{ color: '#a16207' }}>· Giáo án</span>
+                  <button onClick={removeAttachment} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', color: '#b45309', padding: '0 2px', lineHeight: 1, fontSize: 15, fontWeight: 700 }} title="Gỡ tệp">×</button>
+                </div>
+                {attachedPreview ? (
+                  <div style={{ marginTop: 4, color: '#a16207', fontSize: 12.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {attachedPreview}
+                  </div>
+                ) : null}
               </div>
             ) : null}
             {attachError ? (
@@ -1003,13 +1075,13 @@ function NewGamePageContent() {
               <input
                 ref={fileInputRef}
                 type="file"
-                accept=".txt,.md,.csv,.json"
+                accept=".pdf,.txt,.docx"
                 style={{ display: 'none' }}
                 onChange={handleFileAttach}
               />
               <button
                 onClick={() => fileInputRef.current?.click()}
-                disabled={isRunning || loadingRecs}
+                disabled={isRunning || loadingRecs || uploadingAttachment}
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: 6,
                   border: attachedFileName ? '1px solid #fcd34d' : '1px solid #e3e6ee',
@@ -1017,20 +1089,20 @@ function NewGamePageContent() {
                   color: attachedFileName ? '#92400e' : '#5b6577',
                   fontFamily: 'inherit', fontSize: 13, fontWeight: 500,
                   padding: '7px 12px', borderRadius: 9,
-                  cursor: isRunning || loadingRecs ? 'not-allowed' : 'pointer',
-                  opacity: isRunning || loadingRecs ? 0.5 : 1,
+                  cursor: isRunning || loadingRecs || uploadingAttachment ? 'not-allowed' : 'pointer',
+                  opacity: isRunning || loadingRecs || uploadingAttachment ? 0.5 : 1,
                 }}
               >
                 <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M14 9l-4.5 4.5a2.5 2.5 0 01-3.5-3.5l5-5a1.6 1.6 0 012.3 2.3l-5 5"/></svg>
-                {attachedFileName ? 'Thay tệp' : 'Đính kèm'}
+                {uploadingAttachment ? 'Đang đọc giáo án...' : attachedFileName ? 'Thay giáo án' : 'Tải giáo án'}
               </button>
               <div
                 style={{
                   marginLeft: 'auto', width: 42, height: 42, borderRadius: '50%',
-                  background: isRunning || loadingRecs || !prompt.trim() ? '#c7c5f7' : '#4f46e5',
+                  background: isRunning || loadingRecs || uploadingAttachment || !prompt.trim() ? '#c7c5f7' : '#4f46e5',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  cursor: isRunning || loadingRecs || !prompt.trim() ? 'not-allowed' : 'pointer',
-                  boxShadow: isRunning || loadingRecs || !prompt.trim() ? 'none' : '0 5px 14px rgba(79,70,229,.3)',
+                  cursor: isRunning || loadingRecs || uploadingAttachment || !prompt.trim() ? 'not-allowed' : 'pointer',
+                  boxShadow: isRunning || loadingRecs || uploadingAttachment || !prompt.trim() ? 'none' : '0 5px 14px rgba(79,70,229,.3)',
                   transition: 'all .15s ease',
                 }}
                 onClick={() => void handleSubmit()}
@@ -1041,6 +1113,10 @@ function NewGamePageContent() {
           </div>
         </div>
       </main>
+
+      {guideGame ? (
+        <GuideModal game={guideGame} onClose={() => setGuideGame(null)} />
+      ) : null}
     </div>
   )
 }

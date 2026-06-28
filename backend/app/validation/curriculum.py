@@ -8,7 +8,13 @@ from typing import Any
 
 from app.retrieval.context import RetrievedContext, _norm
 
-_DECIMAL_NUMBER_RE = re.compile(r"(?<!\d)\d+,\d+(?!\d)")
+# A real Vietnamese decimal (e.g. "0,5", "1,25") is comma-separated and never adjacent
+# to a "/". Excluding slash-adjacency keeps this from matching the comma-joined fraction
+# tokens that games like Beat Forge emit ("1/4,1/4,1/4" — where "4,1" looks like a decimal).
+_DECIMAL_NUMBER_RE = re.compile(r"(?<![\d/])\d+,\d+(?![\d/])")
+# A string that is entirely an integer list ("1,2,3,5,8") is a sequence, not a decimal —
+# e.g. legacy Cat Jump levels. Checked before the decimal search in _content_has_decimal_notation.
+_INTEGER_CSV_RE = re.compile(r"^\s*-?\d+(?:\s*,\s*-?\d+)+\s*$")
 _DECIMAL_SCOPE_TERMS = (
     "so thap phan",
     "phan thap phan",
@@ -66,7 +72,7 @@ def _validate_primary_decimal_scope(
     text_raw = json.dumps(content, ensure_ascii=False)
     text_norm = _norm(text_raw)
     has_decimal_concept = any(term in text_norm for term in _DECIMAL_SCOPE_TERMS)
-    has_decimal_notation = bool(_DECIMAL_NUMBER_RE.search(text_raw))
+    has_decimal_notation = _content_has_decimal_notation(content)
     if not (has_decimal_concept or has_decimal_notation):
         return []
 
@@ -82,3 +88,20 @@ def _validate_primary_decimal_scope(
             "Hãy điều chỉnh về cấu tạo thập phân của số tự nhiên hoặc chọn lớp 5."
         )
     ]
+
+
+def _content_has_decimal_notation(value: Any) -> bool:
+    if isinstance(value, dict):
+        return any(_content_has_decimal_notation(item) for item in value.values())
+    if isinstance(value, list):
+        return any(_content_has_decimal_notation(item) for item in value)
+    if not isinstance(value, str):
+        return False
+
+    stripped = value.strip()
+    # Some game schemas, e.g. Cat Jump, intentionally encode integer sequences as
+    # comma-separated strings: "1,2,3,5,8,13,21,34". This is not Vietnamese decimal
+    # notation and should not be blocked for primary grades.
+    if _INTEGER_CSV_RE.fullmatch(stripped):
+        return False
+    return bool(_DECIMAL_NUMBER_RE.search(stripped))
