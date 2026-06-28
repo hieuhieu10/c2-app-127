@@ -13,6 +13,10 @@ def seed_game(
     title: str = "Math facts",
     input_text: str = "Teach simple addition.",
     status: GameStatus = GameStatus.draft,
+    product_template_id: str = "treasure_hunt",
+    question: str = "What is 2 + 2?",
+    correct_answer: str = "4",
+    options_json: list[str] | None = None,
 ) -> tuple[Game, GameItem]:
     SessionLocal = client.app.state.testing_session_local
     db = SessionLocal()
@@ -32,7 +36,7 @@ def seed_game(
         db.flush()
         game = Game(
             lesson_id=lesson.id,
-            product_template_id="treasure_hunt",
+            product_template_id=product_template_id,
             ai_template_id="quiz",
             status=status,
             settings_json={"numItems": 10, "playerCount": 2, "mapTheme": "treasure-hunt"},
@@ -43,9 +47,9 @@ def seed_game(
         item = GameItem(
             game_id=game.id,
             order_index=0,
-            question="What is 2 + 2?",
-            correct_answer="4",
-            options_json=["3", "4", "5"],
+            question=question,
+            correct_answer=correct_answer,
+            options_json=["3", "4", "5"] if options_json is None else options_json,
             explanation="2 + 2 equals 4.",
             hint="Add the two numbers.",
             validation_status="valid",
@@ -299,6 +303,28 @@ def test_get_edit_recheck_approve_publish_flow(client):
     published = client.post(f"/api/games/{game_id}/publish", headers=headers)
     assert published.status_code == 200
     assert published.json()["status"] == "published"
+
+
+def test_recheck_keeps_farm_builder_valid(client):
+    # farm_builder encodes the problem spec in options_json ([shape, constraint, value])
+    # and stores correct_answer as "shape|constraint|value", so the MCQ "answer must be in
+    # options" rule does not apply. Recheck must keep it valid, otherwise approval is blocked.
+    headers = auth_headers(client)
+    game, item = seed_game(
+        client,
+        product_template_id="farm_builder",
+        question="Xây trang trại hình vuông với diện tích = 16 ô vuông",
+        correct_answer="hình vuông|diện tích|16",
+        options_json=["hình vuông", "diện tích", "16"],
+    )
+
+    rechecked = client.post(f"/api/games/{game.id}/items/{item.id}/recheck", headers=headers)
+    assert rechecked.status_code == 200
+    assert rechecked.json()["validationStatus"] == "valid"
+
+    approved = client.post(f"/api/games/{game.id}/approve", headers=headers)
+    assert approved.status_code == 200
+    assert approved.json()["status"] == "approved"
 
 
 def test_user_cannot_access_other_users_game(client):

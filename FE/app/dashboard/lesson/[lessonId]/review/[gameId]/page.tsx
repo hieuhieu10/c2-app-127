@@ -141,8 +141,10 @@ export default function ReviewPage() {
                 </Button>
               </div>
 
-              <div className={isFullscreen ? 'mx-auto h-[calc(100dvh-24px)] min-h-0 w-full max-w-[1800px] flex-1' : 'min-w-0'}>
-                <GameShell game={game} fullscreen={isFullscreen} />
+              <div className={isFullscreen ? 'h-[calc(100dvh-24px)] w-full overflow-y-auto' : 'min-w-0'}>
+                <div className={isFullscreen ? 'mx-auto h-full w-full max-w-[1280px]' : 'min-w-0'}>
+                  <GameShell game={game} fullscreen={isFullscreen} />
+                </div>
               </div>
             </div>
           </div>

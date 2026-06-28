@@ -139,7 +139,8 @@ async def recommend_for_session(
         assistant_content = assistant_payload["message"]
         message_type = ChatMessageType.guardrail
     else:
-        assistant_payload["recommendations"] = ai_response.get("recommendations") or []
+        # Recommendations come back best-first; show only the top 3 in chat.
+        assistant_payload["recommendations"] = (ai_response.get("recommendations") or [])[:3]
         assistant_content = "Đã đề xuất trò chơi phù hợp."
         message_type = ChatMessageType.recommendations
 

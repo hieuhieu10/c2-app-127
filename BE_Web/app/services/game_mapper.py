@@ -10,6 +10,29 @@ class GameMappingError(ValueError):
     pass
 
 
+def _int_count(content: dict, key: str) -> int:
+    """Coerce a supply-count field to a non-negative int.
+
+    Treats absent/null as 0 and raises GameMappingError (caught at the route
+    layer) for anything non-numeric, instead of letting a raw ValueError/
+    TypeError from int() abort the response.
+    """
+    raw = content.get(key)
+    if raw is None:
+        return 0
+    try:
+        value = int(raw)
+    except (ValueError, TypeError):
+        raise GameMappingError(
+            f"beat_forge content field {key!r} must be a non-negative integer, got {raw!r}"
+        )
+    if value < 0:
+        raise GameMappingError(
+            f"beat_forge content field {key!r} must be a non-negative integer, got {raw!r}"
+        )
+    return value
+
+
 def battleship_content_to_items(content: dict) -> list[dict]:
     questions = content.get("questions")
     if not isinstance(questions, list) or not questions:
@@ -112,12 +135,12 @@ def beat_forge_content_to_items(content: dict) -> list[dict]:
     if not time_sig:
         raise GameMappingError("beat_forge content must include time_signature")
 
-    half_notes           = int(content.get("half_notes", 0))
-    quarter_notes        = int(content.get("quarter_notes", 0))
-    eighth_notes         = int(content.get("eighth_notes", 0))
-    dotted_half_notes    = int(content.get("dotted_half_notes", 0))
-    dotted_quarter_notes = int(content.get("dotted_quarter_notes", 0))
-    triplet_eighth_notes = int(content.get("triplet_eighth_notes", 0))
+    half_notes           = _int_count(content, "half_notes")
+    quarter_notes        = _int_count(content, "quarter_notes")
+    eighth_notes         = _int_count(content, "eighth_notes")
+    dotted_half_notes    = _int_count(content, "dotted_half_notes")
+    dotted_quarter_notes = _int_count(content, "dotted_quarter_notes")
+    triplet_eighth_notes = _int_count(content, "triplet_eighth_notes")
     lanes = content.get("lanes")
 
     if not isinstance(lanes, list) or len(lanes) < 2:

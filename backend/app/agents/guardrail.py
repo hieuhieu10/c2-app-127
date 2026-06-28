@@ -62,7 +62,9 @@ _BLOCKED_TERMS = (
     "porn", "sex video", "nude", "heroin", "cocaine", "make a bomb", "suicide",
 )
 
-_DECIMAL_NUMBER_RE = re.compile(r"(?<!\d)\d+,\d+(?!\d)")
+# Decimals ("0,5", "1,25") are comma-separated and never adjacent to "/"; excluding
+# slash-adjacency avoids matching comma-joined fraction tokens like "1/4,1/4" ("4,1").
+_DECIMAL_NUMBER_RE = re.compile(r"(?<![\d/])\d+,\d+(?![\d/])")
 _DECIMAL_SCOPE_TERMS = (
     "so thap phan",
     "phan thap phan",
@@ -217,6 +219,13 @@ subject, grade, and request, return exactly one verdict via the tool:
 - "above_grade": the request belongs to the subject but clearly exceeds the stated grade's level.
 - "unsafe": the request is violent, sexual, hateful, dangerous, or otherwise not child-friendly.
 - "unclear": the request is too vague to generate a meaningful learning game.
+A request may dress a subject's skill in a real-world or cross-domain theme. Judge by the \
+underlying skill being practiced, NOT by the theme. In particular, using musical rhythm — note \
+durations, time signatures, bars, or dotted/triplet notes — as a concrete way to practice \
+fraction addition, equivalent fractions, or common denominators is a legitimate Mathematics \
+activity (this tool's library includes a music-themed fraction game). When `Môn: Toán`, treat \
+such a request as Math and return "ok" if the underlying fraction skill fits the grade; do NOT \
+return "irrelevant" just because the wording mentions music or notes. \
 Educational topics that mention conflict, war, or the human body in an age-appropriate, curricular \
 way are "ok" — only flag "unsafe" for genuinely inappropriate content. Write `reason` and \
 `suggestion` in Vietnamese, friendly and concrete, telling the teacher how to re-prompt."""

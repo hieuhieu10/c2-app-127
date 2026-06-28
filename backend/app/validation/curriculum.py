@@ -8,7 +8,10 @@ from typing import Any
 
 from app.retrieval.context import RetrievedContext, _norm
 
-_DECIMAL_NUMBER_RE = re.compile(r"(?<!\d)\d+,\d+(?!\d)")
+# A real Vietnamese decimal (e.g. "0,5", "1,25") is comma-separated and never adjacent
+# to a "/". Excluding slash-adjacency keeps this from matching the comma-joined fraction
+# tokens that games like Beat Forge emit ("1/4,1/4,1/4" — where "4,1" looks like a decimal).
+_DECIMAL_NUMBER_RE = re.compile(r"(?<![\d/])\d+,\d+(?![\d/])")
 _DECIMAL_SCOPE_TERMS = (
     "so thap phan",
     "phan thap phan",
