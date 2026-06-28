@@ -86,7 +86,7 @@ const DIFFICULTIES: { label: string; value: 'easy' | 'medium' | 'hard' }[] = [
   { label: 'Trung bình', value: 'medium' },
   { label: 'Khó', value: 'hard' },
 ]
-const FIXED_NUM_ITEMS = 10
+const TREASURE_HUNT_NUM_ITEMS = 10
 
 const PIPELINE_STAGE_DEFS: PipelineStage[] = [
   { id: 'parse_pdf', label: 'Phân tích yêu cầu', subtitle: '...', tag: 'Prompt · Giáo án', tagType: 'neutral', status: 'pending' },
@@ -195,13 +195,17 @@ function extractNumItemsFromPrompt(promptText: string): number | null {
   return null
 }
 
+function getGenerateNumItems(templateId: string): number | null {
+  return templateId === 'treasure_hunt' ? TREASURE_HUNT_NUM_ITEMS : null
+}
+
 function buildSentForm(promptText: string, payload: Record<string, unknown>): SentForm {
   return {
     subject: typeof payload.subject === 'string' ? payload.subject : 'Toán',
     grade: typeof payload.grade === 'number' ? payload.grade : 4,
     difficulty: typeof payload.difficulty === 'string' ? payload.difficulty : 'medium',
     prompt: promptText,
-    numItems: typeof payload.numItems === 'number' ? payload.numItems : null,
+    numItems: typeof payload.numItems === 'number' ? payload.numItems : extractNumItemsFromPrompt(promptText),
     sourceText: typeof payload.sourceText === 'string' ? payload.sourceText : null,
     uploadedFileId: typeof payload.uploadedFileId === 'string' ? payload.uploadedFileId : null,
     uploadType: payload.uploadType === 'lesson_plan' || payload.uploadType === 'slide' ? payload.uploadType : 'none',
@@ -524,7 +528,7 @@ function NewGamePageContent() {
       grade,
       difficulty,
       prompt: promptText,
-      numItems: FIXED_NUM_ITEMS,
+      numItems: extractNumItemsFromPrompt(promptText),
       sourceText,
       uploadedFileId,
       uploadType,
@@ -537,7 +541,6 @@ function NewGamePageContent() {
       grade,
       difficulty,
       prompt: promptText,
-      numItems: FIXED_NUM_ITEMS,
       sourceText,
       uploadedFileId,
       uploadType,
@@ -603,8 +606,10 @@ function NewGamePageContent() {
     scrollDown()
 
     try {
+      const generateNumItems = getGenerateNumItems(recommendation.template_id)
       for await (const event of beWebApi.generateChat(currentSessionId, {
         templateId: recommendation.template_id,
+        numItems: generateNumItems,
         promptMessageId,
         recommendationMessageId,
       })) {

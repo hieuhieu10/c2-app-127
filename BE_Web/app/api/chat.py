@@ -226,6 +226,7 @@ async def generate_for_session(
             "promptMessageId": prompt_message.id,
             "recommendationMessageId": request.recommendationMessageId,
             "selectedTemplate": {"template_id": request.templateId},
+            "numItems": request.numItems,
         },
         status=ChatMessageStatus.running,
     )
@@ -243,8 +244,13 @@ async def generate_for_session(
         "upload_type": session.upload_type or "none",
         "override_template": request.templateId,
     }
-    if session.num_items is not None:
-        payload["num_items"] = session.num_items
+    requested_num_items = request.numItems if request.numItems is not None else session.num_items
+    if request.numItems is not None:
+        session.num_items = request.numItems
+        db.add(session)
+        db.flush()
+    if requested_num_items is not None:
+        payload["num_items"] = requested_num_items
 
     if not payload["subject"] or not payload["grade"] or not payload["difficulty"]:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Session is missing lesson context")

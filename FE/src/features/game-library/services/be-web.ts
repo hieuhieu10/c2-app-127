@@ -151,6 +151,7 @@ export interface RecommendChatResponse {
 
 export interface GenerateChatInput {
   templateId: string
+  numItems?: number | null
   promptMessageId?: number
   recommendationMessageId?: number
 }
