@@ -245,14 +245,14 @@ export function AppSidebar() {
       </Link>
 
       <nav style={{ display: 'flex', flexDirection: 'column', gap: 2, marginTop: 18 }}>
-        <Link href="/dashboard" style={isActive('/dashboard') && !isActive('/dashboard/game') ? s.navActive : s.navInactive}>
+        <Link href="/dashboard" style={isActive('/dashboard') && !isActive('/dashboard/game') && !isActive('/dashboard/library') ? s.navActive : s.navInactive}>
           <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.7"><rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="11" y="3" width="6" height="6" rx="1.5"/><rect x="3" y="11" width="6" height="6" rx="1.5"/><rect x="11" y="11" width="6" height="6" rx="1.5"/></svg>
           Trò chơi của tôi
         </Link>
-        <a href="#" style={s.navInactive}>
+        <Link href="/dashboard/library" style={isActive('/dashboard/library') ? s.navActive : s.navInactive}>
           <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"><path d="M4 5.5A1.5 1.5 0 015.5 4H9v12H5.5A1.5 1.5 0 014 14.5z"/><path d="M16 5.5A1.5 1.5 0 0014.5 4H11v12h3.5A1.5 1.5 0 0016 14.5z"/></svg>
-          Thư viện mẫu
-        </a>
+          Thư viện game
+        </Link>
         <a href="#" style={s.navInactive}>
           <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.7"><circle cx="7" cy="7" r="2.5"/><circle cx="14" cy="8" r="2"/><path d="M3 16c0-2.2 1.8-4 4-4s4 1.8 4 4M12 16c0-1.6.8-3 2-3.6"/></svg>
           Lớp học của tôi

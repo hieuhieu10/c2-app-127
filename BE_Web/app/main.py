@@ -7,12 +7,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.core.debug import install_api_debug_middleware
-from app.api import auth, chat, games
+from app.api import auth, chat, games, uploads
 from app.core.settings import settings
 
 uploads_dir = Path(settings.upload_dir)
 uploads_dir.mkdir(parents=True, exist_ok=True)
 (uploads_dir / "avatars").mkdir(parents=True, exist_ok=True)
+(uploads_dir / "lesson_files").mkdir(parents=True, exist_ok=True)
 
 app = FastAPI(title=settings.app_name, version="0.1.0")
 
@@ -30,6 +31,7 @@ app.mount("/uploads", StaticFiles(directory=str(uploads_dir)), name="uploads")
 app.include_router(auth.router)
 app.include_router(chat.router)
 app.include_router(games.router)
+app.include_router(uploads.router)
 
 
 @app.get("/health")

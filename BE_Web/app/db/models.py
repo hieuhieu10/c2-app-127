@@ -65,6 +65,64 @@ class User(TimestampMixin, Base):
 
     lessons: Mapped[list["Lesson"]] = relationship(back_populates="user")
     chat_sessions: Mapped[list["ChatSession"]] = relationship(back_populates="user", cascade="all, delete-orphan")
+    lesson_uploads: Mapped[list["LessonUpload"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+    lesson_upload_chunks: Mapped[list["LessonUploadChunk"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+
+
+class LessonUpload(TimestampMixin, Base):
+    __tablename__ = "lesson_uploads"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    original_filename: Mapped[str] = mapped_column(String(255))
+    stored_filename: Mapped[str] = mapped_column(String(255))
+    stored_path: Mapped[str] = mapped_column(String(1000))
+    mime_type: Mapped[str | None] = mapped_column(String(255))
+    extension: Mapped[str] = mapped_column(String(20))
+    size_bytes: Mapped[int] = mapped_column(Integer)
+    char_count: Mapped[int] = mapped_column(Integer, default=0)
+    parse_status: Mapped[str] = mapped_column(String(50), default="parsed")
+    parse_error: Mapped[str | None] = mapped_column(Text)
+    extracted_text: Mapped[str | None] = mapped_column(Text)
+    preview_text: Mapped[str | None] = mapped_column(Text)
+    retention_policy: Mapped[str] = mapped_column(String(50), default="session")
+    session_id: Mapped[int | None] = mapped_column(ForeignKey("chat_sessions.id"), nullable=True, index=True)
+    last_used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    user: Mapped[User] = relationship(back_populates="lesson_uploads")
+    session: Mapped["ChatSession | None"] = relationship(back_populates="lesson_uploads")
+    chunks: Mapped[list["LessonUploadChunk"]] = relationship(
+        back_populates="upload",
+        cascade="all, delete-orphan",
+        order_by="LessonUploadChunk.chunk_index",
+    )
+
+
+class LessonUploadChunk(TimestampMixin, Base):
+    __tablename__ = "lesson_upload_chunks"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    upload_id: Mapped[int] = mapped_column(ForeignKey("lesson_uploads.id"), index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    chunk_index: Mapped[int] = mapped_column(Integer)
+    chunk_type: Mapped[str] = mapped_column(String(50), default="section")
+    title: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    lesson_no: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    page_start: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    page_end: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    text: Mapped[str] = mapped_column(Text)
+    keywords_json: Mapped[list[str]] = mapped_column(JSON, default=list)
+    char_count: Mapped[int] = mapped_column(Integer, default=0)
+
+    upload: Mapped[LessonUpload] = relationship(back_populates="chunks")
+    user: Mapped[User] = relationship(back_populates="lesson_upload_chunks")
 
 
 class Lesson(TimestampMixin, Base):
@@ -94,8 +152,12 @@ class ChatSession(TimestampMixin, Base):
     difficulty: Mapped[str | None] = mapped_column(String(20), nullable=True)
     num_items: Mapped[int | None] = mapped_column(Integer, nullable=True)
     source_text: Mapped[str | None] = mapped_column(Text, nullable=True)
+    uploaded_file_id: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    upload_type: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    attached_file_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
 
     user: Mapped[User] = relationship(back_populates="chat_sessions")
+    lesson_uploads: Mapped[list[LessonUpload]] = relationship(back_populates="session")
     messages: Mapped[list["ChatMessage"]] = relationship(
         back_populates="session",
         cascade="all, delete-orphan",

@@ -236,18 +236,20 @@ async def _stream_pipeline(req: LessonRequest) -> AsyncGenerator[str, None]:
             yield _ev({"type": "blocked", "guardrail": report.model_dump(), "elapsed_ms": ms()})
             return
 
-        # ── Stage 1: retrieve (covers PDF parse + RAG) ──────────────────────
-        yield _ev({"type": "stage", "id": "parse_pdf", "label": "Phân tích tài liệu",
-                   "subtitle": "Đang đọc tài liệu...", "tag": "PyMuPDF · OCR", "status": "running"})
+        # ── Stage 1: normalize prompt / optional teacher context ────────────
+        has_teacher_context = bool(req.source_text)
+        yield _ev({"type": "stage", "id": "parse_pdf", "label": "Phân tích yêu cầu",
+                   "subtitle": "Đang đọc prompt và giáo án đã upload..." if has_teacher_context else "Đang đọc prompt của giáo viên...",
+                   "tag": "Prompt · Giáo án" if has_teacher_context else "Prompt", "status": "running"})
         await asyncio.sleep(0)
 
         state.update(retrieve_node(state))
         ctx = state.get("context")
         num_passages = len(ctx.passages) if ctx else 0
 
-        yield _ev({"type": "stage", "id": "parse_pdf", "label": "Phân tích tài liệu",
-                   "subtitle": f"Trích xuất {num_passages} đoạn nội dung liên quan",
-                   "tag": "PyMuPDF · OCR", "status": "done", "elapsed_ms": ms()})
+        yield _ev({"type": "stage", "id": "parse_pdf", "label": "Phân tích yêu cầu",
+                   "subtitle": f"Đã nhận {num_passages} đoạn context từ prompt/giáo án",
+                   "tag": "Prompt · Giáo án" if has_teacher_context else "Prompt", "status": "done", "elapsed_ms": ms()})
         await asyncio.sleep(0)
 
         if state.get("error") or not state.get("objective_id"):
@@ -285,10 +287,15 @@ async def _stream_pipeline(req: LessonRequest) -> AsyncGenerator[str, None]:
         template_meta = get_template(template_id)
         template_name = template_meta.name if template_meta else template_id
 
-        # Respect each game's generation floor (e.g. Battleship needs a full question
-        # pool because the hit-chain streak burns through them fast).
+        # Respect each game's generation defaults/floor. If the caller did not
+        # specify a count, use the template's default, not only its minimum; a
+        # too-small pool makes "hard" games feel thin.
         if template_meta:
-            state["num_items"] = max(state.get("num_items") or 0, template_meta.min_items)
+            requested_count = state.get("num_items")
+            target_count = requested_count or template_meta.default_num_items
+            if req.difficulty == "hard" and requested_count is None:
+                target_count += 2
+            state["num_items"] = max(target_count, template_meta.min_items)
 
         yield _ev({"type": "stage", "id": "recommend", "label": "Đề xuất mẫu trò chơi",
                    "subtitle": f"Chọn mẫu {template_name} · độ phù hợp 86%",
@@ -303,23 +310,53 @@ async def _stream_pipeline(req: LessonRequest) -> AsyncGenerator[str, None]:
 
         state.update(await generate_node(state))
         state.update(validate_node(state))
+        if not state.get("ok"):
+            _debug_payload(
+                "generate validation failed",
+                {
+                    "template_id": state.get("template_id"),
+                    "repair_attempts": state.get("repair_attempts", 0),
+                    "validation_errors": state.get("validation_errors", []),
+                },
+            )
 
         attempts = 0
         while not state.get("ok") and attempts < settings.max_repairs:
             state.update(await repair_node(state))
             state.update(validate_node(state))
             attempts = state.get("repair_attempts", attempts + 1)
+            if not state.get("ok"):
+                _debug_payload(
+                    "generate repair validation failed",
+                    {
+                        "template_id": state.get("template_id"),
+                        "repair_attempts": state.get("repair_attempts", 0),
+                        "validation_errors": state.get("validation_errors", []),
+                    },
+                )
 
         if not state.get("ok"):
+            validation_errors = state.get("validation_errors", [])
+            error_message = (
+                "Không thể tạo nội dung hợp lệ: " + "; ".join(validation_errors[:5])
+                if validation_errors
+                else state.get("error", "Lỗi sinh nội dung")
+            )
             yield _ev({"type": "stage", "id": "generate", "label": "Sinh nội dung trò chơi",
                        "subtitle": "Không thể tạo nội dung hợp lệ",
                        "tag": "Bộ sinh nội dung", "status": "error", "elapsed_ms": ms()})
             await asyncio.sleep(0)
-            yield _ev({"type": "error", "message": state.get("error", "Lỗi sinh nội dung")})
+            yield _ev({
+                "type": "error",
+                "message": error_message,
+                "template_id": state.get("template_id"),
+                "validation_errors": validation_errors,
+                "repair_attempts": state.get("repair_attempts", 0),
+            })
             return
 
         content: dict = state.get("content") or {}
-        items = content.get("pairs", content.get("questions", content.get("blanks", [])))
+        items = content.get("pairs", content.get("questions", content.get("items", content.get("blanks", []))))
         num_items = len(items)
         repair_attempts: int = state.get("repair_attempts", 0)
 

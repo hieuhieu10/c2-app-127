@@ -6,9 +6,11 @@ mathematical rule (arithmetic, geometric, Fibonacci, quadratic, triangular, etc.
 Non-math content (words, categories, facts) is NOT permitted.
 
 Each level (``question``) encodes the full 8-number sequence in ``correct_answer`` as a
-comma-separated string, e.g. ``"3,6,9,12,15,18,21,24"``. The React shell parses this,
+semicolon-separated string, e.g. ``"3;6;9;12;15;18;21;24"``. The React shell parses this,
 shows the first 3 numbers, and generates three multiple-choice options dynamically so the
-AI never needs to provide distractors.
+AI never needs to provide distractors. Semicolons (not commas) are used so the curriculum
+decimal-scope validator never misreads a list like "5,10" as the decimal 5.10 and wrongly
+rejects an integer sequence at grade ≤ 4.
 
 Difficulty guidance:
   easy   — constant arithmetic step (skip-count by 2, 3, 5, 10)
@@ -48,12 +50,13 @@ class CatJumpLevel(BaseModel):
         min_length=1,
         description=(
             "Exactly 8 positive integers forming the complete sequence, written as a "
-            "comma-separated string with NO spaces, e.g. '3,6,9,12,15,18,21,24'. "
+            "SEMICOLON-separated string with NO spaces, e.g. '3;6;9;12;15;18;21;24'. "
+            "Use semicolons, never commas, to separate the numbers. "
             "Students see only the first 3 numbers; they must deduce numbers 4-8 one at a time. "
             "Hard / medium sequences should use non-constant differences to challenge deeper reasoning: "
-            "Fibonacci '1,1,2,3,5,8,13,21', squares '1,4,9,16,25,36,49,64', "
-            "triangle numbers '1,3,6,10,15,21,28,36', "
-            "growing gaps '2,4,8,14,22,32,44,58' (differences: +2,+4,+6,+8,+10,+12,+14). "
+            "Fibonacci '1;1;2;3;5;8;13;21', squares '1;4;9;16;25;36;49;64', "
+            "triangle numbers '1;3;6;10;15;21;28;36', "
+            "growing gaps '2;4;8;14;22;32;44;58' (differences: +2,+4,+6,+8,+10,+12,+14). "
             "All 8 values must be positive integers greater than 0."
         ),
     )
@@ -88,10 +91,13 @@ class CatJumpLevel(BaseModel):
     @field_validator("correct_answer")
     @classmethod
     def _validate_sequence(cls, v: str) -> str:
-        parts = [p.strip() for p in v.split(",")]
+        # Accept either separator from the model (it sometimes falls back to commas),
+        # but always store a semicolon-joined string so the curriculum decimal-scope
+        # check never misreads "5,10" as the decimal 5.10 and rejects the sequence.
+        parts = [p.strip() for p in v.replace(",", ";").split(";") if p.strip()]
         if len(parts) != 8:
             raise ValueError(
-                f"correct_answer must have exactly 8 comma-separated integers, got {len(parts)}: {v!r}"
+                f"correct_answer must have exactly 8 integers separated by ';', got {len(parts)}: {v!r}"
             )
         for p in parts:
             if not p.lstrip("-").isdigit():
@@ -101,7 +107,7 @@ class CatJumpLevel(BaseModel):
                     f"All integers must be positive (> 0), got {p!r}. "
                     "Start the sequence from at least 1."
                 )
-        return ",".join(parts)
+        return ";".join(parts)
 
 
 class CatJumpContent(GameContentBase):

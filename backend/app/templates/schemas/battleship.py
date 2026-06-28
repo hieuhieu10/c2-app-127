@@ -32,19 +32,21 @@ class BattleshipQuestion(BaseGameItem):
 class BattleshipContent(GameContentBase):
     """Content envelope for one Trivia Battleship session.
 
-    The question pool is drawn sequentially during gameplay. Generate 20 questions
+    The question pool is drawn sequentially during gameplay. Generate 25 questions
     by default — the hit-chain mechanic (correct answer + hit = another free turn)
-    means one player can consume many questions in a single streak. The minimum of
-    9 covers one question per ship cell (2+3+4 = 9 total cells in the fleet).
+    means one player can consume many questions in a single streak, and a full
+    6×6 match commonly runs 25+ turns across both players. The shell reshuffles the
+    pool if it is exhausted, so 25 keeps repeats out of a typical match. The minimum
+    of 9 covers one question per ship cell (2+3+4 = 9 total cells in the fleet).
     """
 
     template_id: Literal["battleship"] = "battleship"
     questions: list[BattleshipQuestion] = Field(
         ...,
         min_length=9,
-        max_length=25,
+        max_length=30,
         description=(
-            "Pool of 9–25 trivia questions drawn sequentially during play. "
+            "Pool of trivia questions drawn sequentially during play — target ~25. "
             "Vary difficulty across the pool (easier early, harder later). "
             "Each question must be fully self-contained — no 'see above' references, "
             "since the player sees only one question at a time."
@@ -64,7 +66,7 @@ SPEC = GameSpec(
     content_model=BattleshipContent,
     active=True,
     playable=True,
-    min_items=20,
-    default_num_items=20,
+    min_items=25,
+    default_num_items=25,
     sort_order=20,
 )

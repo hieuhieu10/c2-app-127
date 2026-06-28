@@ -226,6 +226,17 @@ function shapeMatchesTarget(detected: string | null, target: string): boolean {
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
+// Polygon points (viewBox 0 0 56 40) for the requirement preview icon — one per shape.
+function shapePolygon(shapeType: string): string {
+  switch (shapeType) {
+    case 'hình vuông':     return '11,3 45,3 45,37 11,37'
+    case 'hình thoi':      return '28,3 52,20 28,37 4,20'
+    case 'hình bình hành': return '4,37 40,37 52,3 16,3'
+    case 'hình thang':     return '4,37 52,37 40,3 16,3'
+    default:               return '4,5 52,5 52,35 4,35'   // hình chữ nhật
+  }
+}
+
 function diffLabel(idx: number) { return ['Dễ', 'Trung bình', 'Khó'][idx] ?? 'Khó' }
 function diffColor(idx: number) { return ['#3f7d2e', '#b07d3f', '#c0682a'][idx] ?? '#c0682a' }
 const CONF = ['#f7c52d', '#5aa02e', '#e8643a', '#3aa0d8', '#fff']
@@ -471,9 +482,9 @@ export function FarmBuilderShell({ game }: ShellProps) {
             </svg>
           )}
 
-          {/* Win overlay (both modes) */}
+          {/* Celebration confetti — decorative only, never covers the drawing */}
           {solved && (
-            <div className="fb-win-overlay">
+            <div className="fb-confetti">
               {Array.from({length:14},(_,i) => (
                 <div key={`cf${i}`} style={{
                   position:'absolute',zIndex:19,
@@ -482,38 +493,6 @@ export function FarmBuilderShell({ game }: ShellProps) {
                   animation:`fb-fall ${1.4+(i%4)*0.3}s ${(i%6)*0.12}s ease-in forwards`,
                 }}/>
               ))}
-              <div className="fb-win-card">
-                <div className="fb-stars">
-                  {[0,1,2].map(i => (
-                    <span key={i} style={{
-                      fontSize:40, lineHeight:1, display:'inline-block',
-                      color: i < starN ? '#f7c52d' : '#dfd3b0',
-                      animation: i < starN ? `fb-twinkle 1.2s ${i*0.15}s ease-in-out infinite` : 'none',
-                    }}>★</span>
-                  ))}
-                </div>
-                <div className="fb-vi" style={{fontSize:17,fontWeight:900,color:'#4a6b2a'}}>{praise}</div>
-                {isAdv ? (
-                  <div style={{fontSize:14,fontWeight:700,color:'#7a6a4a',marginTop:6}}>
-                    {vtShape} · Diện tích: {vtAreaInt} ô vuông
-                  </div>
-                ) : (
-                  <div style={{fontSize:14,fontWeight:700,color:'#7a6a4a',marginTop:6}}>
-                    {eBW}×{eBH} = {eArea} ô · Chu vi: {ed!.perimeter} đoạn
-                  </div>
-                )}
-                {prob.explanation && (
-                  <div className="fb-explanation">{prob.explanation}</div>
-                )}
-                <div className="fb-win-btns">
-                  <button className="fb-btn-again" onClick={() => dispatch({type:'clear'})}>Vẽ lại</button>
-                  {hasNext && (
-                    <button className="fb-btn-next" onClick={() => dispatch({type:'next',total:items.length})}>
-                      Bài tiếp →
-                    </button>
-                  )}
-                </div>
-              </div>
             </div>
           )}
         </div>
@@ -521,11 +500,50 @@ export function FarmBuilderShell({ game }: ShellProps) {
         {/* ── Side panel ── */}
         <div className="fb-panel">
 
+          {solved ? (
+            /* Win card lives in the panel so it never covers the board drawing */
+            <div className="fb-win-card fb-win-card--panel">
+              <div className="fb-stars">
+                {[0,1,2].map(i => (
+                  <span key={i} style={{
+                    fontSize:36, lineHeight:1, display:'inline-block',
+                    color: i < starN ? '#f7c52d' : '#dfd3b0',
+                    animation: i < starN ? `fb-twinkle 1.2s ${i*0.15}s ease-in-out infinite` : 'none',
+                  }}>★</span>
+                ))}
+              </div>
+              <div className="fb-vi" style={{fontSize:17,fontWeight:900,color:'#4a6b2a'}}>{praise}</div>
+              {isAdv ? (
+                <div style={{fontSize:13,fontWeight:700,color:'#7a6a4a',marginTop:6}}>
+                  {vtShape} · Diện tích: {vtAreaInt} ô vuông
+                </div>
+              ) : (
+                <div style={{fontSize:13,fontWeight:700,color:'#7a6a4a',marginTop:6}}>
+                  {eBW}×{eBH} = {eArea} ô · Chu vi: {ed!.perimeter} đoạn
+                </div>
+              )}
+              {prob.explanation && (
+                <div className="fb-explanation">{prob.explanation}</div>
+              )}
+              <div className="fb-win-btns">
+                <button className="fb-btn-again" onClick={() => dispatch({type:'clear'})}>Vẽ lại</button>
+                {hasNext && (
+                  <button className="fb-btn-next" onClick={() => dispatch({type:'next',total:items.length})}>
+                    Bài tiếp →
+                  </button>
+                )}
+              </div>
+            </div>
+          ) : (<>
+
           {/* Mission */}
           <div className="fb-mission">
             <div className="fb-label">YÊU CẦU</div>
             <div className="fb-shape-display">
-              <div className={`fb-shape-icon ${prob.shapeType === 'hình vuông' ? 'square' : isAdv ? 'para' : 'rect'}`}/>
+              <svg className="fb-shape-icon" viewBox="0 0 56 40" width={56} height={40} aria-hidden="true">
+                <polygon points={shapePolygon(prob.shapeType)} fill="#f5e8c8"
+                  stroke="#7a5a33" strokeWidth={3} strokeLinejoin="round"/>
+              </svg>
               <div>
                 <div className="fb-vi" style={{fontSize:15,fontWeight:800,color:'#4a6b2a'}}>{prob.shapeType}</div>
                 <div className="fb-vi" style={{fontSize:17,fontWeight:700,color:'#5a5a3c',marginTop:3}}>
@@ -580,6 +598,7 @@ export function FarmBuilderShell({ game }: ShellProps) {
           <button className="fb-clear-btn" onClick={() => dispatch({type:'clear'})}>
             {isAdv ? 'Xóa các điểm' : 'Xóa hàng rào'}
           </button>
+          </>)}
         </div>
       </div>
     </div>
@@ -649,12 +668,13 @@ const CSS = `
 .fb-post{border-radius:3px;background:#bb863f;
   box-shadow:inset 0 2px 0 rgba(255,255,255,.45),inset 0 -3px 0 rgba(94,60,30,.6),0 0 0 1px #5e3c1e;pointer-events:none;}
 
-/* Win overlay */
-.fb-win-overlay{position:absolute;z-index:20;inset:0;display:flex;align-items:center;justify-content:center;
-  background:rgba(40,55,20,.4);}
+/* Confetti layer — purely decorative, sits over the board without blocking it */
+.fb-confetti{position:absolute;z-index:20;inset:0;overflow:hidden;border-radius:8px;pointer-events:none;}
 .fb-win-card{position:relative;background:#fff7e6;border:5px solid #7a5a33;border-radius:16px;
   padding:24px 32px 28px;text-align:center;box-shadow:0 10px 0 rgba(90,68,34,.4);
   animation:fb-pop .5s ease-out;max-width:380px;}
+/* In-panel placement: card sits beside the board so the drawing is never covered */
+.fb-win-card--panel{width:100%;max-width:none;padding:18px 16px 20px;box-shadow:0 6px 0 rgba(90,68,34,.3);}
 .fb-stars{display:flex;gap:8px;justify-content:center;margin-bottom:8px;}
 .fb-explanation{font-family:'Baloo 2',sans-serif;font-size:13px;color:#7a6a4a;margin-top:8px;
   line-height:1.4;padding:8px 10px;background:rgba(74,107,42,.08);border-radius:8px;}
@@ -675,11 +695,8 @@ const CSS = `
 .fb-mission{background:#fffaf0;border:4px solid #7a5a33;border-radius:14px;
   padding:13px 15px;box-shadow:0 6px 0 rgba(90,68,34,.3);}
 .fb-shape-display{display:flex;gap:13px;align-items:center;}
-.fb-shape-icon{border:3px solid #7a5a33;background:#f5e8c8;flex:0 0 auto;}
-.fb-shape-icon.square{width:40px;height:40px;}
-.fb-shape-icon.rect  {width:56px;height:36px;}
-/* Parallelogram icon via CSS skew */
-.fb-shape-icon.para  {width:56px;height:36px;transform:skewX(-20deg);transform-origin:bottom left;}
+/* SVG preview — draws the exact target shape per problem (see shapePolygon) */
+.fb-shape-icon{flex:0 0 auto;overflow:visible;}
 
 .fb-stat-solo{background:#fff;border:4px solid #7a5a33;border-radius:14px;
   padding:10px 12px 8px;text-align:center;box-shadow:0 6px 0 rgba(90,68,34,.3);}
