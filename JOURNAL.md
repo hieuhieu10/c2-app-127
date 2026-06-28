@@ -52,3 +52,9 @@ Hợp nhất nhánh `dang` (slice recommend + generate + các game shell) vào `
 
 - Bài học: thêm game mới phải nhớ tầng BE_Web (mapper + đăng ký), nếu không sẽ HTTP 400 khi generate. Khi merge, lớp điều phối có thể bị thay kiến trúc — cần **port lại logic** chứ không chọn một phía của xung đột.
 - Chạy test sau merge: **backend 84 passed, BE_Web 26 passed**; cả hai app compile sạch.
+
+## Ghi chú kỹ thuật — DeepSeek thinking mode & chuẩn bị deploy
+
+- **Bug "no tool call":** generate thỉnh thoảng fail vì `DEFAULT_MODEL=deepseek-v4-flash` là model *thinking* — nó từ chối forced `tool_choice` và đốt `max_tokens` vào `reasoning_content`, nên request lớn bị `finish_reason='length'` trước khi kịp emit tool call → không có tool_calls, content rỗng → lỗi. Bài học: model thinking **không hợp** để ép structured-JSON tool call nếu không kiểm soát ngân sách token.
+- **Cách sửa:** dò trực tiếp API và tìm ra `extra_body={"thinking": {"type": "disabled"}}` — tắt thinking là cho phép forced `tool_choice` + không reasoning đốt token. Giữ được `deepseek-v4-flash` (nhanh/rẻ), không phải hạ về `deepseek-chat`. Verify E2E: 15 câu @ `max_tokens=4096` (đúng budget từng truncate) chạy ổn; full backend **97 passed**.
+- **Deploy Docker/VPS:** cách test chắc ăn là chạy đúng compose prod ở local (`docker compose --env-file .env.production up -d --build`), chờ tất cả service `healthy`, rồi smoke test luồng FE→BE_Web→BE_AI→tạo game. Gotcha lớn: `NEXT_PUBLIC_BE_WEB_URL`/`CORS_ORIGINS` là build-time và đang trỏ `localhost` — phải đổi sang domain VPS trước khi deploy thật, và đổi `JWT_SECRET_KEY`.
