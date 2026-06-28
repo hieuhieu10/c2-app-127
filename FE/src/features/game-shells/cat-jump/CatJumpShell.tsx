@@ -8,7 +8,7 @@ import type { Game, GameItem } from '@/types/app'
  *
  * Each GameItem encodes one river-crossing level:
  *   item.question        → level name (e.g. "Hop by 3")
- *   item.correctAnswer   → 8 integers as a comma-separated string (e.g. "3,6,9,12,15,18,21,24")
+ *   item.correctAnswer   → 8 integers as a semicolon-separated string (e.g. "3;6;9;12;15;18;21;24")
  *   item.hint            → pattern-rule hint shown in the HUD
  *
  * The shell shows 8 stepping stones; the first 3 reveal their numbers immediately.
@@ -59,7 +59,7 @@ function parseLevels(items: GameItem[]): Level[] {
     .filter((it) => it.correctAnswer)
     .map((it) => {
       const seq = it.correctAnswer
-        .split(',')
+        .split(/[;,]/) // semicolon-separated (new); tolerate legacy comma data too
         .map((n) => parseInt(n.trim(), 10))
         .filter((n) => !isNaN(n) && n > 0)
       return { name: it.question || 'Dãy số', seq, hint: it.hint ?? '' }

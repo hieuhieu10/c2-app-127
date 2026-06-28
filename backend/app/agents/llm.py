@@ -230,8 +230,14 @@ async def _call_openai_compatible_tool(
             tool_description=tool_description,
             input_schema=input_schema,
         ),
-        "tool_choice": {"type": "function", "function": {"name": tool_name}},
     }
+    # DeepSeek's thinking models (e.g. deepseek-v4-flash) reject a *forced* tool_choice
+    # ("Thinking mode does not support this tool_choice"). "auto" is accepted, and with a
+    # single available tool the model reliably calls it. OpenAI keeps the deterministic force.
+    if provider == "deepseek":
+        request["tool_choice"] = "auto"
+    else:
+        request["tool_choice"] = {"type": "function", "function": {"name": tool_name}}
     if provider == "openai":
         request["max_completion_tokens"] = max_tokens or settings.max_tokens
     else:

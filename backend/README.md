@@ -319,10 +319,10 @@ WEAVIATE_COLLECTION=CurriculumObjective
 | `hybrid` | Dùng BGE-M3 + Weaviate nếu sẵn sàng; nếu lỗi thì fallback về JSON local. |
 | `weaviate` | Bắt buộc dùng BGE-M3 + Weaviate; lỗi nếu DB/model chưa sẵn sàng. |
 
-Weaviate đã được merge vào `docker-compose.yml`. Chạy full stack online kèm Weaviate/RAG:
+Chạy Weaviate bằng Docker (service `weaviate` trong `docker-compose.yml`):
 
 ```powershell
-docker compose --env-file .env.production up --build -d
+docker compose up -d weaviate
 ```
 
 Ingest GDPT 2018 objectives vào Weaviate:

@@ -56,10 +56,10 @@ interface ShareSettings {
 /** Normalise the raw AI content dict into a flat RawQuestion array.
  *
  * Different templates use different top-level keys:
- *   - quiz / battleship / cat_jump → content.questions
- *   - feed_the_cats                → content.items
- *   - farm_builder                 → content.challenges (target_area → correct_answer)
- *   - beat_forge                   → uses lanes (not a Q&A list; returns [] here)
+ *   - quiz / battleship / cat_jump / treasure_hunt → content.questions
+ *   - feed_the_cats                                → content.items
+ *   - farm_builder                                 → content.problems (shape_type|constraint|value → correct_answer)
+ *   - beat_forge                                   → uses lanes (not a Q&A list; returns [] here)
  */
 function extractQuestions(content: GameContent): RawQuestion[] {
   if (Array.isArray(content.problems) && content.problems.length > 0) {
