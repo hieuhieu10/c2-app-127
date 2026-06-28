@@ -86,6 +86,7 @@ const DIFFICULTIES: { label: string; value: 'easy' | 'medium' | 'hard' }[] = [
   { label: 'Trung bình', value: 'medium' },
   { label: 'Khó', value: 'hard' },
 ]
+const FIXED_NUM_ITEMS = 10
 
 const PIPELINE_STAGE_DEFS: PipelineStage[] = [
   { id: 'parse_pdf', label: 'Phân tích yêu cầu', subtitle: '...', tag: 'Prompt · Giáo án', tagType: 'neutral', status: 'pending' },
@@ -359,7 +360,6 @@ function NewGamePageContent() {
   const [grade, setGrade] = useState(4)
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium')
   const [prompt, setPrompt] = useState('')
-  const [numItems, setNumItems] = useState<number | null>(null)
   const [sourceText, setSourceText] = useState<string | null>(null)
   const [uploadedFileId, setUploadedFileId] = useState<string | null>(null)
   const [uploadType, setUploadType] = useState<'none' | 'lesson_plan' | 'slide'>('none')
@@ -439,7 +439,6 @@ function NewGamePageContent() {
         setSubject(session.subject ?? 'Toán')
         setGrade(session.grade ?? 4)
         setDifficulty((session.difficulty ?? 'medium') as 'easy' | 'medium' | 'hard')
-        setNumItems(session.numItems)
         setSourceText(session.sourceText ?? null)
         setUploadedFileId(session.uploadedFileId ?? null)
         setUploadType(session.uploadType === 'lesson_plan' || session.uploadType === 'slide' ? session.uploadType : 'none')
@@ -520,13 +519,12 @@ function NewGamePageContent() {
     const promptText = prompt.trim()
     if (!promptText) return
 
-    const resolvedNumItems = numItems ?? extractNumItemsFromPrompt(promptText)
     const form: SentForm = {
       subject,
       grade,
       difficulty,
       prompt: promptText,
-      numItems: resolvedNumItems,
+      numItems: FIXED_NUM_ITEMS,
       sourceText,
       uploadedFileId,
       uploadType,
@@ -539,7 +537,7 @@ function NewGamePageContent() {
       grade,
       difficulty,
       prompt: promptText,
-      numItems: resolvedNumItems,
+      numItems: FIXED_NUM_ITEMS,
       sourceText,
       uploadedFileId,
       uploadType,
