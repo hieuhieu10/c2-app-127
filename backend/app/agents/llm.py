@@ -142,7 +142,9 @@ def _message_content_text(message: Any) -> str:
     return ""
 
 
-def _extract_openai_compatible_tool_args(message: Any, *, tool_name: str, provider: str) -> dict[str, Any]:
+def _extract_openai_compatible_tool_args(
+    message: Any, *, tool_name: str, provider: str, finish_reason: str | None = None
+) -> dict[str, Any]:
     tool_calls = _get_attr_or_key(message, "tool_calls", None) or []
     if tool_calls:
         for tool_call in tool_calls:
@@ -160,6 +162,17 @@ def _extract_openai_compatible_tool_args(message: Any, *, tool_name: str, provid
         if content:
             return _parse_json_object(content, tool_name=tool_name)
 
+    # A 'thinking' model (e.g. deepseek-v4-flash) can spend the whole max_tokens
+    # budget on reasoning_content and stop with finish_reason='length' before
+    # emitting the tool call, leaving both tool_calls and content empty. Surface
+    # an actionable error instead of the generic "no tool call".
+    if finish_reason == "length":
+        raise RuntimeError(
+            f"Model hit the max_tokens limit before emitting tool '{tool_name}' "
+            f"(finish_reason='length'). A 'thinking' model such as deepseek-v4-flash "
+            f"likely spent the token budget on reasoning. Use a non-thinking model "
+            f"like deepseek-chat (DEFAULT_MODEL), or raise MAX_TOKENS."
+        )
     raise RuntimeError(f"Model returned no tool call for tool '{tool_name}'.")
 
 
@@ -231,13 +244,14 @@ async def _call_openai_compatible_tool(
             input_schema=input_schema,
         ),
     }
-    # DeepSeek's thinking models (e.g. deepseek-v4-flash) reject a *forced* tool_choice
-    # ("Thinking mode does not support this tool_choice"). "auto" is accepted, and with a
-    # single available tool the model reliably calls it. OpenAI keeps the deterministic force.
+    request["tool_choice"] = {"type": "function", "function": {"name": tool_name}}
+    # DeepSeek hybrid models (e.g. deepseek-v4-flash) default to a 'thinking' mode that
+    # both rejects a forced tool_choice ("Thinking mode does not support this tool_choice")
+    # and spends the max_tokens budget on reasoning_content — which can truncate before the
+    # tool call is emitted (finish_reason='length' -> "no tool call"). Disabling thinking lets
+    # us force the tool call deterministically, exactly like OpenAI. Harmless on deepseek-chat.
     if provider == "deepseek":
-        request["tool_choice"] = "auto"
-    else:
-        request["tool_choice"] = {"type": "function", "function": {"name": tool_name}}
+        request["extra_body"] = {"thinking": {"type": "disabled"}}
     if provider == "openai":
         request["max_completion_tokens"] = max_tokens or settings.max_tokens
     else:
@@ -257,8 +271,13 @@ async def _call_openai_compatible_tool(
             resp = await client.chat.completions.create(**retry_request)
         else:
             raise
-    message = resp.choices[0].message
-    return _extract_openai_compatible_tool_args(message, tool_name=tool_name, provider=provider)
+    choice = resp.choices[0]
+    return _extract_openai_compatible_tool_args(
+        choice.message,
+        tool_name=tool_name,
+        provider=provider,
+        finish_reason=getattr(choice, "finish_reason", None),
+    )
 
 
 async def call_tool(
