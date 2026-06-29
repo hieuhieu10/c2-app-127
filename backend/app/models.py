@@ -41,6 +41,7 @@ class TemplateCandidate(BaseModel):
     id: str
     name: str
     description: str
+    category: str = "Tổng quát"
 
 
 class RecommendResponse(BaseModel):

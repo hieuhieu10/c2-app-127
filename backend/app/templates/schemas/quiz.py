@@ -34,6 +34,7 @@ SPEC = GameSpec(
     content_type_fit=("facts", "definitions", "concepts", "cause-effect"),
     grade_range=(1, 12),
     content_model=QuizContent,
+    category="Toán học",
     active=True,
     playable=False,
     sort_order=40,

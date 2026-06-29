@@ -34,6 +34,8 @@ export interface GameDefinition {
   title: string
   description: string
   icon: string
+  /** Teacher-facing classification tag shown in the library, e.g. 'Toán học' | 'Tổng quát'. */
+  category: string
   itemCount: number
   interactionType: string
   bestFor: string
@@ -63,6 +65,7 @@ export const GAMES: GameDefinition[] = [
     title: 'Săn Kho Báu',
     description: 'Người chơi trả lời câu hỏi bài học để đua trên hai tuyến đường tới hang kho báu',
     icon: '🗺️',
+    category: 'Tổng quát',
     itemCount: 10,
     interactionType: 'Đua trên bản đồ theo lượt',
     bestFor: 'Bài học tiểu học, ôn nhanh, phép tính, từ vựng, khái niệm khoa học',
@@ -75,11 +78,12 @@ export const GAMES: GameDefinition[] = [
     backendId: 'battleship',
     type: 'battleship',
     title: 'Bắn Tàu Đố Vui',
-    description: 'Trò chơi 2 người luân phiên — trả lời đúng câu đố để được bắn vào lưới của đối thủ',
+    description: 'Trò chơi 2 người luân phiên — trả lời đúng câu đố để được bắn vào lưới của đối thủ. Dành cho học sinh lớp 4 trở lên',
     icon: '⚓',
+    category: 'Tổng quát',
     itemCount: 20,
     interactionType: 'Đối kháng 2 người theo lượt',
-    bestFor: 'Lớp 6-12, ôn tập thi đua, ghi nhớ kiến thức, từ vựng, nhân quả',
+    bestFor: 'Lớp 4-12, ôn tập thi đua, ghi nhớ kiến thức, từ vựng, nhân quả',
     example: 'Trả lời đúng câu hỏi lịch sử để dội bom hạm đội đối thủ. Bắn trúng = thêm lượt.',
     howToPlay: 'Trò chơi đối kháng cho 2 người chơi. Đến lượt mình, em phải trả lời đúng một câu đố để giành quyền bắn vào một ô trên lưới của đối thủ. Bắn trúng tàu sẽ được bắn thêm một lượt nữa. Người bắn chìm toàn bộ hạm đội của đối phương trước sẽ giành chiến thắng.',
     howToPlayMedia: '/games/battleship/guide.webm',
@@ -91,6 +95,7 @@ export const GAMES: GameDefinition[] = [
     title: 'Cho Mèo Đói Ăn',
     description: 'Kéo từng miếng cá tới chú mèo có nhãn khớp với đáp án của miếng đó — trò phân loại vui nhộn',
     icon: '🐱',
+    category: 'Toán học',
     itemCount: 9,
     interactionType: 'Kéo thả phân loại',
     bestFor: 'Lớp 1-5, phép tính, phân loại ví dụ theo nhóm, ghép cặp',
@@ -105,6 +110,7 @@ export const GAMES: GameDefinition[] = [
     title: 'Mèo Nhảy',
     description: 'Dẫn chú mèo qua 8 hòn đá bằng cách chọn số tiếp theo trong dãy quy luật khó dần',
     icon: '🐱',
+    category: 'Toán học',
     itemCount: 6,
     interactionType: 'Dãy số trắc nghiệm',
     bestFor: 'Lớp 1-7, quy luật số, đếm cách quãng, dãy số, Fibonacci, số chính phương',
@@ -119,6 +125,7 @@ export const GAMES: GameDefinition[] = [
     title: 'Xưởng Nhịp Điệu',
     description: 'Lấp đầy các dòng nhạc cụ bằng số khối nốt có hạn — tổng phân số phải đúng bằng nhịp của ô nhịp',
     icon: '🎵',
+    category: 'Toán học',
     itemCount: 3,
     interactionType: 'Giải đố phân số kéo thả',
     bestFor: 'Lớp 2-8, cộng phân số, lý thuyết âm nhạc, tiết tấu, cảm nhận số',
@@ -133,6 +140,7 @@ export const GAMES: GameDefinition[] = [
     title: 'Xây Dựng Trang Trại',
     description: 'Đặt hàng rào trên lưới để quây đúng diện tích yêu cầu — hình gọn hơn nhận được nhiều sao hơn',
     icon: '🌾',
+    category: 'Toán học',
     itemCount: 5,
     interactionType: 'Vẽ tự do trên lưới',
     bestFor: 'Lớp 4-8, diện tích, chu vi, thừa số, tư duy không gian',

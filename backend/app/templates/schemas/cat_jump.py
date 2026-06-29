@@ -161,6 +161,7 @@ SPEC = GameSpec(
     ),
     grade_range=(1, 7),
     content_model=CatJumpContent,
+    category="Toán học",
     active=True,
     playable=True,
     min_items=4,

@@ -43,9 +43,9 @@ def ensure_schema_compatibility(engine: Engine) -> None:
     if "session_id" not in lesson_upload_columns:
         statements.append("ALTER TABLE lesson_uploads ADD COLUMN session_id INTEGER")
     if "last_used_at" not in lesson_upload_columns:
-        statements.append("ALTER TABLE lesson_uploads ADD COLUMN last_used_at DATETIME")
+        statements.append("ALTER TABLE lesson_uploads ADD COLUMN last_used_at TIMESTAMP")
     if "deleted_at" not in lesson_upload_columns:
-        statements.append("ALTER TABLE lesson_uploads ADD COLUMN deleted_at DATETIME")
+        statements.append("ALTER TABLE lesson_uploads ADD COLUMN deleted_at TIMESTAMP")
 
     if not statements:
         return

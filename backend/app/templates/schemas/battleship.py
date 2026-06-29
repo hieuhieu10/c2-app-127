@@ -59,11 +59,13 @@ SPEC = GameSpec(
     name="Trivia Battleship",
     description=(
         "2-player hot-seat game: answer a trivia question correctly to earn the right to bomb "
-        "the opponent's 6×6 grid. A hit rewards another turn. Best for competitive factual review."
+        "the opponent's 6×6 grid. A hit rewards another turn. Best for competitive factual review. "
+        "Designed for students in grade 4 and up (lớp 4 trở lên)."
     ),
     content_type_fit=("facts", "definitions", "concepts", "cause-effect", "vocabulary"),
-    grade_range=(6, 12),
+    grade_range=(4, 12),
     content_model=BattleshipContent,
+    category="Tổng quát",
     active=True,
     playable=True,
     min_items=25,
