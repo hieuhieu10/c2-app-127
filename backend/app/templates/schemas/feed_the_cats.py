@@ -140,6 +140,7 @@ SPEC = GameSpec(
     ),
     grade_range=(1, 6),
     content_model=FeedCatsContent,
+    category="Toán học",
     active=True,
     playable=True,
     min_items=6,

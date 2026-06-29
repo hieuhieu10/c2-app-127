@@ -226,6 +226,7 @@ SPEC = GameSpec(
     ),
     grade_range=(4, 8),
     content_model=FarmBuilderContent,
+    category="Toán học",
     active=True,
     playable=True,
     min_items=3,

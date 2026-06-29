@@ -289,6 +289,7 @@ SPEC = GameSpec(
     ),
     grade_range=(2, 8),
     content_model=BeatForgeContent,
+    category="Toán học",
     active=True,
     playable=True,
     min_items=2,

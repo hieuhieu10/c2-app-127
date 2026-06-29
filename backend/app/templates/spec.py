@@ -26,6 +26,9 @@ class GameSpec:
     grade_range: tuple[int, int]
     content_model: Type[BaseModel]
 
+    # Teacher-facing classification tag, e.g. "Toán học" or "Tổng quát".
+    category: str = "Tổng quát"
+
     # Whether the recommender may surface it at all.
     active: bool = True
     # Whether a finished, ready-to-play frontend shell exists. Only playable games

@@ -226,6 +226,28 @@ def build_generator_user(
             "- Example valid grouping: answers 12, 24, 36 with two or three expressions for each answer.\n"
             "- Do NOT create word problems, definitions, matching cards, or multiple-choice questions for this template."
         )
+    if template.id == "cat_jump":
+        parts.append(
+            "\nCat Jump number-sequence rules — CRITICAL:\n"
+            "- Each `correct_answer` is the FULL 8-term sequence as a SEMICOLON-separated string "
+            "with no spaces, e.g. '3;6;9;12;15;18;21;24'. ALWAYS separate the 8 terms with ';'.\n"
+            "- Each term must be POSITIVE and is one of three forms:\n"
+            "    • integer  — '3;6;9;12;15;18;21;24'\n"
+            "    • fraction — 'numerator/denominator', e.g. '1/4;1/2;3/4;1;5/4;3/2;7/4;2'\n"
+            "    • decimal  — Vietnamese comma 'X,Y', e.g. '0,2;0,4;0,6;0,8;1,0;1,2;1,4;1,6'\n"
+            "  The comma is the DECIMAL POINT only; never use it to separate terms — that is what ';' is for.\n"
+            "- VARIETY IS REQUIRED — every level must use a DIFFERENT rule AND the set must mix term types. "
+            "Whole-number patterns are the backbone: skip-counting, squares (1;4;9;16;…), cubes, Fibonacci "
+            "(1;1;2;3;5;8;13;21), triangular numbers (1;3;6;10;15;21;28;36), prime numbers (2;3;5;7;11;13;17;19), "
+            "doubling/geometric (3;6;12;24;…), growing gaps (2;4;8;14;22;…). Do NOT make every level a fraction "
+            "or decimal — use those for AT MOST about half the levels, and only when the grade allows.\n"
+            f"- Grade {grade}: fractions (phân số) are allowed for grade 4+, decimals (số thập phân) for grade 5+. "
+            "For lower grades use whole-number patterns only.\n"
+            "- 'Complicated'/'hard' means a harder RULE (squares, Fibonacci, primes, growing gaps, or a "
+            "fraction/decimal step) — NOT a malformed value. Keep every term well-formed and > 0.\n"
+            "- Do NOT mix forms WITHIN one sequence: each single sequence is all integers, all fractions, or "
+            "all decimals — but DO mix the forms ACROSS the different levels."
+        )
     if template.id == "beat_forge":
         parts.append(
             "\nBeat Forge lane arithmetic — CRITICAL:\n"

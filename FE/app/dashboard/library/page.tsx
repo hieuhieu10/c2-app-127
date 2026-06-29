@@ -11,6 +11,13 @@ import { GuideModal } from '@/features/game-library/components/GuideModal'
 
 type ModalKind = 'create' | 'guide'
 
+/** Colour scheme for the game classification tag shown on each library card. */
+function categoryStyle(category: string): { background: string; color: string; borderColor: string } {
+  if (category === 'Toán học') return { background: '#eaf1ff', color: '#1e51b8', borderColor: '#d4e2fb' }
+  // 'Tổng quát' and any future general-purpose tag.
+  return { background: '#e7f7ef', color: '#0f7b4f', borderColor: '#cdeedd' }
+}
+
 export default function GameLibraryPage() {
   const router = useRouter()
   const { user, loading: authLoading } = useAuth()
@@ -57,6 +64,15 @@ export default function GameLibraryPage() {
                     <div style={{ fontSize: 16, fontWeight: 700 }}>{game.title}</div>
                     <div style={{ fontSize: 12.5, color: '#8b94a6', marginTop: 2 }}>{game.interactionType}</div>
                   </div>
+                  <span
+                    style={{
+                      fontSize: 11.5, fontWeight: 600, borderRadius: 999, padding: '4px 10px', whiteSpace: 'nowrap',
+                      flexShrink: 0, ...categoryStyle(game.category),
+                      borderWidth: 1, borderStyle: 'solid',
+                    }}
+                  >
+                    {game.category}
+                  </span>
                 </div>
 
                 <div style={{ fontSize: 13.5, color: '#5b6577', lineHeight: 1.55, flex: 1, marginBottom: 14 }}>

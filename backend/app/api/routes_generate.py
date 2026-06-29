@@ -60,7 +60,7 @@ async def _guard(req: LessonRequest) -> None:
 def get_templates() -> list[TemplateCandidate]:
     """List active, generatable templates."""
     return [
-        TemplateCandidate(id=m.id, name=m.name, description=m.description)
+        TemplateCandidate(id=m.id, name=m.name, description=m.description, category=m.category)
         for m in list_templates(active_only=True)
         if has_content_model(m.id)
     ]
@@ -109,7 +109,10 @@ async def recommend(req: LessonRequest) -> RecommendResponse:
     return RecommendResponse(
         template_id=state["template_id"],
         rationale=state.get("rationale", ""),
-        candidates=[TemplateCandidate(id=c.id, name=c.name, description=c.description) for c in cands],
+        candidates=[
+            TemplateCandidate(id=c.id, name=c.name, description=c.description, category=c.category)
+            for c in cands
+        ],
     )
 
 

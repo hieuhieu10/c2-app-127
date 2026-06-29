@@ -62,7 +62,52 @@ async def test_full_workflow_gives_up_on_persistent_invalid(monkeypatch):
     )
     assert not state["ok"]
     assert state["error"]
-    assert "schema validation" in state["error"]
+    assert "Không thể tạo nội dung hợp lệ" in state["error"]
+
+
+async def test_full_workflow_survives_llm_generation_failure(monkeypatch):
+    """A timeout / no-tool-call from the LLM must not crash the graph; it should
+    route through the repair loop and finish with a clean teacher-facing error."""
+    import asyncio
+
+    calls = {"n": 0}
+
+    async def always_timeout(*a, **k):
+        calls["n"] += 1
+        raise asyncio.TimeoutError
+
+    _patch_llm(monkeypatch, chosen="quiz", gen_fn=always_timeout)
+    state = await run_workflow(
+        subject="Lịch sử", grade=8, difficulty="medium",
+        prompt="Cần Vương", objective_id="ls8-phongtrao-canvuong",
+    )
+    assert not state["ok"]
+    assert state["error"]
+    assert "timeout" in state["error"].lower()
+    # 1 generate + MAX_REPAIRS retries — the failure was retried, not fatal.
+    assert calls["n"] >= 2
+
+
+async def test_full_workflow_recovers_after_transient_llm_failure(monkeypatch):
+    """First attempt throws, a retry succeeds — the workflow should still produce content."""
+    import asyncio
+
+    calls = {"n": 0}
+
+    async def flaky(*a, **k):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise RuntimeError("Model returned no tool call for tool 'emit_game_content'.")
+        return valid_content("quiz")
+
+    _patch_llm(monkeypatch, chosen="quiz", gen_fn=flaky)
+    state = await run_workflow(
+        subject="Lịch sử", grade=8, difficulty="medium",
+        prompt="Cần Vương", objective_id="ls8-phongtrao-canvuong", num_items=3,
+    )
+    assert state["ok"]
+    assert state["content"]["template_id"] == "quiz"
+    assert calls["n"] == 2
 
 
 async def test_full_workflow_stops_when_objective_missing(monkeypatch):
