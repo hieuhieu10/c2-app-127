@@ -86,6 +86,7 @@ const DIFFICULTIES: { label: string; value: 'easy' | 'medium' | 'hard' }[] = [
   { label: 'Trung bình', value: 'medium' },
   { label: 'Khó', value: 'hard' },
 ]
+const TREASURE_HUNT_NUM_ITEMS = 10
 
 const PIPELINE_STAGE_DEFS: PipelineStage[] = [
   { id: 'parse_pdf', label: 'Phân tích yêu cầu', subtitle: '...', tag: 'Prompt · Giáo án', tagType: 'neutral', status: 'pending' },
@@ -194,13 +195,17 @@ function extractNumItemsFromPrompt(promptText: string): number | null {
   return null
 }
 
+function getGenerateNumItems(templateId: string): number | null {
+  return templateId === 'treasure_hunt' ? TREASURE_HUNT_NUM_ITEMS : null
+}
+
 function buildSentForm(promptText: string, payload: Record<string, unknown>): SentForm {
   return {
     subject: typeof payload.subject === 'string' ? payload.subject : 'Toán',
     grade: typeof payload.grade === 'number' ? payload.grade : 4,
     difficulty: typeof payload.difficulty === 'string' ? payload.difficulty : 'medium',
     prompt: promptText,
-    numItems: typeof payload.numItems === 'number' ? payload.numItems : null,
+    numItems: typeof payload.numItems === 'number' ? payload.numItems : extractNumItemsFromPrompt(promptText),
     sourceText: typeof payload.sourceText === 'string' ? payload.sourceText : null,
     uploadedFileId: typeof payload.uploadedFileId === 'string' ? payload.uploadedFileId : null,
     uploadType: payload.uploadType === 'lesson_plan' || payload.uploadType === 'slide' ? payload.uploadType : 'none',
@@ -359,7 +364,6 @@ function NewGamePageContent() {
   const [grade, setGrade] = useState(4)
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium')
   const [prompt, setPrompt] = useState('')
-  const [numItems, setNumItems] = useState<number | null>(null)
   const [sourceText, setSourceText] = useState<string | null>(null)
   const [uploadedFileId, setUploadedFileId] = useState<string | null>(null)
   const [uploadType, setUploadType] = useState<'none' | 'lesson_plan' | 'slide'>('none')
@@ -439,7 +443,6 @@ function NewGamePageContent() {
         setSubject(session.subject ?? 'Toán')
         setGrade(session.grade ?? 4)
         setDifficulty((session.difficulty ?? 'medium') as 'easy' | 'medium' | 'hard')
-        setNumItems(session.numItems)
         setSourceText(session.sourceText ?? null)
         setUploadedFileId(session.uploadedFileId ?? null)
         setUploadType(session.uploadType === 'lesson_plan' || session.uploadType === 'slide' ? session.uploadType : 'none')
@@ -520,13 +523,12 @@ function NewGamePageContent() {
     const promptText = prompt.trim()
     if (!promptText) return
 
-    const resolvedNumItems = numItems ?? extractNumItemsFromPrompt(promptText)
     const form: SentForm = {
       subject,
       grade,
       difficulty,
       prompt: promptText,
-      numItems: resolvedNumItems,
+      numItems: extractNumItemsFromPrompt(promptText),
       sourceText,
       uploadedFileId,
       uploadType,
@@ -539,7 +541,6 @@ function NewGamePageContent() {
       grade,
       difficulty,
       prompt: promptText,
-      numItems: resolvedNumItems,
       sourceText,
       uploadedFileId,
       uploadType,
@@ -605,8 +606,10 @@ function NewGamePageContent() {
     scrollDown()
 
     try {
+      const generateNumItems = getGenerateNumItems(recommendation.template_id)
       for await (const event of beWebApi.generateChat(currentSessionId, {
         templateId: recommendation.template_id,
+        numItems: generateNumItems,
         promptMessageId,
         recommendationMessageId,
       })) {

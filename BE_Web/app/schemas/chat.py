@@ -62,5 +62,6 @@ class ChatRecommendResponse(BaseModel):
 
 class ChatGenerateRequest(BaseModel):
     templateId: str = Field(..., min_length=1)
+    numItems: int | None = Field(None, ge=1, le=20)
     promptMessageId: int | None = None
     recommendationMessageId: int | None = None

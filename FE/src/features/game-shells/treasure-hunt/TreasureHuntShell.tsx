@@ -10,6 +10,7 @@ import {
   getMovePercent,
   getPathPoint,
   getWinner,
+  isPlayerTie,
   movePlayerAfterAnswer,
   rankPlayers,
   type TreasurePlayer,
@@ -41,6 +42,7 @@ export function TreasureHuntShell({ game, fullscreen = false }: TreasureHuntShel
   const hasAnyValidQuestion = game.items.some((item, index) => normalizeTreasureQuestion(item, index).isValid)
   const activePlayer = players[currentIndex % players.length]
   const movePercent = getMovePercent(game.items.length)
+  const isRoundComplete = (currentIndex + 1) % players.length === 0
 
   if (game.items.length > 0 && !hasAnyValidQuestion) {
     return (
@@ -70,7 +72,7 @@ export function TreasureHuntShell({ game, fullscreen = false }: TreasureHuntShel
     const hasWinner = players.some((player) => player.position >= FINISH_POSITION)
     const isLastQuestion = currentIndex >= game.items.length - 1
 
-    if (hasWinner || isLastQuestion) {
+    if ((hasWinner && isRoundComplete) || isLastQuestion) {
       setFinished(true)
       return
     }
@@ -115,6 +117,7 @@ export function TreasureHuntShell({ game, fullscreen = false }: TreasureHuntShel
 
   const feedbackCopy = getFeedbackCopy(feedback, currentQuestion.correctAnswer)
   const hasWinner = players.some((player) => player.position >= FINISH_POSITION)
+  const canShowResults = (hasWinner && isRoundComplete) || currentIndex >= game.items.length - 1
 
   return (
     <div className={`treasureV2 ${fullscreen ? 'treasureV2Fullscreen' : ''}`}>
@@ -198,7 +201,7 @@ export function TreasureHuntShell({ game, fullscreen = false }: TreasureHuntShel
               disabled={!currentQuestion.isValid || (feedback === 'idle' && !selectedAnswer)}
               onClick={feedback === 'idle' ? answerQuestion : goNext}
             >
-              {feedback === 'idle' ? '⚔ TRẢ LỜI' : hasWinner || currentIndex >= game.items.length - 1 ? '🏆 KẾT QUẢ' : '➡ CÂU TIẾP'}
+              {feedback === 'idle' ? '⚔ TRẢ LỜI' : canShowResults ? '🏆 KẾT QUẢ' : '➡ CÂU TIẾP'}
             </button>
           </div>
 
@@ -389,14 +392,20 @@ function TreasureEndScreen({
 }) {
   const winner = getWinner(players)
   const rankings = rankPlayers(players)
+  const tiedWinners = rankings.filter((player) => isPlayerTie(player, winner))
+  const hasTie = tiedWinners.length > 1
 
   return (
     <div className="treasureEnd">
       <div className="treasureEndBox">
         <div className="endCrown">🏆</div>
         <div className="endEyebrow">Treasure Cave Opened</div>
-        <h3>{winner.name} wins!</h3>
-        <p>The player found the treasure after {totalQuestions} questions.</p>
+        <h3>{hasTie ? 'Hai người chơi hòa nhau!' : `${getPlayerDisplayName(winner)} wins!`}</h3>
+        <p>
+          {hasTie
+            ? `Cả hai có cùng kết quả sau ${totalQuestions} câu hỏi.`
+            : `The player found the treasure after ${totalQuestions} questions.`}
+        </p>
 
         <div className="endRanks">
           {rankings.map((player, index) => (
@@ -408,7 +417,7 @@ function TreasureEndScreen({
                 className="endAvatar"
                 fallback={<div className="endEmoji">{player.avatar}</div>}
               />
-              <div className="endName">{player.name}</div>
+              <div className="endName">{getPlayerDisplayName(player)}</div>
               <div className="endStats">
                 <span>{player.correctAnswers} correct</span>
                 <span>{player.score} pts</span>
@@ -460,6 +469,13 @@ function getAnswerButtonClass(option: string, selectedAnswer: string, correctAns
 
 function getDisplayProgress(position: number): number {
   return Math.min(100, Math.round((position / FINISH_POSITION) * 100))
+}
+
+function getPlayerDisplayName(player: TreasurePlayer): string {
+  if (player.name) return player.name
+  if (player.id === 'player-1') return 'Người chơi 1'
+  if (player.id === 'player-2') return 'Người chơi 2'
+  return 'Người chơi'
 }
 
 function getVisualProgress(position: number): number {
