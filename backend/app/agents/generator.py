@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import asyncio
+
 from app.agents.llm import call_tool
 from app.agents.prompts import GENERATOR_SYSTEM, build_generator_user
 from app.agents.state import GenerationState
@@ -81,12 +83,17 @@ async def _generate(state: GenerationState, repair_errors: list[str] | None) -> 
         repair_errors=repair_errors,
     )
     # Scale the LLM budget with the requested item count. A large pool (e.g.
-    # Battleship's 25 MCQs) otherwise (a) trips the 30s default timeout and (b)
-    # overflows the 4096-token output cap, truncating the JSON into an unparseable
+    # Battleship's 25 MCQs) otherwise (a) trips the generation timeout and (b)
+    # overflows the output-token cap, truncating the JSON into an unparseable
     # tool call. Both scale with how many items we asked the model to emit.
+    #
+    # The token budget must also leave room for *reasoning* tokens: thinking
+    # models count their hidden reasoning against max_tokens, so a hard request
+    # can burn 2-3k tokens reasoning before a single JSON token is emitted — too
+    # tight a cap truncates the tool call. The 2000 base reserves that headroom.
     num_items = state.get("num_items", 5)
-    timeout = min(180.0, max(30.0, num_items * 5.0))
-    max_tokens = min(8000, max(settings.max_tokens, num_items * 300))
+    timeout = min(180.0, max(float(settings.generate_timeout), num_items * 5.0))
+    max_tokens = min(8000, max(settings.max_tokens, 2000 + num_items * 500))
     return await call_tool(
         system=GENERATOR_SYSTEM,
         user=user,
@@ -98,19 +105,52 @@ async def _generate(state: GenerationState, repair_errors: list[str] | None) -> 
     )
 
 
+def _llm_failure_errors(exc: Exception) -> list[str]:
+    """Turn an LLM-call failure into a teacher-facing, repair-routable error.
+
+    Thinking models intermittently time out or return no/incomplete tool call for
+    hard prompts. We surface that as a normal failure so the repair loop retries
+    (the next attempt usually succeeds) instead of crashing the whole request.
+    """
+    if isinstance(exc, asyncio.TimeoutError):
+        return [
+            "Mô hình AI phản hồi quá lâu (timeout) khi sinh nội dung — "
+            "hãy thử lại hoặc giảm số lượng mục/độ khó."
+        ]
+    return [f"Bộ sinh nội dung AI chưa trả về kết quả hợp lệ: {exc}"]
+
+
 async def generate_node(state: GenerationState) -> GenerationState:
-    content = await _generate(state, repair_errors=None)
+    try:
+        content = await _generate(state, repair_errors=None)
+    except Exception as exc:  # noqa: BLE001 — LLM I/O boundary: never crash the graph
+        return {"content": None, "repair_attempts": 0, "ok": False,
+                "validation_errors": _llm_failure_errors(exc)}
     return {"content": content, "repair_attempts": 0}
 
 
 async def repair_node(state: GenerationState) -> GenerationState:
-    errors = state.get("validation_errors", [])
-    content = await _generate(state, repair_errors=errors)
-    return {"content": content, "repair_attempts": state.get("repair_attempts", 0) + 1}
+    attempts = state.get("repair_attempts", 0) + 1
+    # If the previous attempt produced no content (timeout / no tool call), retry
+    # fresh; only feed errors back as a repair note when there is invalid output
+    # to actually fix.
+    repair_errors = state.get("validation_errors", []) if state.get("content") else None
+    try:
+        content = await _generate(state, repair_errors=repair_errors)
+    except Exception as exc:  # noqa: BLE001 — LLM I/O boundary: never crash the graph
+        return {"content": None, "repair_attempts": attempts, "ok": False,
+                "validation_errors": _llm_failure_errors(exc)}
+    return {"content": content, "repair_attempts": attempts}
 
 
 def validate_node(state: GenerationState) -> GenerationState:
-    result = validate(state["template_id"], state.get("content") or {})
+    if not state.get("content"):
+        # Generation/LLM call failed upstream (timeout, no tool call, truncated
+        # JSON). Preserve that failure so the repair loop retries and the final
+        # message stays clean instead of reporting bogus "missing field" errors.
+        errs = state.get("validation_errors") or ["Bộ sinh nội dung AI không trả về nội dung."]
+        return {"ok": False, "validation_errors": errs}
+    result = validate(state["template_id"], state["content"])
     if result.ok:
         curriculum_errors = validate_curriculum_content(
             content=result.content or {},

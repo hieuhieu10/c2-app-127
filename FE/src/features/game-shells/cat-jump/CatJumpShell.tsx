@@ -18,13 +18,15 @@ import type { Game, GameItem } from '@/types/app'
  */
 
 // ── Types ──────────────────────────────────────────────────────────────────────
-interface Level { name: string; seq: number[]; hint: string }
+/** One sequence term: its numeric value (for arithmetic) plus its display string (VN form). */
+interface Term { value: number; display: string; kind: 'int' | 'frac' | 'dec'; den: number; places: number }
+interface Level { name: string; seq: Term[]; hint: string }
 
 interface GState {
   levelIndex: number
   levelName: string
   hint: string
-  seq: number[]
+  seq: Term[]
   filledUpTo: number   // last stone whose number is visible (0-indexed)
   catIndex: number     // stone the cat is currently on (0-7, or 8 = goal island)
   prevIndex: number    // stone the cat was on before last hop
@@ -37,8 +39,8 @@ interface GState {
   wrongTile: number     // index of the wrong-choice button currently flashing (-1 = none)
   shake: boolean        // stage shake on wrong answer
   floatVisible: boolean // +10 float label
-  choices: number[]
-  correct: number
+  choices: string[]
+  correct: string
   score: number
   confettiKey: number
 }
@@ -54,49 +56,89 @@ const BOB_DELAY = ['0s', '.3s', '.15s', '.45s', '.2s', '.5s', '.1s', '.35s']
 const LAST = 7 // index of the last stone
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
+/** Render a decimal value with the Vietnamese comma separator, fixed to `places`. */
+function formatDec(value: number, places: number): string {
+  return value.toFixed(places).replace('.', ',')
+}
+
+/** Parse one sequence term: positive integer "6", fraction "1/4", or decimal "0,5"/"0.5". */
+function parseTerm(raw: string): Term | null {
+  const s = raw.trim()
+  if (/^-?\d+$/.test(s)) {
+    const value = parseInt(s, 10)
+    return { value, display: String(value), kind: 'int', den: 1, places: 0 }
+  }
+  const frac = s.match(/^(-?\d+)\/(\d+)$/)
+  if (frac) {
+    const num = parseInt(frac[1], 10)
+    const den = parseInt(frac[2], 10)
+    if (den === 0) return null
+    return { value: num / den, display: `${num}/${den}`, kind: 'frac', den, places: 0 }
+  }
+  const dec = s.match(/^(-?\d+)[.,](\d+)$/)
+  if (dec) {
+    const value = parseFloat(`${dec[1]}.${dec[2]}`)
+    const places = dec[2].length
+    return { value, display: formatDec(value, places), kind: 'dec', den: 1, places }
+  }
+  return null
+}
+
+/** Build a Term[] from plain integers — used for the built-in fallback level. */
+function intSeq(nums: number[]): Term[] {
+  return nums.map((n) => ({ value: n, display: String(n), kind: 'int' as const, den: 1, places: 0 }))
+}
+
 function parseLevels(items: GameItem[]): Level[] {
   return items
     .filter((it) => it.correctAnswer)
     .map((it) => {
-      const seq = it.correctAnswer
-        .split(/[;,]/) // semicolon-separated (new); tolerate legacy comma data too
-        .map((n) => parseInt(n.trim(), 10))
-        .filter((n) => !isNaN(n) && n > 0)
+      const raw = it.correctAnswer.trim()
+      // Semicolons separate terms (canonical); fall back to commas only for legacy
+      // integer CSV data, where the comma cannot be a decimal point.
+      const sep = raw.includes(';') ? ';' : ','
+      const seq = raw
+        .split(sep)
+        .map((t) => parseTerm(t))
+        .filter((t): t is Term => t !== null && t.value > 0)
       return { name: it.question || 'Dãy số', seq, hint: it.hint ?? '' }
     })
     .filter((lv) => lv.seq.length === 8)
 }
 
-function buildChoices(seq: number[], target: number): { choices: number[]; correct: number } {
-  const correct = seq[target]
-  const localStep = seq[target] - seq[target - 1]
+function buildChoices(seq: Term[], target: number): { choices: string[]; correct: string } {
+  const cur = seq[target]
+  const prev = seq[target - 1]
+  const correct = cur.display
+  const step = cur.value - prev.value
 
-  // Build a diverse distractor pool; the shell never reuses content distractors.
-  const pool: number[] = [
-    correct - 1,
-    correct + 1,
-    correct + localStep,
-    correct - localStep,
-    correct + 2,
-    correct - 2,
-  ]
-  // For geometric sequences, also try ratio-based distractors
-  const ratio = seq[target - 1] > 0 ? Math.round(seq[target] / seq[target - 1]) : 2
-  if (ratio >= 2 && ratio <= 10) {
-    pool.push(correct * ratio, Math.round(correct / ratio) || 1)
+  // Smallest meaningful increment for this term kind, used to build near-miss values.
+  const unit = cur.kind === 'frac' ? 1 / cur.den : cur.kind === 'dec' ? Math.pow(10, -cur.places) : 1
+
+  // Format a numeric value back into the same display kind as the correct term.
+  const fmt = (value: number): string | null => {
+    if (value <= 0) return null
+    if (cur.kind === 'frac') {
+      const num = Math.round(value * cur.den)
+      return num > 0 ? `${num}/${cur.den}` : null
+    }
+    if (cur.kind === 'dec') return formatDec(value, cur.places)
+    return String(Math.round(value))
   }
 
-  const distract: number[] = []
-  for (const v of pool) {
-    if (v > 0 && v !== correct && !distract.includes(v)) distract.push(v)
+  // Diverse near-miss pool in value space; the shell never reuses content distractors.
+  // Position errors (±step) first, then numeric slips (±unit).
+  const offsets = [step, -step, unit, -unit, 2 * unit, -2 * unit]
+  const distract: string[] = []
+  for (const off of offsets) {
+    const d = fmt(cur.value + off)
+    if (d && d !== correct && !distract.includes(d)) distract.push(d)
     if (distract.length === 2) break
   }
-  // Fallback distractors in case the pool is exhausted
-  let extra = 1
-  while (distract.length < 2) {
-    const candidate = correct + extra * 3
-    if (candidate !== correct && !distract.includes(candidate)) distract.push(candidate)
-    extra++
+  // Fallback: walk outward by whole units until two distinct distractors exist.
+  for (let k = 3; distract.length < 2 && k < 30; k++) {
+    const d = fmt(cur.value + k * unit)
+    if (d && d !== correct && !distract.includes(d)) distract.push(d)
   }
 
   const arr = [correct, distract[0], distract[1]]
@@ -261,7 +303,7 @@ export function CatJumpShell({ game }: { game: Game; previewMode?: boolean; scen
   const [S, setS] = useState<GState>(() =>
     levels.length > 0
       ? initState(levels, 0, 0)
-      : initState([{ name: 'Nhảy cách 2', seq: [2, 4, 6, 8, 10, 12, 14, 16], hint: 'Cộng thêm 2 mỗi bước' }], 0, 0)
+      : initState([{ name: 'Nhảy cách 2', seq: intSeq([2, 4, 6, 8, 10, 12, 14, 16]), hint: 'Cộng thêm 2 mỗi bước' }], 0, 0)
   )
   const [scale, setScale] = useState(1)
   const wrapRef = useRef<HTMLDivElement>(null)
@@ -372,7 +414,7 @@ export function CatJumpShell({ game }: { game: Game; previewMode?: boolean; scen
   // ── Derived render values ─────────────────────────────────────────────────────
   const cur = catPos(S.catIndex)
   const prev = catPos(S.prevIndex)
-  const stoneText = (i: number) => (i <= S.filledUpTo ? String(S.seq[i]) : '?')
+  const stoneText = (i: number) => (i <= S.filledUpTo ? S.seq[i].display : '?')
   const isTarget = (i: number) => S.targetIndex === i && S.status === 'playing'
 
   const starOn = '#f6c453', starOff = '#e3d7bf'
