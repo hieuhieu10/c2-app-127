@@ -8,25 +8,34 @@ import { Spinner } from '@/components/ui/spinner'
 import { GAMES, type GameDefinition } from '@/features/game-shells/registry'
 import { CreateGameModal } from '@/features/game-library/components/CreateGameModal'
 import { GuideModal } from '@/features/game-library/components/GuideModal'
+import { fetchTemplates } from '@/features/game-creation/ai-api'
+import { categoryStyle } from '@/lib/category'
 
 type ModalKind = 'create' | 'guide'
-
-/** Colour scheme for the game classification tag shown on each library card. */
-function categoryStyle(category: string): { background: string; color: string; borderColor: string } {
-  if (category === 'Toán học') return { background: '#eaf1ff', color: '#1e51b8', borderColor: '#d4e2fb' }
-  // 'Tổng quát' and any future general-purpose tag.
-  return { background: '#e7f7ef', color: '#0f7b4f', borderColor: '#cdeedd' }
-}
 
 export default function GameLibraryPage() {
   const router = useRouter()
   const { user, loading: authLoading } = useAuth()
   const [active, setActive] = useState<{ game: GameDefinition; kind: ModalKind } | null>(null)
+  // Category is owned by the backend SPEC; overlay it onto the registry via /templates.
+  // Falls back to the registry's category while loading or if the request fails.
+  const [categories, setCategories] = useState<Record<string, string>>({})
 
   useEffect(() => {
     if (authLoading) return
     if (!user) router.push('/signin')
   }, [authLoading, user, router])
+
+  useEffect(() => {
+    let cancelled = false
+    fetchTemplates()
+      .then((templates) => {
+        if (cancelled) return
+        setCategories(Object.fromEntries(templates.map((t) => [t.id, t.category])))
+      })
+      .catch(() => { /* keep registry categories as fallback */ })
+    return () => { cancelled = true }
+  }, [])
 
   if (authLoading || !user) {
     return <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center' }}><Spinner /></div>
@@ -48,7 +57,9 @@ export default function GameLibraryPage() {
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(330px, 1fr))', gap: 16 }}>
-            {GAMES.map((game) => (
+            {GAMES.map((game) => {
+              const category = categories[game.backendId] ?? game.category
+              return (
               <div
                 key={game.backendId}
                 style={{
@@ -67,11 +78,11 @@ export default function GameLibraryPage() {
                   <span
                     style={{
                       fontSize: 11.5, fontWeight: 600, borderRadius: 999, padding: '4px 10px', whiteSpace: 'nowrap',
-                      flexShrink: 0, ...categoryStyle(game.category),
+                      flexShrink: 0, ...categoryStyle(category),
                       borderWidth: 1, borderStyle: 'solid',
                     }}
                   >
-                    {game.category}
+                    {category}
                   </span>
                 </div>
 
@@ -114,7 +125,8 @@ export default function GameLibraryPage() {
                   </button>
                 </div>
               </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </main>

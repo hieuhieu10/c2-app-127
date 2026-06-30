@@ -95,6 +95,25 @@ export class GuardrailError extends Error {
   }
 }
 
+export interface TemplateCandidate {
+  id: string
+  name: string
+  description: string
+  category: string
+}
+
+/** Fetch the backend's active, generatable templates (source of truth for category). */
+export async function fetchTemplates(): Promise<TemplateCandidate[]> {
+  debugLog('BE_AI -> GET /templates', null)
+  const res = await fetch(`${AI_BASE}/templates`)
+  if (!res.ok) {
+    throw new Error(`Không lấy được danh sách mẫu trò chơi: ${res.status}`)
+  }
+  const data = (await res.json()) as TemplateCandidate[]
+  debugLog('BE_AI <- GET /templates', data)
+  return data
+}
+
 export async function recommendGames(input: RecommendGamesInput): Promise<GameRecommendation[]> {
   debugLog('BE_AI -> POST /recommend/games', input)
   const res = await fetch(`${AI_BASE}/recommend/games`, {

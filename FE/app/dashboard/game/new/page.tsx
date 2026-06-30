@@ -4,6 +4,7 @@ import { Suspense, useEffect, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { AppSidebar } from '@/components/layout/AppSidebar'
 import {
+  fetchTemplates,
   type CompleteEvent,
   type GameRecommendation,
   type SafetyReport,
@@ -11,6 +12,7 @@ import {
 } from '@/features/game-creation/ai-api'
 import { getTemplateByBackendId } from '@/features/game-creation/template-registry'
 import type { GameDefinition } from '@/features/game-shells/registry'
+import { categoryStyle } from '@/lib/category'
 import { GuideModal } from '@/features/game-library/components/GuideModal'
 import {
   beWebApi,
@@ -381,6 +383,8 @@ function NewGamePageContent() {
   const [elapsedSec, setElapsedSec] = useState(0)
   const [activeGenerationMessageId, setActiveGenerationMessageId] = useState<string | null>(null)
   const [guideGame, setGuideGame] = useState<GameDefinition | null>(null)
+  // Category is owned by the backend SPEC; overlay it via /templates (registry is the fallback).
+  const [categories, setCategories] = useState<Record<string, string>>({})
 
   const threadRef = useRef<HTMLDivElement>(null)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -400,6 +404,17 @@ function NewGamePageContent() {
       threadRef.current?.scrollTo({ top: threadRef.current.scrollHeight, behavior: 'smooth' })
     }, 50)
   }
+
+  useEffect(() => {
+    let cancelled = false
+    fetchTemplates()
+      .then((templates) => {
+        if (cancelled) return
+        setCategories(Object.fromEntries(templates.map((t) => [t.id, t.category])))
+      })
+      .catch(() => { /* keep registry categories as fallback */ })
+    return () => { cancelled = true }
+  }, [])
 
   useEffect(() => {
     return () => {
@@ -822,6 +837,7 @@ function NewGamePageContent() {
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
                         {message.recommendations.map((recommendation) => {
                           const meta = getTemplateByBackendId(recommendation.template_id)
+                          const category = categories[recommendation.template_id] ?? meta?.category
                           return (
                             <div
                               key={`${message.id}-${recommendation.template_id}`}
@@ -844,6 +860,11 @@ function NewGamePageContent() {
                                     {recommendation.recommended ? (
                                       <span style={{ fontSize: 11.5, fontWeight: 600, color: '#4f46e5', background: '#eef0fe', border: '1px solid #dfe1fc', borderRadius: 7, padding: '2px 8px' }}>
                                         Đề xuất
+                                      </span>
+                                    ) : null}
+                                    {category ? (
+                                      <span style={{ fontSize: 11.5, fontWeight: 600, ...categoryStyle(category), borderWidth: 1, borderStyle: 'solid', borderRadius: 7, padding: '2px 8px' }}>
+                                        {category}
                                       </span>
                                     ) : null}
                                   </div>
