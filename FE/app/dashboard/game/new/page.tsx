@@ -4,12 +4,12 @@ import { Suspense, useEffect, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { AppSidebar } from '@/components/layout/AppSidebar'
 import {
-  fetchTemplates,
   type CompleteEvent,
   type GameRecommendation,
   type SafetyReport,
   type StageStatus,
 } from '@/features/game-creation/ai-api'
+import { useTemplateCategories } from '@/features/game-creation/use-template-categories'
 import { getTemplateByBackendId } from '@/features/game-creation/template-registry'
 import type { GameDefinition } from '@/features/game-shells/registry'
 import { categoryStyle } from '@/lib/category'
@@ -383,8 +383,8 @@ function NewGamePageContent() {
   const [elapsedSec, setElapsedSec] = useState(0)
   const [activeGenerationMessageId, setActiveGenerationMessageId] = useState<string | null>(null)
   const [guideGame, setGuideGame] = useState<GameDefinition | null>(null)
-  // Category is owned by the backend SPEC; overlay it via /templates (registry is the fallback).
-  const [categories, setCategories] = useState<Record<string, string>>({})
+  // Category is owned by the backend SPEC; overlaid via /templates (registry is the fallback).
+  const categories = useTemplateCategories()
 
   const threadRef = useRef<HTMLDivElement>(null)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -404,17 +404,6 @@ function NewGamePageContent() {
       threadRef.current?.scrollTo({ top: threadRef.current.scrollHeight, behavior: 'smooth' })
     }, 50)
   }
-
-  useEffect(() => {
-    let cancelled = false
-    fetchTemplates()
-      .then((templates) => {
-        if (cancelled) return
-        setCategories(Object.fromEntries(templates.map((t) => [t.id, t.category])))
-      })
-      .catch(() => { /* keep registry categories as fallback */ })
-    return () => { cancelled = true }
-  }, [])
 
   useEffect(() => {
     return () => {

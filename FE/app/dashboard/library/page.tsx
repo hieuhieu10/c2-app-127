@@ -8,7 +8,7 @@ import { Spinner } from '@/components/ui/spinner'
 import { GAMES, type GameDefinition } from '@/features/game-shells/registry'
 import { CreateGameModal } from '@/features/game-library/components/CreateGameModal'
 import { GuideModal } from '@/features/game-library/components/GuideModal'
-import { fetchTemplates } from '@/features/game-creation/ai-api'
+import { useTemplateCategories } from '@/features/game-creation/use-template-categories'
 import { categoryStyle } from '@/lib/category'
 
 type ModalKind = 'create' | 'guide'
@@ -17,25 +17,13 @@ export default function GameLibraryPage() {
   const router = useRouter()
   const { user, loading: authLoading } = useAuth()
   const [active, setActive] = useState<{ game: GameDefinition; kind: ModalKind } | null>(null)
-  // Category is owned by the backend SPEC; overlay it onto the registry via /templates.
-  // Falls back to the registry's category while loading or if the request fails.
-  const [categories, setCategories] = useState<Record<string, string>>({})
+  // Category is owned by the backend SPEC; overlaid onto the registry via /templates.
+  const categories = useTemplateCategories()
 
   useEffect(() => {
     if (authLoading) return
     if (!user) router.push('/signin')
   }, [authLoading, user, router])
-
-  useEffect(() => {
-    let cancelled = false
-    fetchTemplates()
-      .then((templates) => {
-        if (cancelled) return
-        setCategories(Object.fromEntries(templates.map((t) => [t.id, t.category])))
-      })
-      .catch(() => { /* keep registry categories as fallback */ })
-    return () => { cancelled = true }
-  }, [])
 
   if (authLoading || !user) {
     return <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center' }}><Spinner /></div>
