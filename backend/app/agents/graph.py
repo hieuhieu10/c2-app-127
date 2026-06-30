@@ -32,10 +32,10 @@ from app.agents.state import GenerationState
 
 
 def _finalize_failure(state: GenerationState) -> GenerationState:
-    errs = "; ".join(state.get("validation_errors", [])) or "unknown validation failure"
+    errs = "; ".join(state.get("validation_errors", [])) or "unknown generation failure"
     return {
         "ok": False,
-        "error": f"Content failed schema validation after repairs: {errs}",
+        "error": f"Không thể tạo nội dung hợp lệ sau khi thử lại: {errs}",
     }
 
 

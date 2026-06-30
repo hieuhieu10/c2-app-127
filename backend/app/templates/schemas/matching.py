@@ -69,6 +69,7 @@ SPEC = GameSpec(
     content_type_fit=("term-definition", "pairs", "classification", "vocabulary"),
     grade_range=(1, 12),
     content_model=MatchingContent,
+    category="Toán học",
     active=True,
     playable=False,
     sort_order=50,

@@ -32,6 +32,11 @@ class Settings(BaseSettings):
     max_repairs: int = 2
     # Tokens budget for a single generation call.
     max_tokens: int = 4096
+    # Minimum per-call generation timeout (seconds). Thinking models (e.g. DeepSeek
+    # reasoning variants) spend a long, variable time reasoning before emitting the
+    # tool call, so the floor must clear the slow tail. Scaled up by item count in
+    # generator._generate and capped at 180s.
+    generate_timeout: int = 60
     # Log API request/response bodies for local debugging. Do not enable in prod.
     api_debug: bool = False
 

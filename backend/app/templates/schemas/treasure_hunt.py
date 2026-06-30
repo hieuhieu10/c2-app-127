@@ -65,6 +65,7 @@ SPEC = GameSpec(
     content_type_fit=("facts", "definitions", "concepts", "vocabulary", "formulas"),
     grade_range=(1, 12),
     content_model=TreasureHuntContent,
+    category="Tổng quát",
     active=True,
     playable=True,
     min_items=8,
