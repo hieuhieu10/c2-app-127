@@ -5,7 +5,7 @@ export function FaithfulnessScore({ score }: { score?: number }) {
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between text-sm">
-        <span className="font-medium">Faithfulness</span>
+        <span className="font-medium">Độ bám sát</span>
         <span className="text-muted-foreground">{value || '--'}%</span>
       </div>
       <div className="h-2 overflow-hidden rounded-full bg-secondary">

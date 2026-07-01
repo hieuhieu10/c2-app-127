@@ -49,6 +49,7 @@ def create_game_from_generation(
             "mapTheme": "treasure-hunt" if template_id == "treasure_hunt" else None,
         },
         ai_raw_response_json={
+            "session_id": session.id,
             "content": content,
             "safety_report": safety_report,
             "elapsed_ms": elapsed_ms,

@@ -24,14 +24,14 @@ export default function SignInPage() {
 
     try {
       if (!email || !password) {
-        setError('Please fill in all fields')
+        setError('Vui lòng điền đầy đủ các trường')
         return
       }
       
       await signIn(email, password)
       router.push('/dashboard')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to sign in')
+      setError(err instanceof Error ? err.message : 'Đăng nhập thất bại')
     } finally {
       setLoading(false)
     }
@@ -42,11 +42,11 @@ export default function SignInPage() {
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="space-y-2">
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-primary mb-2">LearnGame</h1>
+            <h1 className="text-3xl font-bold text-primary mb-2">Học Mà Chơi</h1>
           </div>
-          <CardTitle className="text-center">Sign in to your account</CardTitle>
+          <CardTitle className="text-center">Đăng nhập vào tài khoản</CardTitle>
           <CardDescription className="text-center">
-            Create engaging educational games with AI
+            Tạo trò chơi học tập hấp dẫn cùng AI
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -70,7 +70,7 @@ export default function SignInPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Mật khẩu</Label>
               <Input
                 id="password"
                 type="password"
@@ -82,15 +82,15 @@ export default function SignInPage() {
             </div>
 
             <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={loading}>
-              {loading ? 'Signing in...' : 'Sign in'}
+              {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
             </Button>
           </form>
 
           <div className="mt-6 text-center text-sm">
             <p className="text-muted-foreground mb-3">
-              Don&apos;t have an account?{' '}
+              Bạn chưa có tài khoản?{' '}
               <Link href="/signup" className="text-primary hover:underline font-medium">
-                Sign up
+                Đăng ký
               </Link>
             </p>
           </div>

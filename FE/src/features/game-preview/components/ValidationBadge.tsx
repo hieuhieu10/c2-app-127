@@ -9,7 +9,7 @@ export function ValidationBadge({ status }: { status: GameItem['validationStatus
 
   return (
     <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${styles[status]}`}>
-      {status === 'valid' ? 'Valid' : status === 'invalid' ? 'Needs review' : 'Pending'}
+      {status === 'valid' ? 'Hợp lệ' : status === 'invalid' ? 'Cần rà soát' : 'Đang chờ'}
     </span>
   )
 }

@@ -20,6 +20,7 @@ export interface BeWebGameItem {
 export interface BeWebGame {
   lessonId: number
   gameId: number
+  sessionId?: number | null
   status: 'draft' | 'generation_failed' | 'approved' | 'published'
   productTemplateId: string
   aiTemplateId: string
@@ -453,6 +454,7 @@ export function mapBeWebGame(game: BeWebGame): Game {
   return {
     id: String(game.gameId),
     lessonId: String(game.lessonId),
+    sessionId: typeof game.sessionId === 'number' ? String(game.sessionId) : null,
     templateType,
     items: game.items.map((item) => mapBeWebItem(item, templateType)),
     settings: {

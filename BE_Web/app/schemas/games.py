@@ -22,6 +22,7 @@ class GameItemResponse(BaseModel):
 class GameResponse(BaseModel):
     lessonId: int
     gameId: int
+    sessionId: int | None = None
     status: str
     productTemplateId: str
     aiTemplateId: str
