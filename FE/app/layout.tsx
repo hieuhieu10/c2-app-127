@@ -12,6 +12,11 @@ const beVietnamPro = Be_Vietnam_Pro({
 export const metadata = {
   title: "Học Mà Chơi",
   description: "Trình tạo trò chơi học tập · AI",
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/apple-icon.png",
+  },
 };
 
 export default function RootLayout({
@@ -20,8 +25,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi">
-      <body className={beVietnamPro.variable} style={{ fontFamily: "'Be Vietnam Pro', sans-serif", margin: 0 }}>
+    <html lang="vi" className="light" style={{ colorScheme: "light" }}>
+      <body
+        className={beVietnamPro.variable}
+        style={{ background: "#f9fafb", color: "#111827", fontFamily: "'Be Vietnam Pro', sans-serif", margin: 0 }}
+      >
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>

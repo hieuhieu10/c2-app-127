@@ -76,6 +76,7 @@ export interface GameSettings {
 export interface Game {
   id: string
   lessonId: string
+  sessionId?: string | null
   templateType: GameTemplateType
   items: GameItem[]
   settings?: GameSettings

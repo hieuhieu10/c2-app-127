@@ -15,7 +15,7 @@ export function ItemReviewPanel({ items, selectedIndex, onSelect }: ItemReviewPa
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">Items ({validCount}/{items.length})</CardTitle>
+        <CardTitle className="text-lg">Các mục ({validCount}/{items.length})</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         {items.map((item, index) => (
@@ -28,7 +28,7 @@ export function ItemReviewPanel({ items, selectedIndex, onSelect }: ItemReviewPa
             }`}
           >
             <div className="mb-2 flex items-center justify-between gap-2">
-              <span className="text-sm font-semibold">Item {index + 1}</span>
+              <span className="text-sm font-semibold">Mục {index + 1}</span>
               <ValidationBadge status={item.validationStatus} />
             </div>
             <p className="line-clamp-2 text-sm text-muted-foreground">{item.question}</p>

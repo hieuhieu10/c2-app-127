@@ -86,14 +86,14 @@ export function TeacherEditForm({ item, itemNumber, onChange, onValidate }: Teac
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <CardTitle className="flex items-center gap-2">
-              Edit Item {itemNumber}
+              Chỉnh mục {itemNumber}
               {dirty && (
                 <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
-                  Unsaved
+                  Chưa lưu
                 </span>
               )}
             </CardTitle>
-            <CardDescription>Teacher-approved content is the final gate before launch.</CardDescription>
+            <CardDescription>Nội dung được giáo viên duyệt là bước chốt cuối trước khi phát hành.</CardDescription>
           </div>
           <ValidationBadge status={item.validationStatus} />
         </div>
@@ -110,14 +110,14 @@ export function TeacherEditForm({ item, itemNumber, onChange, onValidate }: Teac
         <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(220px,0.9fr)]">
           <FaithfulnessScore score={item.faithfulnessScore} />
           <div className="grid gap-2 text-xs sm:grid-cols-3 xl:grid-cols-1 2xl:grid-cols-3">
-            <Metric label="Entailment" value={item.entailmentStatus ?? 'pending'} />
-            <Metric label="Distractors" value={item.distractorStatus ?? 'pending'} />
-            <Metric label="Safety" value={item.safetyStatus ?? 'pending'} />
+            <Metric label="Mức suy diễn" value={item.entailmentStatus ?? 'pending'} />
+            <Metric label="Phương án nhiễu" value={item.distractorStatus ?? 'pending'} />
+            <Metric label="An toàn" value={item.safetyStatus ?? 'pending'} />
           </div>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="question">Question</Label>
+          <Label htmlFor="question">Câu hỏi</Label>
           <Textarea
             id="question"
             value={draft.question}
@@ -127,7 +127,7 @@ export function TeacherEditForm({ item, itemNumber, onChange, onValidate }: Teac
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="answer">Correct Answer</Label>
+          <Label htmlFor="answer">Đáp án đúng</Label>
           <Input
             id="answer"
             value={draft.correctAnswer}
@@ -137,7 +137,7 @@ export function TeacherEditForm({ item, itemNumber, onChange, onValidate }: Teac
 
         {draft.options.length > 0 && (
           <div className="space-y-3">
-            <Label>Answer Options</Label>
+            <Label>Các lựa chọn trả lời</Label>
             <div className="grid gap-3 md:grid-cols-2">
               {draft.options.map((option, index) => (
                 <Input
@@ -148,7 +148,7 @@ export function TeacherEditForm({ item, itemNumber, onChange, onValidate }: Teac
                     options[index] = e.target.value
                     patch({ options })
                   }}
-                  placeholder={`Option ${String.fromCharCode(65 + index)}`}
+                  placeholder={`Lựa chọn ${String.fromCharCode(65 + index)}`}
                 />
               ))}
             </div>
@@ -156,7 +156,7 @@ export function TeacherEditForm({ item, itemNumber, onChange, onValidate }: Teac
         )}
 
         <div className="space-y-2">
-          <Label htmlFor="explanation">Explanation</Label>
+          <Label htmlFor="explanation">Giải thích</Label>
           <Textarea
             id="explanation"
             value={draft.explanation}
@@ -168,7 +168,7 @@ export function TeacherEditForm({ item, itemNumber, onChange, onValidate }: Teac
         <div className="grid gap-2 border-t border-border pt-4 sm:grid-cols-2">
           {dirty && (
             <Button onClick={handleSave} disabled={saving}>
-              {saving ? 'Saving…' : 'Save Changes'}
+              {saving ? 'Đang lưu…' : 'Lưu thay đổi'}
             </Button>
           )}
           <Button
@@ -177,10 +177,10 @@ export function TeacherEditForm({ item, itemNumber, onChange, onValidate }: Teac
             variant={dirty ? 'outline' : 'default'}
             className={!dirty ? 'sm:col-span-1' : undefined}
           >
-            {rechecking ? 'Checking…' : 'Re-check Item'}
+            {rechecking ? 'Đang kiểm tra…' : 'Kiểm tra lại mục'}
           </Button>
           <Button variant="outline" disabled>
-            Regenerate Item Coming Soon
+            Tạo lại mục sắp ra mắt
           </Button>
         </div>
       </CardContent>
@@ -189,12 +189,23 @@ export function TeacherEditForm({ item, itemNumber, onChange, onValidate }: Teac
 }
 
 function Metric({ label, value }: { label: string; value: string }) {
+  const translatedValue = value
+    .replaceAll('not-applicable', 'không áp dụng')
+    .replaceAll('needs-review', 'cần rà soát')
+    .replaceAll('verified-wrong', 'đã kiểm tra')
+    .replaceAll('not-entailed', 'không được suy ra')
+    .replaceAll('entailed', 'được suy ra')
+    .replaceAll('ambiguous', 'mơ hồ')
+    .replaceAll('blocked', 'bị chặn')
+    .replaceAll('safe', 'an toàn')
+    .replaceAll('pending', 'đang chờ')
+
   return (
     <div className="min-w-0 rounded-md border border-border bg-secondary/20 p-2">
       <div className="truncate font-semibold text-muted-foreground" title={label}>
         {label}
       </div>
-      <div className="mt-1 break-words capitalize leading-snug">{value.replaceAll('-', ' ')}</div>
+      <div className="mt-1 break-words capitalize leading-snug">{translatedValue.replaceAll('-', ' ')}</div>
     </div>
   )
 }

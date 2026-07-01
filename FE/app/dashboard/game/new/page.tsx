@@ -220,7 +220,7 @@ function buildSelectedGame(payload: Record<string, unknown> | null | undefined):
   const meta = getTemplateByBackendId(templateId)
   return {
     template_id: templateId,
-    name: typeof payload.name === 'string' ? payload.name : (meta?.title ?? templateId),
+    name: meta?.title ?? (typeof payload.name === 'string' ? payload.name : templateId),
     intro: typeof payload.intro === 'string' ? payload.intro : '',
     recommended: Boolean(payload.recommended),
   }
@@ -822,6 +822,7 @@ function NewGamePageContent() {
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
                         {message.recommendations.map((recommendation) => {
                           const meta = getTemplateByBackendId(recommendation.template_id)
+                          const displayName = meta?.title ?? recommendation.name
                           return (
                             <div
                               key={`${message.id}-${recommendation.template_id}`}
@@ -840,7 +841,7 @@ function NewGamePageContent() {
                                 </div>
                                 <div style={{ flex: 1, minWidth: 0 }}>
                                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
-                                    <span style={{ fontSize: 15.5, fontWeight: 700, color: '#1b2333' }}>{recommendation.name}</span>
+                                    <span style={{ fontSize: 15.5, fontWeight: 700, color: '#1b2333' }}>{displayName}</span>
                                     {recommendation.recommended ? (
                                       <span style={{ fontSize: 11.5, fontWeight: 600, color: '#4f46e5', background: '#eef0fe', border: '1px solid #dfe1fc', borderRadius: 7, padding: '2px 8px' }}>
                                         Đề xuất
@@ -890,7 +891,9 @@ function NewGamePageContent() {
                     {message.selectedGame ? (
                       <div style={{ display: 'inline-flex', alignSelf: 'flex-start', alignItems: 'center', gap: 9, background: '#eef0fe', border: '1px solid #dfe1fc', borderRadius: 11, padding: '8px 13px' }}>
                         <span style={{ fontSize: 18 }}>{getTemplateByBackendId(message.selectedGame.template_id)?.icon ?? '🎮'}</span>
-                        <span style={{ fontSize: 13.5, fontWeight: 600, color: '#3730a3' }}>Trò chơi đã chọn: {message.selectedGame.name}</span>
+                        <span style={{ fontSize: 13.5, fontWeight: 600, color: '#3730a3' }}>
+                          Trò chơi đã chọn: {getTemplateByBackendId(message.selectedGame.template_id)?.title ?? message.selectedGame.name}
+                        </span>
                       </div>
                     ) : null}
 
