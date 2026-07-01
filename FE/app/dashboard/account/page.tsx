@@ -44,7 +44,7 @@ export default function AccountPage() {
   }, [user])
 
   const avatarTitle = useMemo(() => {
-    if (!user) return 'User'
+    if (!user) return 'Người dùng'
     return user.email ? `${user.name} (${user.email})` : user.name
   }, [user])
 
@@ -63,7 +63,7 @@ export default function AccountPage() {
 
     const trimmedName = name.trim()
     if (!trimmedName) {
-      setProfileError('Name is required')
+      setProfileError('Tên không được để trống')
       return
     }
 
@@ -71,9 +71,9 @@ export default function AccountPage() {
     try {
       await updateProfile(trimmedName)
       setName(trimmedName)
-      setProfileSuccess('Profile updated successfully')
+      setProfileSuccess('Cập nhật hồ sơ thành công')
     } catch (error) {
-      setProfileError(error instanceof Error ? error.message : 'Failed to update profile')
+      setProfileError(error instanceof Error ? error.message : 'Cập nhật hồ sơ thất bại')
     } finally {
       setProfileSaving(false)
     }
@@ -85,12 +85,12 @@ export default function AccountPage() {
     setPasswordSuccess(null)
 
     if (newPassword.length < 6) {
-      setPasswordError('New password must be at least 6 characters')
+      setPasswordError('Mật khẩu mới phải có ít nhất 6 ký tự')
       return
     }
 
     if (newPassword !== confirmPassword) {
-      setPasswordError('New password confirmation does not match')
+      setPasswordError('Mật khẩu xác nhận mới không khớp')
       return
     }
 
@@ -100,9 +100,9 @@ export default function AccountPage() {
       setCurrentPassword('')
       setNewPassword('')
       setConfirmPassword('')
-      setPasswordSuccess('Password changed successfully')
+      setPasswordSuccess('Đổi mật khẩu thành công')
     } catch (error) {
-      setPasswordError(error instanceof Error ? error.message : 'Failed to change password')
+      setPasswordError(error instanceof Error ? error.message : 'Đổi mật khẩu thất bại')
     } finally {
       setPasswordSaving(false)
     }
@@ -113,12 +113,12 @@ export default function AccountPage() {
     setAvatarSuccess(null)
 
     if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
-      setAvatarError('Avatar must be a PNG, JPEG, or WebP image')
+      setAvatarError('Ảnh đại diện phải là PNG, JPEG hoặc WebP')
       return
     }
 
     if (file.size > 2 * 1024 * 1024) {
-      setAvatarError('Avatar must be 2MB or smaller')
+      setAvatarError('Ảnh đại diện phải nhỏ hơn hoặc bằng 2MB')
       return
     }
 
@@ -126,9 +126,9 @@ export default function AccountPage() {
     try {
       await uploadAvatar(file)
       setAvatarFile(file)
-      setAvatarSuccess('Avatar uploaded successfully')
+      setAvatarSuccess('Tải ảnh đại diện lên thành công')
     } catch (error) {
-      setAvatarError(error instanceof Error ? error.message : 'Failed to upload avatar')
+      setAvatarError(error instanceof Error ? error.message : 'Tải ảnh đại diện lên thất bại')
     } finally {
       setAvatarUploading(false)
     }
@@ -148,15 +148,15 @@ export default function AccountPage() {
 
       <main className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground">Account</h1>
-          <p className="mt-2 text-muted-foreground">Manage your profile details and password.</p>
+          <h1 className="text-3xl font-bold text-foreground">Tài khoản</h1>
+          <p className="mt-2 text-muted-foreground">Quản lý thông tin hồ sơ và mật khẩu của bạn.</p>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
           <Card>
             <CardHeader>
-              <CardTitle>Profile</CardTitle>
-              <CardDescription>Update how your account appears inside LearnGame.</CardDescription>
+              <CardTitle>Hồ sơ</CardTitle>
+              <CardDescription>Cập nhật cách tài khoản của bạn hiển thị trong Học Mà Chơi.</CardDescription>
             </CardHeader>
             <CardContent>
               <form className="space-y-5" onSubmit={(event) => void handleProfileSubmit(event)}>
@@ -166,7 +166,7 @@ export default function AccountPage() {
                       type="button"
                       className={`group relative rounded-full transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${avatarUploading ? 'opacity-70' : ''}`}
                       onClick={() => avatarInputRef.current?.click()}
-                      aria-label="Change avatar"
+                      aria-label="Đổi ảnh đại diện"
                     >
                       <UserAvatar
                         name={user.name}
@@ -179,7 +179,7 @@ export default function AccountPage() {
                       />
                       <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/0 text-[11px] font-semibold text-white transition group-hover:bg-black/45 group-focus-visible:bg-black/45">
                         <span className="opacity-0 transition group-hover:opacity-100 group-focus-visible:opacity-100">
-                          {avatarUploading ? 'Uploading' : 'Change'}
+                          {avatarUploading ? 'Đang tải' : 'Đổi'}
                         </span>
                       </div>
                     </button>
@@ -200,9 +200,9 @@ export default function AccountPage() {
 
                 <div className="space-y-3 rounded-lg border border-border bg-muted/20 p-4">
                   <div>
-                    <Label htmlFor="avatar-file">Avatar</Label>
+                    <Label htmlFor="avatar-file">Ảnh đại diện</Label>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      Click avatar to change. PNG, JPEG, or WebP up to 2MB.
+                      Bấm vào ảnh đại diện để thay đổi. Hỗ trợ PNG, JPEG hoặc WebP tối đa 2MB.
                     </p>
                   </div>
                   {avatarFile ? <p className="text-sm text-muted-foreground">{avatarFile.name}</p> : null}
@@ -216,7 +216,7 @@ export default function AccountPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="account-name">Name</Label>
+                  <Label htmlFor="account-name">Tên</Label>
                   <Input
                     id="account-name"
                     value={name}
@@ -229,7 +229,7 @@ export default function AccountPage() {
                 {profileSuccess ? <p className="text-sm text-emerald-600">{profileSuccess}</p> : null}
 
                 <Button type="submit" disabled={profileSaving}>
-                  {profileSaving ? 'Saving...' : 'Save Profile'}
+                  {profileSaving ? 'Đang lưu...' : 'Lưu hồ sơ'}
                 </Button>
               </form>
             </CardContent>
@@ -237,13 +237,13 @@ export default function AccountPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Change Password</CardTitle>
-              <CardDescription>Use a new password with at least 6 characters.</CardDescription>
+              <CardTitle>Đổi mật khẩu</CardTitle>
+              <CardDescription>Dùng mật khẩu mới có ít nhất 6 ký tự.</CardDescription>
             </CardHeader>
             <CardContent>
               <form className="space-y-5" onSubmit={(event) => void handlePasswordSubmit(event)}>
                 <div className="space-y-2">
-                  <Label htmlFor="current-password">Current Password</Label>
+                  <Label htmlFor="current-password">Mật khẩu hiện tại</Label>
                   <Input
                     id="current-password"
                     type="password"
@@ -254,7 +254,7 @@ export default function AccountPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="new-password">New Password</Label>
+                  <Label htmlFor="new-password">Mật khẩu mới</Label>
                   <Input
                     id="new-password"
                     type="password"
@@ -265,7 +265,7 @@ export default function AccountPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="confirm-password">Confirm New Password</Label>
+                  <Label htmlFor="confirm-password">Xác nhận mật khẩu mới</Label>
                   <Input
                     id="confirm-password"
                     type="password"
@@ -279,7 +279,7 @@ export default function AccountPage() {
                 {passwordSuccess ? <p className="text-sm text-emerald-600">{passwordSuccess}</p> : null}
 
                 <Button type="submit" disabled={passwordSaving}>
-                  {passwordSaving ? 'Updating...' : 'Change Password'}
+                  {passwordSaving ? 'Đang cập nhật...' : 'Đổi mật khẩu'}
                 </Button>
               </form>
             </CardContent>

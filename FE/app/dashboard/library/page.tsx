@@ -22,6 +22,12 @@ export default function GameLibraryPage() {
   const router = useRouter()
   const { user, loading: authLoading } = useAuth()
   const [active, setActive] = useState<{ game: GameDefinition; kind: ModalKind } | null>(null)
+  const [activeCategory, setActiveCategory] = useState<string>('Tất cả')
+
+  const categories = ['Tất cả', ...Array.from(new Set(GAMES.map((game) => game.category)))]
+  const visibleGames = activeCategory === 'Tất cả'
+    ? GAMES
+    : GAMES.filter((game) => game.category === activeCategory)
 
   useEffect(() => {
     if (authLoading) return
@@ -37,18 +43,68 @@ export default function GameLibraryPage() {
       <AppSidebar />
 
       <main style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-        <header style={{ minHeight: 60, flexShrink: 0, borderBottom: '1px solid #e9ebf1', background: '#fff', display: 'flex', alignItems: 'center', padding: '0 26px' }}>
+        <header
+          style={{
+            minHeight: 60,
+            flexShrink: 0,
+            borderBottom: '1px solid #e9ebf1',
+            background: '#fff',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 16,
+            padding: '10px 26px',
+            flexWrap: 'wrap',
+          }}
+        >
           <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-.2px' }}>Thư viện game</span>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'flex-end' }}>
+            {categories.map((category) => {
+              const activeFilter = category === activeCategory
+              return (
+                <button
+                  key={category}
+                  type="button"
+                  onClick={() => setActiveCategory(category)}
+                  style={{
+                    border: activeFilter ? '1px solid #c7c5f7' : '1px solid #e3e6ee',
+                    background: activeFilter ? '#eef0fe' : '#fff',
+                    color: activeFilter ? '#4338ca' : '#5b6577',
+                    fontFamily: 'inherit',
+                    fontSize: 13,
+                    fontWeight: activeFilter ? 700 : 600,
+                    padding: '8px 13px',
+                    borderRadius: 999,
+                    cursor: 'pointer',
+                    boxShadow: activeFilter ? '0 4px 12px rgba(79,70,229,.12)' : 'none',
+                  }}
+                >
+                  {category}
+                </button>
+              )
+            })}
+          </div>
         </header>
 
         <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '30px 32px' }}>
-          <div style={{ marginBottom: 22 }}>
-            <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 4 }}>Các trò chơi có sẵn</div>
-            <div style={{ fontSize: 13.5, color: '#8b94a6' }}>Chọn một mẫu trò chơi để tạo nội dung ngay, hoặc xem hướng dẫn cách chơi.</div>
-          </div>
+          {visibleGames.length === 0 ? (
+            <div
+              style={{
+                background: '#fff',
+                border: '1px solid #e9ebf1',
+                borderRadius: 16,
+                padding: '28px 24px',
+                color: '#5b6577',
+                fontSize: 14,
+                boxShadow: '0 1px 2px rgba(16,24,40,.04),0 6px 20px rgba(16,24,40,.04)',
+              }}
+            >
+              Chưa có trò chơi nào trong nhóm <strong>{activeCategory}</strong>.
+            </div>
+          ) : null}
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(330px, 1fr))', gap: 16 }}>
-            {GAMES.map((game) => (
+            {visibleGames.map((game) => (
               <div
                 key={game.backendId}
                 style={{

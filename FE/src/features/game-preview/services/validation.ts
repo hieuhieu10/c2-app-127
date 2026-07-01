@@ -5,19 +5,19 @@ export function validateGameItem(item: GameItem): GameItem {
   const requiresAnswerOptions = item.type === 'multiple-choice' || item.type === 'press-the-button'
 
   if (!item.question?.trim()) {
-    errors.push('Question cannot be empty')
+    errors.push('Câu hỏi không được để trống')
   }
 
   if (!item.correctAnswer?.trim()) {
-    errors.push('Correct answer cannot be empty')
+    errors.push('Đáp án đúng không được để trống')
   }
 
   if (requiresAnswerOptions && (!item.options || item.options.length < 2)) {
-    errors.push('This item needs AI answer options')
+    errors.push('Mục này cần có các lựa chọn trả lời do AI sinh ra')
   }
 
   if (item.options?.some((option) => !option.trim())) {
-    errors.push('Options cannot be empty')
+    errors.push('Các lựa chọn không được để trống')
   }
 
   // Only multiple-choice / press-the-button items are answered by picking an option,
@@ -27,7 +27,7 @@ export function validateGameItem(item: GameItem): GameItem {
   // `|| item.options` check failed every non-quiz game here.
   const hasAnswerInOptions = Boolean(item.options?.includes(item.correctAnswer))
   if (requiresAnswerOptions && !hasAnswerInOptions) {
-    errors.push('Correct answer must match one of the answer options')
+    errors.push('Đáp án đúng phải trùng với một trong các lựa chọn trả lời')
   }
 
   const score = calculateFaithfulnessScore(item, errors, requiresAnswerOptions)
