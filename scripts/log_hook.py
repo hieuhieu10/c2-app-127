@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 Shared AI hook logger — works with Claude Code, Gemini CLI, Codex, Cursor, Copilot.
 Reads JSON from stdin, normalizes to common format, appends to .ai-log/session.jsonl
@@ -180,8 +180,13 @@ def main():
     with open(log_file, "a", encoding="utf-8") as f:
         f.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
-    # Output valid JSON (required by some tools like Gemini)
-    print(json.dumps({"status": "logged"}))
+    # Some tools accept arbitrary JSON hook output, but Codex's
+    # UserPromptSubmit expects a stricter event-specific schema. This hook is
+    # only used for passive logging, so stay silent for Codex to avoid
+    # "invalid user prompt submit JSON output" while keeping JSON output for
+    # other tools that expect it.
+    if tool != "codex":
+        print(json.dumps({"status": "logged"}))
 
 
 if __name__ == "__main__":
