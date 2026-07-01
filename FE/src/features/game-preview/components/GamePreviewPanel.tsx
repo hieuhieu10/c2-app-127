@@ -6,8 +6,8 @@ export function GamePreviewPanel({ game }: { game: Game }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Playable Preview</CardTitle>
-        <CardDescription>Exactly what the class will see after approval.</CardDescription>
+        <CardTitle>Bản xem trước có thể chơi</CardTitle>
+        <CardDescription>Đây là đúng nội dung lớp học sẽ thấy sau khi được phê duyệt.</CardDescription>
       </CardHeader>
       <CardContent>
         <GameShell game={game} previewMode />

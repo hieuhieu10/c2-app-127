@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import type { Game } from '@/types/app'
 import { Button } from '@/components/ui/button'
@@ -26,8 +26,12 @@ interface TreasureHuntShellProps {
 }
 
 const DEFAULT_CHARACTER_IDS = ['choice-01', 'choice-02']
+const FULLSCREEN_STAGE_WIDTH = 1280
+const FULLSCREEN_SAFE_PADDING = 48
 
 export function TreasureHuntShell({ game, fullscreen = false }: TreasureHuntShellProps) {
+  const viewportRef = useRef<HTMLDivElement | null>(null)
+  const stageRef = useRef<HTMLDivElement | null>(null)
   const [selectedCharacterIds, setSelectedCharacterIds] = useState<string[]>(DEFAULT_CHARACTER_IDS)
   const [showCharacterSelect, setShowCharacterSelect] = useState(true)
   const [players, setPlayers] = useState<TreasurePlayer[]>(() => createTreasurePlayers(game.settings, DEFAULT_CHARACTER_IDS))
@@ -36,6 +40,8 @@ export function TreasureHuntShell({ game, fullscreen = false }: TreasureHuntShel
   const [feedback, setFeedback] = useState<FeedbackState>('idle')
   const [finished, setFinished] = useState(false)
   const [soundOn, setSoundOn] = useState(true)
+  const [fullscreenScale, setFullscreenScale] = useState(1)
+  const [stageHeight, setStageHeight] = useState(0)
 
   const currentItem = game.items[currentIndex]
   const currentQuestion = currentItem ? normalizeTreasureQuestion(currentItem, currentIndex) : null
@@ -44,10 +50,44 @@ export function TreasureHuntShell({ game, fullscreen = false }: TreasureHuntShel
   const movePercent = getMovePercent(game.items.length)
   const isRoundComplete = (currentIndex + 1) % players.length === 0
 
+  useEffect(() => {
+    if (!fullscreen) {
+      setFullscreenScale(1)
+      setStageHeight(0)
+      return
+    }
+
+    const updateScale = () => {
+      const viewport = viewportRef.current
+      const stage = stageRef.current
+      if (!viewport || !stage) return
+
+      const availableWidth = Math.max(320, viewport.clientWidth - FULLSCREEN_SAFE_PADDING)
+      const availableHeight = Math.max(320, viewport.clientHeight - FULLSCREEN_SAFE_PADDING)
+      const measuredStageHeight = Math.max(stage.scrollHeight, stage.offsetHeight, 1)
+      const nextScale = Math.min(availableWidth / FULLSCREEN_STAGE_WIDTH, availableHeight / measuredStageHeight, 1)
+
+      setStageHeight(measuredStageHeight)
+      setFullscreenScale(Number(nextScale.toFixed(4)))
+    }
+
+    updateScale()
+
+    const resizeObserver = new ResizeObserver(updateScale)
+    if (viewportRef.current) resizeObserver.observe(viewportRef.current)
+    if (stageRef.current) resizeObserver.observe(stageRef.current)
+
+    window.addEventListener('resize', updateScale)
+    return () => {
+      resizeObserver.disconnect()
+      window.removeEventListener('resize', updateScale)
+    }
+  }, [currentIndex, feedback, fullscreen, selectedAnswer, showCharacterSelect])
+
   if (game.items.length > 0 && !hasAnyValidQuestion) {
     return (
       <div className="rounded-lg border border-destructive/40 bg-destructive/10 p-8 text-center text-destructive">
-        This game has no valid AI answer options. Please regenerate or edit the items before playing.
+        Trò chơi này chưa có các lựa chọn trả lời hợp lệ từ AI. Vui lòng tạo lại hoặc chỉnh sửa các mục trước khi chơi.
       </div>
     )
   }
@@ -55,7 +95,7 @@ export function TreasureHuntShell({ game, fullscreen = false }: TreasureHuntShel
   if (!currentQuestion || !activePlayer) {
     return (
       <div className="rounded-lg border border-dashed border-border bg-secondary/20 p-8 text-center text-muted-foreground">
-        No game items available.
+        Chưa có nội dung trò chơi.
       </div>
     )
   }
@@ -120,8 +160,30 @@ export function TreasureHuntShell({ game, fullscreen = false }: TreasureHuntShel
   const canShowResults = (hasWinner && isRoundComplete) || currentIndex >= game.items.length - 1
 
   return (
-    <div className={`treasureV2 ${fullscreen ? 'treasureV2Fullscreen' : ''}`}>
-      <div className="treasureStage">
+    <div className={`treasureV2 ${fullscreen ? 'treasureV2Fullscreen' : ''}`} ref={viewportRef}>
+      <div
+        className={fullscreen ? 'treasureFullscreenScaler' : undefined}
+        style={
+          fullscreen
+            ? {
+                width: FULLSCREEN_STAGE_WIDTH * fullscreenScale,
+                height: stageHeight * fullscreenScale,
+              }
+            : undefined
+        }
+      >
+      <div
+        className="treasureStage"
+        ref={stageRef}
+        style={
+          fullscreen
+            ? {
+                width: FULLSCREEN_STAGE_WIDTH,
+                transform: `scale(${fullscreenScale})`,
+              }
+            : undefined
+        }
+      >
         <header className="treasureTopbar">
           <div className="scoreWrap">
             {players.map((player, index) => (
@@ -139,10 +201,10 @@ export function TreasureHuntShell({ game, fullscreen = false }: TreasureHuntShel
           </div>
 
           <div className="actions">
-            <button type="button" className="roundBtn" onClick={() => setSoundOn((value) => !value)} aria-label="Toggle sound">
+            <button type="button" className="roundBtn" onClick={() => setSoundOn((value) => !value)} aria-label="Bật tắt âm thanh">
               {soundOn ? '🔊' : '🔇'}
             </button>
-            <button type="button" className="roundBtn" onClick={() => setShowCharacterSelect(true)} aria-label="Choose characters">
+            <button type="button" className="roundBtn" onClick={() => setShowCharacterSelect(true)} aria-label="Chọn nhân vật">
               🏠
             </button>
           </div>
@@ -225,6 +287,7 @@ export function TreasureHuntShell({ game, fullscreen = false }: TreasureHuntShel
             ? '✨ Hai nhân vật xuất phát từ bên trái, mỗi người đi một đường tới kho báu! ✨'
             : `${feedbackCopy.title} ${feedbackCopy.message}${currentQuestion.explanation ? ` ${currentQuestion.explanation}` : ''}`}
         </div> */}
+      </div>
       </div>
 
       {showCharacterSelect && (
@@ -399,18 +462,18 @@ function TreasureEndScreen({
     <div className="treasureEnd">
       <div className="treasureEndBox">
         <div className="endCrown">🏆</div>
-        <div className="endEyebrow">Treasure Cave Opened</div>
-        <h3>{hasTie ? 'Hai người chơi hòa nhau!' : `${getPlayerDisplayName(winner)} wins!`}</h3>
+        <div className="endEyebrow">KHO BÁU ĐÃ MỞ</div>
+        <h3>{hasTie ? 'Hai người chơi hòa nhau!' : `${getPlayerDisplayName(winner)} chiến thắng!`}</h3>
         <p>
           {hasTie
             ? `Cả hai có cùng kết quả sau ${totalQuestions} câu hỏi.`
-            : `The player found the treasure after ${totalQuestions} questions.`}
+            : `${getPlayerDisplayName(winner)} đã tìm thấy kho báu sau ${totalQuestions} câu hỏi.`}
         </p>
 
         <div className="endRanks">
           {rankings.map((player, index) => (
             <div key={player.id} className="endRankCard">
-              <div className="endRank">Rank {index + 1}</div>
+              <div className="endRank">Hạng {index + 1}</div>
               <AssetImage
                 src={getCharacterAsset(player.assetId, 'celebrate')}
                 alt={player.name}
@@ -419,15 +482,15 @@ function TreasureEndScreen({
               />
               <div className="endName">{getPlayerDisplayName(player)}</div>
               <div className="endStats">
-                <span>{player.correctAnswers} correct</span>
-                <span>{player.score} pts</span>
+                <span>{player.correctAnswers} câu đúng</span>
+                <span>{player.score} điểm</span>
               </div>
             </div>
           ))}
         </div>
 
         <Button onClick={onRestart} className="mt-5 h-12 w-full bg-amber-500 text-base font-black text-amber-950 hover:bg-amber-400">
-          Play Again
+          Chơi lại
         </Button>
       </div>
       <style>{treasureHuntStyles}</style>
@@ -510,7 +573,17 @@ const treasureHuntStyles = `
 }
 .treasureV2Fullscreen {
   height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 10px;
+  background: transparent;
+}
+.treasureFullscreenScaler {
+  position: relative;
+  flex: 0 0 auto;
+  overflow: visible;
 }
 .treasureStage {
   position: relative;
@@ -525,9 +598,108 @@ const treasureHuntStyles = `
 }
 
 .treasureV2Fullscreen .treasureStage {
-  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: top left;
   min-height: 0;
-  overflow: auto;
+  overflow: visible;
+}
+.treasureV2Fullscreen .treasureStage {
+  gap: 10px;
+  padding: 10px;
+}
+.treasureV2Fullscreen .treasureTopbar {
+  min-height: 54px;
+}
+.treasureV2Fullscreen .scoreCard {
+  height: 52px;
+  min-width: 74px;
+  width: 76px;
+}
+.treasureV2Fullscreen .miniChar {
+  height: 46px;
+  top: -7px;
+}
+.treasureV2Fullscreen .miniImg {
+  max-height: 40px;
+}
+.treasureV2Fullscreen .scoreNum {
+  margin-top: 20px;
+  font-size: 18px;
+}
+.treasureV2Fullscreen .titleRibbon {
+  min-width: 360px;
+  font-size: 23px;
+  padding: 7px 18px;
+}
+.treasureV2Fullscreen .roundBtn {
+  width: 48px;
+  height: 48px;
+  border-width: 3px;
+  font-size: 21px;
+}
+.treasureV2Fullscreen .mapArea {
+  aspect-ratio: 1672 / 941;
+  min-height: 0;
+}
+.treasureV2Fullscreen .bottomPanel {
+  min-height: 150px;
+  grid-template-columns: 82px minmax(0, 1fr) 150px 142px;
+  gap: 9px;
+}
+.treasureV2Fullscreen .panel {
+  border-width: 4px;
+  border-radius: 14px;
+  padding: 9px;
+}
+.treasureV2Fullscreen .sideTitle {
+  font-size: 14px;
+  padding: 7px 5px;
+}
+.treasureV2Fullscreen .questionCount {
+  margin-top: 9px;
+  font-size: 20px;
+}
+.treasureV2Fullscreen .moveBadge {
+  margin-top: 10px;
+  font-size: 13px;
+  padding: 5px 8px;
+}
+.treasureV2Fullscreen .questionText {
+  font-size: 20px;
+  margin-bottom: 6px;
+}
+.treasureV2Fullscreen .answerBtn {
+  min-height: 44px;
+  font-size: 15px;
+  padding: 7px 5px;
+}
+.treasureV2Fullscreen .turnTitle,
+.treasureV2Fullscreen .eventTitle {
+  font-size: 17px;
+}
+.treasureV2Fullscreen .turnCharacter {
+  min-height: 86px;
+  margin: 5px 0 8px;
+}
+.treasureV2Fullscreen .turnCharacterImg {
+  width: 72px;
+  height: 72px;
+}
+.treasureV2Fullscreen .turnName {
+  font-size: 14px;
+}
+.treasureV2Fullscreen .submitBtn {
+  font-size: 17px;
+  padding: 11px 7px;
+}
+.treasureV2Fullscreen .eventItem {
+  font-size: 13px;
+  padding: 7px 3px;
+}
+.treasureV2Fullscreen .eventItem b {
+  font-size: 15px;
 }
 .selectModal {
   position: absolute;

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
+import { MessageSquareMore } from 'lucide-react'
 import { useAuth } from '@/features/auth/auth-context'
 import { beWebApi, mapBeWebGame, mapBeWebItem, mapBeWebLesson } from '@/features/game-library/services/be-web'
 import { ItemReviewPanel } from '@/features/game-preview/components/ItemReviewPanel'
@@ -12,6 +13,7 @@ import { validateGameItem, validateGameItems } from '@/features/game-preview/ser
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Spinner } from '@/components/ui/spinner'
+import { BrandLogo } from '@/components/layout/brand-logo'
 import type { Game, GameItem, Lesson } from '@/types/app'
 
 export default function ValidationPage() {
@@ -100,7 +102,7 @@ export default function ValidationPage() {
       router.push(`/dashboard/lesson/${lesson.id}/review/${game.id}`)
     } catch (error) {
       console.error('Failed to approve game:', error)
-      alert(error instanceof Error ? error.message : 'Failed to approve game')
+      alert(error instanceof Error ? error.message : 'Duyệt trò chơi thất bại')
     }
   }
 
@@ -116,7 +118,7 @@ export default function ValidationPage() {
     return (
       <div className="flex h-screen items-center justify-center">
         <Link href="/dashboard">
-          <Button>Back to Dashboard</Button>
+          <Button>Quay lại bảng điều khiển</Button>
         </Link>
       </div>
     )
@@ -125,29 +127,30 @@ export default function ValidationPage() {
   const selectedItem = game.items[selectedIndex]
   const allItemsValid = game.items.every((item) => item.validationStatus === 'valid' && item.safetyStatus !== 'blocked')
   const queueItems = game.items.slice(selectedIndex, selectedIndex + 3)
+  const chatHref = game.sessionId ? `/dashboard/game/new?session=${game.sessionId}` : '/dashboard/game/new'
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/5">
       <header className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur-sm">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-          <Link href="/dashboard" className="text-2xl font-bold text-primary hover:opacity-80">
-            LearnGame
-          </Link>
-          <div className="text-sm text-muted-foreground">Step 4 of 4: Preview, Validate, Approve</div>
+          <BrandLogo />
+          <div className="text-sm text-muted-foreground">Bước 4/4: Xem trước, kiểm duyệt, phê duyệt</div>
         </div>
       </header>
 
       <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Teacher Review Workspace</h1>
+            <h1 className="text-3xl font-bold text-foreground">Không gian duyệt của giáo viên</h1>
             <p className="mt-2 text-muted-foreground">
-              Review generated content, inspect validation evidence, edit weak items, then approve for class use.
+              Xem nội dung đã sinh, kiểm tra kết quả xác thực, chỉnh các mục chưa tốt rồi phê duyệt để dùng trên lớp.
             </p>
           </div>
-          <Button onClick={approveGame} disabled={!allItemsValid} className="lg:w-56">
-            Approve Game
-          </Button>
+          <div className="flex flex-col gap-3 sm:flex-row lg:justify-end">
+            <Button onClick={approveGame} disabled={!allItemsValid} className="w-full sm:w-auto lg:min-w-56">
+              Phê duyệt trò chơi
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-[320px_1fr]">
@@ -162,8 +165,8 @@ export default function ValidationPage() {
             />
             <Card className="h-fit">
               <CardHeader>
-                <CardTitle className="text-lg">Review Queue</CardTitle>
-                <CardDescription>Next items to inspect.</CardDescription>
+                <CardTitle className="text-lg">Hàng chờ kiểm duyệt</CardTitle>
+                <CardDescription>Các mục tiếp theo cần kiểm tra.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 {queueItems.map((item) => {
@@ -178,13 +181,19 @@ export default function ValidationPage() {
                       }`}
                     >
                       <div className="mb-2 flex items-center justify-between gap-2">
-                        <span className="text-sm font-semibold">Item {index + 1}</span>
+                        <span className="text-sm font-semibold">Mục {index + 1}</span>
                         <ValidationBadge status={item.validationStatus} />
                       </div>
                       <p className="line-clamp-3 text-sm text-muted-foreground">{item.question}</p>
                     </button>
                   )
                 })}
+                <Link href={chatHref}>
+                  <Button variant="outline" className="mt-4 w-full">
+                    <MessageSquareMore className="mr-2 h-4 w-4" />
+                    Quay lại trang chat
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           </div>

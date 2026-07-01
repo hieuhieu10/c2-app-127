@@ -9,10 +9,8 @@ import {
   type SafetyReport,
   type StageStatus,
 } from '@/features/game-creation/ai-api'
-import { useTemplateCategories } from '@/features/game-creation/use-template-categories'
 import { getTemplateByBackendId } from '@/features/game-creation/template-registry'
 import type { GameDefinition } from '@/features/game-shells/registry'
-import { categoryStyle } from '@/lib/category'
 import { GuideModal } from '@/features/game-library/components/GuideModal'
 import {
   beWebApi,
@@ -222,7 +220,7 @@ function buildSelectedGame(payload: Record<string, unknown> | null | undefined):
   const meta = getTemplateByBackendId(templateId)
   return {
     template_id: templateId,
-    name: typeof payload.name === 'string' ? payload.name : (meta?.title ?? templateId),
+    name: meta?.title ?? (typeof payload.name === 'string' ? payload.name : templateId),
     intro: typeof payload.intro === 'string' ? payload.intro : '',
     recommended: Boolean(payload.recommended),
   }
@@ -383,8 +381,6 @@ function NewGamePageContent() {
   const [elapsedSec, setElapsedSec] = useState(0)
   const [activeGenerationMessageId, setActiveGenerationMessageId] = useState<string | null>(null)
   const [guideGame, setGuideGame] = useState<GameDefinition | null>(null)
-  // Category is owned by the backend SPEC; overlaid via /templates (registry is the fallback).
-  const categories = useTemplateCategories()
 
   const threadRef = useRef<HTMLDivElement>(null)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -826,7 +822,7 @@ function NewGamePageContent() {
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
                         {message.recommendations.map((recommendation) => {
                           const meta = getTemplateByBackendId(recommendation.template_id)
-                          const category = categories[recommendation.template_id] ?? meta?.category
+                          const displayName = meta?.title ?? recommendation.name
                           return (
                             <div
                               key={`${message.id}-${recommendation.template_id}`}
@@ -845,15 +841,10 @@ function NewGamePageContent() {
                                 </div>
                                 <div style={{ flex: 1, minWidth: 0 }}>
                                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
-                                    <span style={{ fontSize: 15.5, fontWeight: 700, color: '#1b2333' }}>{recommendation.name}</span>
+                                    <span style={{ fontSize: 15.5, fontWeight: 700, color: '#1b2333' }}>{displayName}</span>
                                     {recommendation.recommended ? (
                                       <span style={{ fontSize: 11.5, fontWeight: 600, color: '#4f46e5', background: '#eef0fe', border: '1px solid #dfe1fc', borderRadius: 7, padding: '2px 8px' }}>
                                         Đề xuất
-                                      </span>
-                                    ) : null}
-                                    {category ? (
-                                      <span style={{ fontSize: 11.5, fontWeight: 600, ...categoryStyle(category), borderWidth: 1, borderStyle: 'solid', borderRadius: 7, padding: '2px 8px' }}>
-                                        {category}
                                       </span>
                                     ) : null}
                                   </div>
@@ -900,7 +891,9 @@ function NewGamePageContent() {
                     {message.selectedGame ? (
                       <div style={{ display: 'inline-flex', alignSelf: 'flex-start', alignItems: 'center', gap: 9, background: '#eef0fe', border: '1px solid #dfe1fc', borderRadius: 11, padding: '8px 13px' }}>
                         <span style={{ fontSize: 18 }}>{getTemplateByBackendId(message.selectedGame.template_id)?.icon ?? '🎮'}</span>
-                        <span style={{ fontSize: 13.5, fontWeight: 600, color: '#3730a3' }}>Trò chơi đã chọn: {message.selectedGame.name}</span>
+                        <span style={{ fontSize: 13.5, fontWeight: 600, color: '#3730a3' }}>
+                          Trò chơi đã chọn: {getTemplateByBackendId(message.selectedGame.template_id)?.title ?? message.selectedGame.name}
+                        </span>
                       </div>
                     ) : null}
 

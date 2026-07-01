@@ -264,9 +264,12 @@ def farm_builder_content_to_items(content: dict) -> list[dict]:
 
 
 def game_to_response(game: Game) -> GameResponse:
+    raw = game.ai_raw_response_json or {}
+    session_id = raw.get("session_id") if isinstance(raw, dict) else None
     return GameResponse(
         lessonId=game.lesson_id,
         gameId=game.id,
+        sessionId=session_id if isinstance(session_id, int) else None,
         status=game.status.value,
         productTemplateId=game.product_template_id,
         aiTemplateId=game.ai_template_id,

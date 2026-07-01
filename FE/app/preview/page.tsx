@@ -17,16 +17,16 @@ import type { Game, GameItem, GameTemplateType } from '@/types/app'
 
 // ── Sample content (valid for every quiz-style shell) ───────────────────────
 const SAMPLE_QA: Array<{ q: string; a: string; opts: string[]; hint?: string; expl: string }> = [
-  { q: 'What is 7 × 8?', a: '56', opts: ['54', '56', '48', '63'], hint: 'Count by eights: 8, 16, 24…', expl: '7 × 8 = 56.' },
-  { q: 'Which planet is known as the Red Planet?', a: 'Mars', opts: ['Venus', 'Mars', 'Jupiter', 'Mercury'], expl: 'Mars looks red because of iron oxide (rust) on its surface.' },
-  { q: 'What is the capital of Japan?', a: 'Tokyo', opts: ['Kyoto', 'Osaka', 'Tokyo', 'Nagoya'], hint: 'It is on Honshu island.', expl: 'Tokyo has been Japan’s capital since 1868.' },
-  { q: 'How many sides does a hexagon have?', a: '6', opts: ['5', '6', '7', '8'], expl: 'A hexagon has 6 sides ("hexa" = six).' },
-  { q: 'Water freezes at what temperature (°C)?', a: '0', opts: ['0', '10', '32', '100'], hint: 'In Celsius, not Fahrenheit.', expl: 'Water freezes at 0 °C (32 °F).' },
-  { q: 'Who wrote "Romeo and Juliet"?', a: 'Shakespeare', opts: ['Dickens', 'Shakespeare', 'Tolstoy', 'Homer'], expl: 'William Shakespeare wrote it around 1595.' },
-  { q: 'What gas do plants absorb from the air?', a: 'Carbon dioxide', opts: ['Oxygen', 'Nitrogen', 'Carbon dioxide', 'Hydrogen'], expl: 'Plants take in CO₂ for photosynthesis.' },
-  { q: 'What is 12 ÷ 4?', a: '3', opts: ['2', '3', '4', '6'], expl: '12 ÷ 4 = 3.' },
-  { q: 'Which ocean is the largest?', a: 'Pacific', opts: ['Atlantic', 'Indian', 'Arctic', 'Pacific'], hint: 'It borders Asia and the Americas.', expl: 'The Pacific is the largest and deepest ocean.' },
-  { q: 'How many continents are there?', a: '7', opts: ['5', '6', '7', '8'], expl: 'There are 7 continents.' },
+  { q: '7 × 8 bằng bao nhiêu?', a: '56', opts: ['54', '56', '48', '63'], hint: 'Đếm thêm theo 8: 8, 16, 24…', expl: '7 × 8 = 56.' },
+  { q: 'Hành tinh nào được gọi là Hành tinh Đỏ?', a: 'Sao Hỏa', opts: ['Sao Kim', 'Sao Hỏa', 'Sao Mộc', 'Sao Thủy'], expl: 'Sao Hỏa có màu đỏ do bề mặt chứa nhiều oxit sắt.' },
+  { q: 'Thủ đô của Nhật Bản là gì?', a: 'Tokyo', opts: ['Kyoto', 'Osaka', 'Tokyo', 'Nagoya'], hint: 'Thành phố này nằm trên đảo Honshu.', expl: 'Tokyo là thủ đô của Nhật Bản từ năm 1868.' },
+  { q: 'Hình lục giác có bao nhiêu cạnh?', a: '6', opts: ['5', '6', '7', '8'], expl: 'Hình lục giác có 6 cạnh.' },
+  { q: 'Nước đóng băng ở nhiệt độ bao nhiêu (°C)?', a: '0', opts: ['0', '10', '32', '100'], hint: 'Tính theo độ C, không phải độ F.', expl: 'Nước đóng băng ở 0 °C.' },
+  { q: 'Ai là tác giả của "Romeo và Juliet"?', a: 'Shakespeare', opts: ['Dickens', 'Shakespeare', 'Tolstoy', 'Homer'], expl: 'William Shakespeare viết tác phẩm này vào khoảng năm 1595.' },
+  { q: 'Thực vật hấp thụ khí gì từ không khí?', a: 'Carbon dioxide', opts: ['Oxy', 'Nitơ', 'Carbon dioxide', 'Hiđrô'], expl: 'Thực vật hấp thụ CO₂ để quang hợp.' },
+  { q: '12 ÷ 4 bằng bao nhiêu?', a: '3', opts: ['2', '3', '4', '6'], expl: '12 ÷ 4 = 3.' },
+  { q: 'Đại dương nào lớn nhất?', a: 'Thái Bình Dương', opts: ['Đại Tây Dương', 'Ấn Độ Dương', 'Bắc Băng Dương', 'Thái Bình Dương'], hint: 'Đại dương này nằm giữa châu Á và châu Mỹ.', expl: 'Thái Bình Dương là đại dương lớn nhất và sâu nhất.' },
+  { q: 'Có bao nhiêu châu lục?', a: '7', opts: ['5', '6', '7', '8'], expl: 'Có 7 châu lục.' },
 ]
 
 function makeItems(type: GameTemplateType, n: number): GameItem[] {
@@ -49,10 +49,10 @@ function makeItems(type: GameTemplateType, n: number): GameItem[] {
 // that understand `scene` need an entry; others just play from the start.
 const SCENES: Partial<Record<GameTemplateType, { id: string; label: string }[]>> = {
   battleship: [
-    { id: 'select', label: 'Character Select' },
-    { id: 'placement', label: 'Ship Placement' },
-    { id: 'battle', label: 'Battle' },
-    { id: 'gameover', label: 'Game Over' },
+    { id: 'select', label: 'Chọn nhân vật' },
+    { id: 'placement', label: 'Đặt tàu' },
+    { id: 'battle', label: 'Chiến đấu' },
+    { id: 'gameover', label: 'Kết thúc' },
   ],
 }
 
@@ -106,7 +106,7 @@ function PreviewInner() {
   return (
     <div style={S.page}>
       <header style={S.bar}>
-        <span style={S.brand}>🎮 Game Preview</span>
+        <span style={S.brand}>🎮 Xem trước trò chơi</span>
         <div style={S.tabs}>
           {GAMES.map((g) => {
             const on = g.type === active
@@ -117,12 +117,12 @@ function PreviewInner() {
             )
           })}
         </div>
-        <button onClick={() => setNonce((n) => n + 1)} style={S.reset}>↻ Reset</button>
+        <button onClick={() => setNonce((n) => n + 1)} style={S.reset}>↻ Đặt lại</button>
       </header>
 
       {scenes ? (
         <div style={S.scenes}>
-          <span style={S.scenesLabel}>Jump to screen:</span>
+          <span style={S.scenesLabel}>Chuyển tới màn:</span>
           {scenes.map((sc) => {
             const on = sc.id === scene
             return (
@@ -138,7 +138,7 @@ function PreviewInner() {
         </div>
       ) : (
         <p style={S.meta}>
-          {def.icon} <strong>{def.title}</strong> · {def.itemCount} sample items · {def.interactionType}
+          {def.icon} <strong>{def.title}</strong> · {def.itemCount} câu mẫu · {def.interactionType}
         </p>
       )}
 

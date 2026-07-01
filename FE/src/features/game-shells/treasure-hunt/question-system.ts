@@ -16,10 +16,10 @@ export function normalizeTreasureQuestion(item: GameItem, index: number): Treasu
 
   return {
     id: item.id,
-    prompt: item.question || `Question ${index + 1}`,
+    prompt: item.question || `Câu hỏi ${index + 1}`,
     options,
     correctAnswer: item.correctAnswer,
-    explanation: item.explanation || `The correct answer is ${item.correctAnswer}.`,
+    explanation: item.explanation || `Đáp án đúng là ${item.correctAnswer}.`,
     isValid: validationErrors.length === 0,
     validationErrors,
   }
@@ -30,15 +30,15 @@ function validateTreasureQuestionOptions(options: string[], correctAnswer: strin
   const cleanedOptions = options.map((option) => option.trim()).filter(Boolean)
 
   if (cleanedOptions.length < 2) {
-    errors.push('This question is missing valid AI answer options. Please regenerate or edit this item.')
+    errors.push('Câu hỏi này đang thiếu các lựa chọn trả lời hợp lệ từ AI. Vui lòng tạo lại hoặc chỉnh sửa mục này.')
   }
 
   if (cleanedOptions.length !== options.length) {
-    errors.push('Answer options cannot be empty.')
+    errors.push('Các lựa chọn trả lời không được để trống.')
   }
 
   if (correctAnswer.trim() && !cleanedOptions.includes(correctAnswer)) {
-    errors.push('Correct answer must match one of the AI answer options.')
+    errors.push('Đáp án đúng phải trùng với một trong các lựa chọn do AI tạo ra.')
   }
 
   return errors

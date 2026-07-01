@@ -6,6 +6,7 @@ import { useAuth } from '@/features/auth/auth-context'
 import { beWebApi, type BeWebChatSessionSummary } from '@/features/game-library/services/be-web'
 import { UserAvatar } from '@/components/ui/user-avatar'
 import { useEffect, useRef, useState } from 'react'
+import { Sparkles } from 'lucide-react'
 
 const HIDDEN_RECENT_SESSION_IDS_KEY = 'hidden_recent_session_ids'
 
@@ -18,9 +19,11 @@ const s = {
   },
   logo: { display: 'flex', alignItems: 'center', gap: 11, padding: '4px 6px 18px' },
   logoIcon: {
-    width: 36, height: 36, borderRadius: 10, background: '#4f46e5',
+    width: 36, height: 36, borderRadius: 12,
+    background: 'linear-gradient(135deg,#5b7cfa 0%,#4f46e5 48%,#12b8a6 100%)',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
-    flexShrink: 0, boxShadow: '0 4px 10px rgba(79,70,229,.28)',
+    color: '#fff',
+    flexShrink: 0, boxShadow: '0 10px 22px rgba(79,70,229,.20)',
   },
   newBtn: {
     display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -188,7 +191,7 @@ export function AppSidebar() {
   }
 
   function getSessionLabel(session: BeWebChatSessionSummary) {
-    return session.title || session.lastMessagePreview || 'Untitled chat'
+    return session.title || session.lastMessagePreview || 'Đoạn chat chưa có tiêu đề'
   }
 
   function persistHiddenSessionIds(nextIds: number[]) {
@@ -229,7 +232,7 @@ export function AppSidebar() {
       `}</style>
       <div style={s.logo}>
         <div style={s.logoIcon}>
-          <svg width="15" height="15" viewBox="0 0 16 16" fill="#fff"><path d="M4 3l9 5-9 5z"/></svg>
+          <Sparkles size={16} strokeWidth={2.4} />
         </div>
         <div>
           <div style={{ fontWeight: 700, fontSize: 16, letterSpacing: '-.2px' }}>Học Mà Chơi</div>
@@ -253,10 +256,6 @@ export function AppSidebar() {
           <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"><path d="M4 5.5A1.5 1.5 0 015.5 4H9v12H5.5A1.5 1.5 0 014 14.5z"/><path d="M16 5.5A1.5 1.5 0 0014.5 4H11v12h3.5A1.5 1.5 0 0016 14.5z"/></svg>
           Thư viện game
         </Link>
-        <a href="#" style={s.navInactive}>
-          <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.7"><circle cx="7" cy="7" r="2.5"/><circle cx="14" cy="8" r="2"/><path d="M3 16c0-2.2 1.8-4 4-4s4 1.8 4 4M12 16c0-1.6.8-3 2-3.6"/></svg>
-          Lớp học của tôi
-        </a>
         <a href="#" style={s.navInactive}>
           <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"><path d="M4 16V9M10 16V4M16 16v-5"/></svg>
           Phân tích
@@ -352,7 +351,7 @@ export function AppSidebar() {
                 event.currentTarget.style.background = 'transparent'
               }}
             >
-              Profile
+              Hồ sơ
             </button>
             <button
               type="button"
@@ -366,7 +365,7 @@ export function AppSidebar() {
                 event.currentTarget.style.background = 'transparent'
               }}
             >
-              Sign out
+              Đăng xuất
             </button>
           </div>
         ) : null}
@@ -375,7 +374,7 @@ export function AppSidebar() {
           type="button"
           style={s.userRow}
           title={avatarTitle}
-          aria-label="Open user menu"
+          aria-label="Mở menu người dùng"
           aria-expanded={isUserMenuOpen}
           aria-haspopup="menu"
           onClick={() => setIsUserMenuOpen((open) => !open)}
