@@ -92,7 +92,7 @@ export default function ReviewPage() {
             <div
               className={
                 isFullscreen
-                  ? 'fixed inset-0 z-50 flex h-[100dvh] flex-col overflow-hidden bg-[#0686c2] p-3 text-foreground'
+                  ? 'fixed inset-0 z-50 flex h-[100dvh] flex-col overflow-hidden bg-[#f4f5f8] p-3 text-foreground'
                   : 'mt-3 min-w-0'
               }
             >
