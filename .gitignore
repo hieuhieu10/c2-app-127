@@ -23,3 +23,5 @@ build/
 # Runtime uploads
 BE_Web/uploads/
 .claude
+.ai-log/
+.antigravity-log/
