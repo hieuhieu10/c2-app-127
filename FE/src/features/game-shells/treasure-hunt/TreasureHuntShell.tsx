@@ -578,7 +578,7 @@ const treasureHuntStyles = `
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  background: transparent;
+  background: #0686c2;
 }
 .treasureFullscreenScaler {
   position: relative;
